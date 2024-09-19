@@ -32,6 +32,18 @@ The project includes a Makefile that simplifies the use of PlatformIO commands. 
 - `BOARD`: The type of ESP32 board (e.g., `esp32dev`).
 - `SPEED`: Baud rate for the serial monitor (e.g., `115200`).
 
+### Development Environment
+You can run a `mosquitto` MQTT broker locally on your machine for testing. To install `mosquitto`, run the following commands:
+Setup the username and password for the MQTT broker (replace `<username>` with your desired username)
+```bash
+docker run -it -v $(pwd)mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf eclipse-mosquitto mosquitto_passwd -c /mosquitto/config/pwfile <username>
+```
+
+Start the MQTT broker
+```bash
+docker compose up -d
+```
+
 #### Commands
 - **Build the project:**
 

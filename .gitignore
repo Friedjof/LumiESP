@@ -3,3 +3,12 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+mosquitto/config/*
+!mosquitto/config/mosquitto.conf
+
+mosquitto/data/
+mosquitto/log/
+
+config/*
+!config/*-template
