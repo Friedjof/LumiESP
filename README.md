@@ -34,9 +34,9 @@ The project includes a Makefile that simplifies the use of PlatformIO commands. 
 
 ### Development Environment
 You can run a `mosquitto` MQTT broker locally on your machine for testing. To install `mosquitto`, run the following commands:
-Setup the username and password for the MQTT broker (replace `<username>` with your desired username)
+Setup the username and password for the MQTT broker (replace `<username>` with your desired username e.g., `esp`):
 ```bash
-docker run -it -v $(pwd)mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf eclipse-mosquitto mosquitto_passwd -c /mosquitto/config/pwfile <username>
+docker run -it -v ./mosquitto/config:/mosquitto/config eclipse-mosquitto mosquitto_passwd -c /mosquitto/config/password.txt <username>
 ```
 
 Start the MQTT broker
@@ -69,6 +69,12 @@ docker compose up -d
   make clean
   ```
 
+- **Setup the repository:**
+
+  ```bash
+  make setup
+  ```
+  
 ## Troubleshooting
 - Make sure the correct port is selected in the Makefile.
 - Ensure PlatformIO is installed correctly by checking the installation instructions linked above.
