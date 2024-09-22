@@ -55,7 +55,10 @@ void MqttService::mqttReconnect()
     {
         if (mqttClient.connect(DEVICE_NAME, MQTT_USERNAME, MQTT_PASSWORD))
         {
-            mqttClient.publish(MQTT_STATUS_MSG_TOPIC, "connected");
+            char topic[64];
+            this->mqttGlobalTopic(MQTT_STATUS_MSG_TOPIC, topic);
+
+            mqttClient.publish(topic, "connected");
         }
         else
         {
@@ -69,6 +72,36 @@ void MqttService::mqttStatusUpdate()
 {
     if (this->initialized)
     {
-        mqttClient.publish(MQTT_STATUS_MSG_TOPIC, "alive");
+        char topic[64];
+        this->mqttGlobalTopic(MQTT_STATUS_MSG_TOPIC, topic);
+
+        mqttClient.publish(topic, "alive");
     }
+}
+
+void MqttService::mqttDatetimeUpdate(const char* datetime)
+{
+    if (this->initialized)
+    {
+        char topic[64];
+        this->mqttGlobalTopic(MQTT_STATUS_DATETIME_TOPIC, topic);
+
+        mqttClient.publish(topic, datetime);
+    }
+}
+
+void MqttService::publish(const char* subTopic, const char* message)
+{
+    if (this->initialized)
+    {
+        char topic[64];
+        this->mqttGlobalTopic(subTopic, topic);
+
+        mqttClient.publish(topic, message);
+    }
+}
+
+void MqttService::mqttGlobalTopic(const char* subTopic, char* globalTopic)
+{
+    sprintf(globalTopic, MQTT_TOPIC_STRING, DEVICE_NAME, subTopic);
 }

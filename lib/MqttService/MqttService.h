@@ -24,10 +24,12 @@ class MqttService
         void connectToWiFi();
         void mqttReconnect();
         void mqttStatusUpdate();
+        void mqttGlobalTopic(const char* subTopic, char* globalTopic);
+        void mqttDatetimeUpdate(const char* datetime);
+        void publish(const char* subTopic, const char* message);
 
         void mqttLoop() { this->mqttClient.loop(); }
         bool mqttIsConnected() { return this->mqttClient.connected(); }
-        void publish(const char* topic, const char* message) { this->mqttClient.publish(topic, message); }
 };
 
 #endif

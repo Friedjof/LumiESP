@@ -47,20 +47,23 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
         char logLevelStr[8];
 
         this->logLevelStr(logLevel, logLevelStr);
-        
+
         if (mode == LOG_MODE_SERIAL || mode == LOG_MODE_ALL) {
             char datetime[128];
             this->clockService->getDateTime(datetime);
 
-            Serial.printf("%s (%s) [%s] %s\n", DEVICE_NAME, datetime, logLevelStr, message);
+            char log_msg[256];
+            snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime, logLevelStr, message);
+
+            Serial.println(log_msg);
         }
-        
+
         if (mode == LOG_MODE_MQTT || mode == LOG_MODE_ALL) {
             char datetime[128];
             this->clockService->getDateTime(datetime);
 
             char log_msg[256];
-            snprintf(log_msg, 256, "%s (%s) [%s] %s", DEVICE_NAME, datetime, logLevelStr, message);
+            snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime, logLevelStr, message);
 
             this->mqttService->publish(MQTT_STATUS_LOG_TOPIC, log_msg);
         }

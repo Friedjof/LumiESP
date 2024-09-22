@@ -11,25 +11,78 @@
 #define CONFIG_H
 
 // WiFi Configuration
-#define WIFI_SSID "your_wifi_ssid"
-#define WIFI_PASSWORD "your_wifi_password"
+#define WIFI_SSID "<ssid>"
+#define WIFI_PASSWORD "<password>"
 
 // MQTT Configuration
-#define MQTT_BROKER "your_mqtt_broker_address"
-#define MQTT_PORT 1883
-#define MQTT_USERNAME "your_mqtt_username"
-#define MQTT_PASSWORD "your_mqtt_password"
-#define MQTT_CLIENT_ID "your_mqtt_client_id"
+#define MQTT_BROKER    "<mqtt-broker-ip"
+#define MQTT_PORT      1883
+#define MQTT_USERNAME  "<username>"
+#define MQTT_PASSWORD  "<password>"
+#define MQTT_CLIENT_ID "esp32-fwodnd"
 
 // Device Configuration
-#define DEVICE_NAME "your_device_name"
-#define DEVICE_LOCATION "your_device_location"
+#define DEVICE_NAME     "LumiMQTT"
+#define DEVICE_LOCATION "Living Room"
 
-// Sensor Configuration
-#define SENSOR_TYPE "your_sensor_type"
-#define SENSOR_PIN 4
+// DNS Configuration (used for time sync)
+#define CUSTOM_DNS // if defined, custom DNS server is used
+#define DNS_SERVER 9, 9, 9, 9
 
-// Other Configuration
-#define DEBUG true
+// NTP Configuration
+#define NTP_SERVER "time.nist.gov"
 
-#endif // CONFIG_H
+//#define NTP_OFFSET 3600 * 0 // UTC+0
+//#define NTP_OFFSET 3600 * 1 // UTC+1
+#define NTP_OFFSET 3600 * 2   // UTC+2
+//#define NTP_OFFSET 3600 * 3 // UTC+3
+//#define NTP_OFFSET 3600 * 4 // UTC+4
+
+// Logging Configuration
+#define LOG_LEVEL_ERROR 0x01
+#define LOG_LEVEL_WARN  0x02
+#define LOG_LEVEL_INFO  0x04
+#define LOG_LEVEL_DEBUG 0x08
+
+#define LOG_MODE_SERIAL 0x01
+#define LOG_MODE_MQTT   0x02
+#define LOG_MODE_ALL    0xFF
+
+#define LOG_LEVEL LOG_LEVEL_DEBUG
+#define LOG_MODE  LOG_MODE_SERIAL
+
+#define LOG_SERIAL_SPEED 115200
+
+// Example: "LumiMQTT (2020-01-01 00:00:00) [INFO] 'Message'"
+#define LOG_STRING "%s (%s) [%s] '%s'"
+
+// local sub MQTT topics
+// pub = publish, sub = subscribe
+#define MQTT_STATUS_MSG_TOPIC      "pub/status/msg"
+#define MQTT_STATUS_LOG_TOPIC      "pub/status/log"
+#define MQTT_STATUS_DATETIME_TOPIC "pub/status/datetime"
+
+#define MQTT_LED_R_TOPIC           "sub/led/r"
+#define MQTT_LED_G_TOPIC           "sub/led/g"
+#define MQTT_LED_B_TOPIC           "sub/led/b"
+
+#define MQTT_LED_STATE_TOPIC       "pub/led/state"
+
+#define MQTT_LED_R_STATE_TOPIC     "pub/led/r"
+#define MQTT_LED_G_STATE_TOPIC     "pub/led/g"
+#define MQTT_LED_B_STATE_TOPIC     "pub/led/b"
+#define MQTT_LED_STATE_STATE_TOPIC "sub/led/state"
+
+// global MQTT topic will start with the device name (e.g. "LumiMQTT/sub/led/r")
+#define MQTT_TOPIC_STRING          "%s/%s"
+
+// MQTT status update interval
+#define MQTT_DATETIME_UPDATE_STATUS_INTERVAL 10000      // 10 seconds
+
+// MQTT DateTime update interval
+#define MQTT_DATETIME_UPDATE_INTERVAL        1000       // 1 second
+
+// DateTime sync interval
+#define TIME_SYNC_INTERVAL                   60000 * 60 // 1 hour
+
+#endif
