@@ -16,10 +16,10 @@ upload:
 monitor:
 	$(PLATFORMIO) device monitor --port $(PORT) --baud $(SPEED)
 
-flash: upload monitor
-
 clean:
 	$(PLATFORMIO) run --environment $(BOARD) --target clean
+
+flash: clean upload monitor
 
 setup:
 	python ./setup.py
