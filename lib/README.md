@@ -123,4 +123,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 
 ## Contact
 
-For questions or support, please contact [Your Name or Email Address].
+For questions or support, please contact git@noweck.info.
