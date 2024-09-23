@@ -48,7 +48,7 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
 
         this->logLevelStr(logLevel, logLevelStr);
 
-        if (mode == LOG_MODE_SERIAL || mode == LOG_MODE_ALL) {
+        if ((mode == LOG_MODE_SERIAL || mode == LOG_MODE_ALL) && Serial.available()) {
             char datetime[128];
             this->clockService->getDateTime(datetime);
 
@@ -58,7 +58,7 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
             Serial.println(log_msg);
         }
 
-        if (mode == LOG_MODE_MQTT || mode == LOG_MODE_ALL) {
+        if ((mode == LOG_MODE_MQTT || mode == LOG_MODE_ALL) && this->mqttService->isConnected()) {
             char datetime[128];
             this->clockService->getDateTime(datetime);
 

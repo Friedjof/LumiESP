@@ -20,6 +20,9 @@ class MqttService
 
         void setup();
         void loop();
+        
+        bool isInitialized() { return this->initialized; }
+        bool isConnected() { return this->mqttClient.connected(); }
 
         void connectToWiFi();
         void mqttReconnect();
