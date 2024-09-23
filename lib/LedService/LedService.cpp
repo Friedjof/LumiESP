@@ -64,13 +64,45 @@ void LedService::loop()
 
 void LedService::setMode(LedModes mode)
 {
+    // check if mode is already set
+    if (this->newCurrentMode == mode)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service requested mode is already set: " + this->getModeStr(mode));
+        return;
+    }
+
     this->newCurrentMode = mode;
+
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service requested mode: " + this->getModeStr(this->newCurrentMode));
 }
 
-void LedService::setLed(short index, byte r, byte g, byte b)
+void LedService::confirmMode()
 {
-    this->leds[index] = CRGB(r, g, b);
+    this->currentMode = this->newCurrentMode;
+
+    FastLED.show();
+
+    // publish mode to MQTT
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service confirmed mode: " + this->getModeStr(this->currentMode));
+
+    this->mqttService->publish(this->mqttService->mqttLedPubTopic(MQTT_LED_MODE_TOPIC), this->getModeStr(this->currentMode));
 }
+
+void LedService::callback(char* topic, byte* payload, unsigned int length)
+{
+    String strTopic = String(topic);
+    String strPayload = "";
+
+    for (int i = 0; i < length; i++)
+    {
+        strPayload += (char)payload[i];
+    }
+    
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback triggered");
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback topic: " + strTopic);
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback payload: " + strPayload);
+}
+
 
 // ------- HELPER FUNCTIONS -------
 bool LedService::firstModeTrigger(LedModes mode)
@@ -103,6 +135,11 @@ String LedService::getModeStr(LedModes mode)
     }
 }
 
+void LedService::setLed(short index, byte r, byte g, byte b)
+{
+    this->leds[index] = CRGB(r, g, b);
+}
+
 
 // ------- START LED MODES -------
 void LedService::mode_on()
@@ -114,11 +151,7 @@ void LedService::mode_on()
             this->setLed(i, LED_MODE_ON_START_R, LED_MODE_ON_START_G, LED_MODE_ON_START_B);
         }
 
-        FastLED.show();
-
-        this->currentMode = MODE_ON;
-
-        this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LEDs turned on");
+        this->confirmMode();
     }
 }
 
@@ -131,11 +164,7 @@ void LedService::mode_off()
             this->setLed(i, LED_MODE_OFF_START_R, LED_MODE_OFF_START_G, LED_MODE_OFF_START_B);
         }
 
-        FastLED.show();
-
-        this->currentMode = MODE_OFF;
-
-        this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LEDs turned off");
+        this->confirmMode();
     }
 }
 

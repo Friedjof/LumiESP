@@ -16,6 +16,20 @@ void MqttService::setup()
     this->initialized = true;
 }
 
+void MqttService::createTopics()
+{
+    // create all topics
+    const char* initMsg = "initialized";
+    this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC), initMsg);
+    this->publish(this->mqttStatusTopic(MQTT_STATUS_LOG_TOPIC), initMsg);
+    this->publish(this->mqttStatusTopic(MQTT_STATUS_DATETIME_TOPIC), initMsg);
+
+    this->publish(this->mqttLedPubTopic(MQTT_LED_MODE_TOPIC), initMsg);
+    this->publish(this->mqttLedPubTopic(MQTT_LED_STATE_TOPIC), initMsg);
+    this->publish(this->mqttLedSubTopic(MQTT_LED_MODE_TOPIC), initMsg);
+    this->publish(this->mqttLedSubTopic(MQTT_LED_STATE_TOPIC), initMsg);
+}
+
 void MqttService::loop()
 {
     if (!this->initialized)
@@ -51,32 +65,24 @@ void MqttService::connectToWiFi()
 
 void MqttService::mqttReconnect()
 {
-    Serial.println("Attempting MQTT connection...");
     while (!mqttClient.connected())
     {
         if (mqttClient.connect(DEVICE_NAME, MQTT_USERNAME, MQTT_PASSWORD))
         {
-            char topic[64];
-            this->mqttGlobalTopic(MQTT_STATUS_MSG_TOPIC, topic);
-
-            mqttClient.publish(topic, "connected");
+            this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC).c_str(), "connected");
         }
         else
         {
             delay(5000);
         }
     }
-    Serial.println("MQTT connected");
 }
 
 void MqttService::mqttStatusUpdate()
 {
     if (this->initialized)
     {
-        char topic[64];
-        this->mqttGlobalTopic(MQTT_STATUS_MSG_TOPIC, topic);
-
-        mqttClient.publish(topic, "alive");
+        this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC).c_str(), "alive");
     }
 }
 
@@ -84,10 +90,7 @@ void MqttService::mqttDatetimeUpdate(const char* datetime)
 {
     if (this->initialized)
     {
-        char topic[64];
-        this->mqttGlobalTopic(MQTT_STATUS_DATETIME_TOPIC, topic);
-
-        mqttClient.publish(topic, datetime);
+        this->publish(this->mqttStatusTopic(MQTT_STATUS_DATETIME_TOPIC).c_str(), datetime);
     }
 }
 
@@ -95,10 +98,23 @@ void MqttService::publish(const char* subTopic, const char* message)
 {
     if (this->initialized)
     {
-        char topic[64];
-        this->mqttGlobalTopic(subTopic, topic);
+        mqttClient.publish(this->mqttGlobalTopic(subTopic).c_str(), message);
+    }
+}
 
-        mqttClient.publish(topic, message);
+void MqttService::publish(String subTopic, const char* message)
+{
+    if (this->initialized)
+    {
+        this->publish(subTopic.c_str(), message);
+    }
+}
+
+void MqttService::publish(String subTopic, String message)
+{
+    if (this->initialized)
+    {
+        this->publish(subTopic.c_str(), message.c_str());
     }
 }
 
@@ -113,7 +129,44 @@ void MqttService::setCallback(void (*callback)(char*, byte*, unsigned int))
 }
 
 // ------- HELPER FUNCTIONS -------
-void MqttService::mqttGlobalTopic(const char* subTopic, char* globalTopic)
+String MqttService::mqttGlobalTopic(const char* subTopic)
 {
-    sprintf(globalTopic, MQTT_TOPIC_STRING, DEVICE_NAME, subTopic);
+    char result[64];
+    sprintf(result, MQTT_TOPIC_STRING, DEVICE_NAME, subTopic);
+
+    return String(result);
+}
+
+String MqttService::mqttStatusTopic(const char* subTopic)
+{
+    char result[64];
+    sprintf(result, MQTT_STATUS_TOPIC, subTopic);
+
+    return String(result);
+}
+
+String MqttService::mqttLedPubTopic(const char* subTopic)
+{
+    char result[64];
+    sprintf(result, MQTT_LED_PUB_TOPIC, subTopic);
+
+    return String(result);
+}
+
+String MqttService::mqttLedSubTopic(const char* subTopic)
+{
+    char result[64];
+    sprintf(result, MQTT_LED_SUB_TOPIC, subTopic);
+
+    return String(result);
+}
+
+bool MqttService::isLedTopic(const char* topic)
+{
+    return String(topic).startsWith(String(DEVICE_NAME) + "/led/sub/");
+}
+
+bool MqttService::isLedTopic(String topic)
+{
+    return topic.startsWith(String(DEVICE_NAME) + "/led/sub/");
 }

@@ -25,3 +25,11 @@ void ClockService::getDateTime(char *datetime)
     timeinfo = localtime(&now);
     strftime(datetime, 128, "%Y-%m-%d %H:%M:%S", timeinfo);
 }
+
+String ClockService::getDateTime()
+{
+    char datetime[128];
+    this->getDateTime(datetime);
+
+    return String(datetime);
+}

@@ -38,6 +38,7 @@ void TaskService::mqttServiceCallbackWrapper(char *topic, byte *payload, unsigne
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT callback triggered");
 
     this->mqttService->callback(topic, payload, length);
+    this->ledService->callback(topic, payload, length);
 
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT callback topic: " + String(topic));
 }

@@ -37,6 +37,9 @@ class LedService {
         int maxModeSteps = LED_MODE_CONFIG_MAX_STEPS;
         int internalModeSteps = 0;
 
+        void confirmMode();
+        void setLed(short index, byte r, byte g, byte b);
+        bool firstModeTrigger(LedModes mode);
     public:
         LedService();
         LedService(LoggingService *loggingService, MqttService *mqttService);
@@ -45,10 +48,8 @@ class LedService {
 
         void loop();
         void setMode(LedModes mode);
-        bool firstModeTrigger(LedModes mode);
         String getModeStr(LedModes mode);
-
-        void setLed(short index, byte r, byte g, byte b);
+        void callback(char* topic, byte* payload, unsigned int length);
 
         // modes
         void mode_on();

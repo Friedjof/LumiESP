@@ -41,31 +41,35 @@ void LoggingService::logLevelStr(short logLevel, char* logLevelStr) {
     }
 }
 
+String LoggingService::logLevelStr(short logLevel) {
+    char logLevelStr[8];
+    this->logLevelStr(logLevel, logLevelStr);
+
+    return String(logLevelStr);
+}
+
+String LoggingService::logMessageStr(short logLevel, const char* message) {
+    String logLevelStr = this->logLevelStr(logLevel);
+    String datetime = this->clockService->getDateTime();
+
+    char log_msg[256];
+    snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime.c_str(), logLevelStr.c_str(), message);
+
+    return String(log_msg);
+}
+
 // Log message methods
 void LoggingService::logMessage(short logLevel, short mode, const char* message) {
     if (this->initialized && logLevel <= this->logLevel) {
-        char logLevelStr[8];
-
-        this->logLevelStr(logLevel, logLevelStr);
-
         if (mode == LOG_MODE_ALL || mode == LOG_MODE_SERIAL) {
-            char datetime[128];
-            this->clockService->getDateTime(datetime);
-
-            char log_msg[256];
-            snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime, logLevelStr, message);
-
-            Serial.println(log_msg);
+            Serial.println(this->logMessageStr(logLevel, message));
         }
 
         if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->mqttService->isConnected()) {
-            char datetime[128];
-            this->clockService->getDateTime(datetime);
-
-            char log_msg[256];
-            snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime, logLevelStr, message);
-
-            this->mqttService->publish(MQTT_STATUS_LOG_TOPIC, log_msg);
+            this->mqttService->publish(
+                this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_TOPIC).c_str(),
+                this->logMessageStr(logLevel, message).c_str()
+            );
         }
     }
 }

@@ -38,7 +38,7 @@ TaskService taskService(&mqttService, &clockService, &loggingService, &ledServic
 Task mqttStatusUpdateTask(MQTT_DATETIME_UPDATE_STATUS_INTERVAL, TASK_FOREVER, &mqttServiceStatusUpdateWrapper);
 Task mqttServiceUpdateDateTimeTask(MQTT_DATETIME_UPDATE_INTERVAL, TASK_FOREVER, &mqttServiceUpdateDateTimeWrapper);
 Task timeSyncTask(TIME_SYNC_INTERVAL, TASK_FOREVER, &clockServiceTimeSyncWrapper);
-Task mqttServiceLoopTask(5, TASK_FOREVER, &mqttServiceLoopWrapper);
+Task mqttServiceLoopTask(2, TASK_FOREVER, &mqttServiceLoopWrapper);
 Task ledServiceLoopTask(LED_MODE_CONFIG_SPEED, TASK_FOREVER, &ledServiceLoopWrapper);
 
 
@@ -51,6 +51,11 @@ void setup() {
     taskService.setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
+
+    // create MQTT topics
+    mqttService.createTopics();
+
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics created");
 
     // set mqtt callback
     mqttService.setCallback(&mqttServiceCallbackWrapper);

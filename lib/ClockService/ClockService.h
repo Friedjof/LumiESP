@@ -26,6 +26,7 @@ class ClockService
         void setup();
         void syncTime();
         void getDateTime(char* datetime);
+        String getDateTime();
 };
 
 #endif
