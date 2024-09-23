@@ -19,7 +19,7 @@ void mqttServiceLoopWrapper();
 void mqttServiceUpdateDateTimeWrapper();
 void clockServiceTimeSyncWrapper();
 void ledServiceLoopWrapper();
-void mqttServiceCallbackWrapper(char* topic, byte* payload, unsigned int length);
+void mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total);
 
 
 // global objects
@@ -52,7 +52,7 @@ void setup() {
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
 
-    // create MQTT topics
+    // create mqtt topics
     mqttService.createTopics();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics created");
@@ -61,6 +61,11 @@ void setup() {
     mqttService.setCallback(&mqttServiceCallbackWrapper);
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT callback set");
+
+    // subscribe to mqtt topics
+    mqttService.subscribe();
+
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT subscribed");
 
     // add tasks to scheduler
     scheduler.addTask(mqttStatusUpdateTask);
@@ -107,6 +112,6 @@ void ledServiceLoopWrapper() {
     taskService.ledServiceLoopWrapper();
 }
 
-void mqttServiceCallbackWrapper(char* topic, byte* payload, unsigned int length) {
-    taskService.mqttServiceCallbackWrapper(topic, payload, length);
+void mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total) {
+    taskService.mqttServiceCallbackWrapper(properties, topic, payload, len, index, total);
 }

@@ -1,8 +1,6 @@
 #ifndef LoggingService_h
 #define LoggingService_h
 
-#include <PubSubClient.h>
-
 #include "MqttService.h"
 #include "ClockService.h"
 

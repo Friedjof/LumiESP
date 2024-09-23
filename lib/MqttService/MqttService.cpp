@@ -1,17 +1,26 @@
 #include "MqttService.h"
 
 
-MqttService::MqttService() : mqttClient(wifiClient)
+MqttService::MqttService() : mqttClient()
 {
+    // set mqtt callbacks
+    mqttClient.onConnect(std::bind(&MqttService::onConnect, this, std::placeholders::_1));
+    mqttClient.onSubscribe(std::bind(&MqttService::onSubscribe, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    mqttClient.onMessage(std::bind(&MqttService::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+    
+    mqttClient.setCleanSession(true);
 }
 
 void MqttService::setup()
 {
     this->connectToWiFi();
 
+    // set mqtt client settings
     mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
+    mqttClient.setCredentials(MQTT_USERNAME, MQTT_PASSWORD);
+    mqttClient.setClientId(MQTT_CLIENT_ID);
 
-    this->mqttReconnect();
+    this->connect();
 
     this->initialized = true;
 }
@@ -39,7 +48,7 @@ void MqttService::loop()
 
     if (!mqttClient.connected())
     {
-        this->mqttReconnect();
+        this->connect();
     }
 
     mqttClient.loop();
@@ -54,6 +63,9 @@ void MqttService::connectToWiFi()
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     WiFi.waitForConnectResult();
 
+    WiFi.persistent(false);
+    WiFi.setAutoConnect(true);
+
     #ifdef CUSTOM_DNS
     WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(DNS_SERVER));
     #endif
@@ -63,11 +75,11 @@ void MqttService::connectToWiFi()
     }
 }
 
-void MqttService::mqttReconnect()
+void MqttService::connect()
 {
     while (!mqttClient.connected())
     {
-        if (mqttClient.connect(DEVICE_NAME, MQTT_USERNAME, MQTT_PASSWORD))
+        if (mqttClient.connect())
         {
             this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC).c_str(), "connected");
         }
@@ -98,7 +110,28 @@ void MqttService::publish(const char* subTopic, const char* message)
 {
     if (this->initialized)
     {
-        mqttClient.publish(this->mqttGlobalTopic(subTopic).c_str(), message);
+        mqttClient.publish(this->mqttGlobalTopic(subTopic).c_str(), 0, false, message);
+    }
+}
+
+void MqttService::subscribe()
+{
+    this->subscribe(this->mqttLedSubTopic(MQTT_LED_MODE_TOPIC));
+}
+
+void MqttService::subscribe(const char* subTopic)
+{
+    if (this->initialized)
+    {
+        mqttClient.subscribe(this->mqttGlobalTopic(subTopic).c_str(), 0);
+    }
+}
+
+void MqttService::subscribe(String subTopic)
+{
+    if (this->initialized)
+    {
+        this->subscribe(subTopic.c_str());
     }
 }
 
@@ -118,14 +151,27 @@ void MqttService::publish(String subTopic, String message)
     }
 }
 
-void MqttService::callback(char* topic, byte* payload, unsigned int length)
+
+// ------- MQTT CALLBACKS -------
+void MqttService::onConnect(bool sessionPresent)
 {
-    // TODO: implement callback
+    this->createTopics();
+    this->mqttStatusUpdate();
 }
 
-void MqttService::setCallback(void (*callback)(char*, byte*, unsigned int))
+void MqttService::onSubscribe(uint16_t packetId, const espMqttClientTypes::SubscribeReturncode* codes, size_t len)
 {
-    mqttClient.setCallback(callback);
+    // TODO: implement onSubscribe here
+}
+
+void MqttService::onMessage(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
+{
+    // TODO: implement onMessage here
+}
+
+void MqttService::setCallback(void (*callback)(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total))
+{
+    mqttClient.onMessage(callback);
 }
 
 // ------- HELPER FUNCTIONS -------
@@ -161,12 +207,7 @@ String MqttService::mqttLedSubTopic(const char* subTopic)
     return String(result);
 }
 
-bool MqttService::isLedTopic(const char* topic)
+bool MqttService::isLedModeSubTopic(String topic)
 {
-    return String(topic).startsWith(String(DEVICE_NAME) + "/led/sub/");
-}
-
-bool MqttService::isLedTopic(String topic)
-{
-    return topic.startsWith(String(DEVICE_NAME) + "/led/sub/");
+    return topic == this->mqttGlobalTopic(this->mqttLedSubTopic(MQTT_LED_MODE_TOPIC).c_str());
 }

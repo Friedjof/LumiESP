@@ -1,6 +1,8 @@
 #ifndef LEDSERVICE_H
 #define LEDSERVICE_H
 
+#include <map>
+
 #include <FastLED.h>
 
 #include "LoggingService.h"
@@ -9,7 +11,6 @@
 #include "../../config/config.h"
 
 
-// LED modes as enum
 enum LedModes
 {
     MODE_NONE,
@@ -48,7 +49,11 @@ class LedService {
 
         void loop();
         void setMode(LedModes mode);
+
         String getModeStr(LedModes mode);
+        LedModes getModeEnum(String mode);
+
+        void callback(String topic, String payload);
         void callback(char* topic, byte* payload, unsigned int length);
 
         // modes

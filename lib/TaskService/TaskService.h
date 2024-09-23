@@ -23,11 +23,13 @@ class TaskService
 
         void setup();
 
+        void mqttSubscribtion(String topic, String payload);
+
         // task wrappers
         void mqttServiceStatusUpdateWrapper();
         void mqttServiceLoopWrapper();
         void mqttServiceUpdateDateTimeWrapper();
-        void mqttServiceCallbackWrapper(char* topic, byte* payload, unsigned int length);
+        void mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total);
         void clockServiceTimeSyncWrapper();
         void ledServiceLoopWrapper();
 

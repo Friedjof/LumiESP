@@ -1,6 +1,31 @@
 #include "LedService.h"
 
+// LED mode strings representation
+const char* LedModeStrings[] = {
+    "none",
+    "off",
+    "on",
+    "custom",
+    "automatic",
+    "blink",
+    "fade",
+    "rainbow",
+    "loop"
+};
 
+std::map<String, LedModes> stringToEnumMap = {
+    {"none", MODE_NONE},
+    {"off", MODE_OFF},
+    {"on", MODE_ON},
+    {"custom", MODE_CUSTOM},
+    {"automatic", MODE_AUTOMATIC},
+    {"blink", MODE_BLINK},
+    {"fade", MODE_FADE},
+    {"rainbow", MODE_RAINBOW},
+    {"loop", MODE_LOOP}
+};
+
+// ------- CONSTRUCTORS -------
 LedService::LedService()
 {
 }
@@ -11,6 +36,7 @@ LedService::LedService(LoggingService *loggingService, MqttService *mqttService)
     this->mqttService = mqttService;
 }
 
+// ------- SETUP & LOOP -------
 void LedService::setup()
 {
     FastLED.addLeds<WS2812, LED_PIN, GRB>(this->leds, LED_NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -88,6 +114,14 @@ void LedService::confirmMode()
     this->mqttService->publish(this->mqttService->mqttLedPubTopic(MQTT_LED_MODE_TOPIC), this->getModeStr(this->currentMode));
 }
 
+// ------- CALLBACKS -------
+void LedService::callback(String topic, String payload)
+{    
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback triggered");
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback topic: " + topic);
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback payload: " + payload);
+}
+
 void LedService::callback(char* topic, byte* payload, unsigned int length)
 {
     String strTopic = String(topic);
@@ -97,10 +131,8 @@ void LedService::callback(char* topic, byte* payload, unsigned int length)
     {
         strPayload += (char)payload[i];
     }
-    
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback triggered");
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback topic: " + strTopic);
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service callback payload: " + strPayload);
+
+    this->callback(strTopic, strPayload);
 }
 
 
@@ -110,28 +142,20 @@ bool LedService::firstModeTrigger(LedModes mode)
     return this->newCurrentMode == mode && this->currentMode != mode;
 }
 
-String LedService::getModeStr(LedModes mode)
-{
-    switch (mode)
-    {
-        case MODE_OFF:
-            return "off";
-        case MODE_ON:
-            return "on";
-        case MODE_CUSTOM:
-            return "custom";
-        case MODE_AUTOMATIC:
-            return "automatic";
-        case MODE_BLINK:
-            return "blink";
-        case MODE_FADE:
-            return "fade";
-        case MODE_RAINBOW:
-            return "rainbow";
-        case MODE_LOOP:
-            return "loop";
-        default:
-            return "unknown";
+String LedService::getModeStr(LedModes mode) {
+    if (mode >= MODE_NONE && mode <= MODE_LOOP) {
+        return LedModeStrings[mode];
+    } else {
+        return "none";
+    }
+}
+
+LedModes LedService::getModeEnum(String mode) {
+    auto it = stringToEnumMap.find(mode);
+    if (it != stringToEnumMap.end()) {
+        return it->second;
+    } else {
+        return MODE_NONE;
     }
 }
 

@@ -14,6 +14,22 @@ void TaskService::setup()
     this->initialized = true;
 }
 
+void TaskService::mqttSubscribtion(String topic, String payload)
+{
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT callback topic: " + topic + ", payload: " + payload);
+
+    if (this->mqttService->isLedModeSubTopic(topic))
+    {
+        LedModes mode = this->ledService->getModeEnum(payload);
+        if (mode != MODE_NONE)
+        {
+            this->ledService->setMode(mode);
+        } else {
+            this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service requested mode is not valid: " + payload);
+        }
+    }
+}
+
 // ------- TASK WRAPPERS -------
 void TaskService::mqttServiceStatusUpdateWrapper()
 {
@@ -33,14 +49,16 @@ void TaskService::mqttServiceUpdateDateTimeWrapper()
     this->mqttService->mqttDatetimeUpdate(datetime);
 }
 
-void TaskService::mqttServiceCallbackWrapper(char *topic, byte *payload, unsigned int length)
+void TaskService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
 {
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT callback triggered");
+    String playloadStr = "";
 
-    this->mqttService->callback(topic, payload, length);
-    this->ledService->callback(topic, payload, length);
+    for (int i = 0; i < len; i++)
+    {
+        playloadStr += (char)payload[i];
+    }
 
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT callback topic: " + String(topic));
+    this->mqttSubscribtion(String(topic), playloadStr);
 }
 
 void TaskService::clockServiceTimeSyncWrapper()
