@@ -48,8 +48,14 @@ class MqttService
         String mqttStatusTopic(const char* subTopic);
         String mqttLedPubTopic(const char* subTopic);
         String mqttLedSubTopic(const char* subTopic);
+        String mqttLedModeCustomTopic(const char* subTopic);
 
         bool isLedModeSubTopic(String topic);
+        bool isLedModeCustomSubTopic(String topic);
+        bool isLedModeCustomRSubTopic(String topic);
+        bool isLedModeCustomGSubTopic(String topic);
+        bool isLedModeCustomBSubTopic(String topic);
+        bool isLedModeCustomBrightnessSubTopic(String topic);
         
         bool isConnected() { return this->mqttClient.connected(); }
         bool isInitialized() { return this->initialized; }

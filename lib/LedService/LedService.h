@@ -25,12 +25,26 @@ enum LedModes
 };
 
 
+enum Colors
+{
+    COLOR_R,
+    COLOR_G,
+    COLOR_B,
+    COLOR_BRIGHTNESS
+};
+
+
 class LedService {
     private:
         LoggingService *loggingService;
         MqttService *mqttService;
 
         CRGB leds[LED_NUM_LEDS];
+
+        CRGB newCustomColor = CRGB(LED_MODE_CUSTOM_DEFAULT_R, LED_MODE_CUSTOM_DEFAULT_G, LED_MODE_CUSTOM_DEFAULT_B);
+        CRGB customColor = CRGB(LED_MODE_CUSTOM_DEFAULT_R, LED_MODE_CUSTOM_DEFAULT_G, LED_MODE_CUSTOM_DEFAULT_B);
+        byte newCustomBrightness = LED_MODE_CUSTOM_DEFAULT_BRIGHTNESS;
+        byte customBrightness = LED_MODE_CUSTOM_DEFAULT_BRIGHTNESS;
 
         LedModes newCurrentMode = MODE_NONE;
         LedModes currentMode = MODE_NONE;
@@ -40,7 +54,12 @@ class LedService {
 
         void confirmMode();
         void setLed(short index, byte r, byte g, byte b);
-        bool firstModeTrigger(LedModes mode);
+        void setLed(short index, CRGB color);
+        void setLed(short index, CHSV color);
+        void setLed(byte r, byte g, byte b);
+
+        bool isfirstModeTrigger(LedModes mode);
+        bool isNewCustomColor();
     public:
         LedService();
         LedService(LoggingService *loggingService, MqttService *mqttService);
@@ -49,6 +68,9 @@ class LedService {
 
         void loop();
         void setMode(LedModes mode);
+
+        void setCustomColor(byte r, byte g, byte b, byte brightness);
+        void setCustomColor(Colors color, byte value);
 
         String getModeStr(LedModes mode);
         LedModes getModeEnum(String mode);

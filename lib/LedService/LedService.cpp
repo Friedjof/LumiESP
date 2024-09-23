@@ -102,16 +102,44 @@ void LedService::setMode(LedModes mode)
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service requested mode: " + this->getModeStr(this->newCurrentMode));
 }
 
+void LedService::setCustomColor(byte r, byte g, byte b, byte brightness)
+{
+    this->newCustomColor = CRGB(r, g, b);
+    this->newCustomBrightness = brightness;
+}
+
+void LedService::setCustomColor(Colors color, byte value)
+{
+    switch (color)
+    {
+        case COLOR_R:
+            this->newCustomColor.r = value;
+            break;
+        case COLOR_G:
+            this->newCustomColor.g = value;
+            break;
+        case COLOR_B:
+            this->newCustomColor.b = value;
+            break;
+        case COLOR_BRIGHTNESS:
+            this->newCustomBrightness = value;
+            break;
+        default:
+            break;
+    }
+}
+
 void LedService::confirmMode()
 {
-    this->currentMode = this->newCurrentMode;
+    if (this->isfirstModeTrigger(this->newCurrentMode))
+    {
+        this->currentMode = this->newCurrentMode;
+        this->loggingService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "LED Service confirmed mode: " + this->getModeStr(this->currentMode));
+
+        this->mqttService->publish(this->mqttService->mqttLedPubTopic(MQTT_LED_MODE_TOPIC), this->getModeStr(this->currentMode));
+    }
 
     FastLED.show();
-
-    // publish mode to MQTT
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service confirmed mode: " + this->getModeStr(this->currentMode));
-
-    this->mqttService->publish(this->mqttService->mqttLedPubTopic(MQTT_LED_MODE_TOPIC), this->getModeStr(this->currentMode));
 }
 
 // ------- CALLBACKS -------
@@ -137,9 +165,14 @@ void LedService::callback(char* topic, byte* payload, unsigned int length)
 
 
 // ------- HELPER FUNCTIONS -------
-bool LedService::firstModeTrigger(LedModes mode)
+bool LedService::isfirstModeTrigger(LedModes mode)
 {
     return this->newCurrentMode == mode && this->currentMode != mode;
+}
+
+bool LedService::isNewCustomColor()
+{
+    return this->newCustomColor != this->customColor || this->newCustomBrightness != this->customBrightness;
 }
 
 String LedService::getModeStr(LedModes mode) {
@@ -164,13 +197,30 @@ void LedService::setLed(short index, byte r, byte g, byte b)
     this->leds[index] = CRGB(r, g, b);
 }
 
+void LedService::setLed(short index, CRGB color)
+{
+    this->leds[index] = color;
+}
+
+void LedService::setLed(short index, CHSV color)
+{
+    this->leds[index] = color;
+}
+
+void LedService::setLed(byte r, byte g, byte b)
+{
+    for (int i = 0; i < LED_NUM_LEDS; i++)
+    {
+        this->setLed(i, r, g, b);
+    }
+}
 
 // ------- START LED MODES -------
 void LedService::mode_on()
 {
     const int maxModeSteps = 0;
 
-    if (this->firstModeTrigger(MODE_ON)) {
+    if (this->isfirstModeTrigger(MODE_ON)) {
         for (int i = 0; i < LED_NUM_LEDS; i++) {
             this->setLed(i, LED_MODE_ON_START_R, LED_MODE_ON_START_G, LED_MODE_ON_START_B);
         }
@@ -183,7 +233,7 @@ void LedService::mode_off()
 {
     const int maxModeSteps = 0;
 
-    if (this->firstModeTrigger(MODE_OFF)) {
+    if (this->isfirstModeTrigger(MODE_OFF)) {
         for (int i = 0; i < LED_NUM_LEDS; i++) {
             this->setLed(i, LED_MODE_OFF_START_R, LED_MODE_OFF_START_G, LED_MODE_OFF_START_B);
         }
@@ -194,7 +244,20 @@ void LedService::mode_off()
 
 void LedService::mode_custom()
 {
-    // TODO: implement custom mode
+    if (this->isNewCustomColor() || this->isfirstModeTrigger(MODE_CUSTOM))
+    {
+        this->customColor = this->newCustomColor;
+        this->customBrightness = this->newCustomBrightness;
+
+        for (int i = 0; i < LED_NUM_LEDS; i++)
+        {
+            this->setLed(i, this->customColor.r, this->customColor.g, this->customColor.b);
+        }
+
+        FastLED.setBrightness(this->customBrightness);
+
+        this->confirmMode();
+    }
 }
 
 void LedService::mode_automatic()
@@ -219,7 +282,14 @@ void LedService::mode_rainbow()
 
 void LedService::mode_loop()
 {
-    // TODO: implement loop mode
+    int maxModeSteps = LED_NUM_LEDS;
+
+    this->setLed(LED_MODE_LOOP_PATTERN_OFF_R, LED_MODE_LOOP_PATTERN_OFF_G, LED_MODE_LOOP_PATTERN_OFF_B);
+
+    this->setLed(this->internalModeSteps % maxModeSteps, LED_MODE_LOOP_PATTERN_ON_R, LED_MODE_LOOP_PATTERN_ON_G, LED_MODE_LOOP_PATTERN_ON_B);
+
+
+    this->confirmMode();
 }
 
 // ------- END LED MODES -------
