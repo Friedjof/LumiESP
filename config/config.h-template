@@ -25,6 +25,55 @@
 #define DEVICE_NAME     "LumiMQTT"
 #define DEVICE_LOCATION "Living Room"
 
+// LED Configuration
+#define LED_PIN                   2
+#define LED_NUM_LEDS              64 // number of LEDs in the strip
+#define LED_MODE_CONFIG_SPEED     5 // one step every 5ms
+#define LED_MODE_CONFIG_MAX_STEPS 10240
+
+// Mode Configuration
+// color for 'on' mode
+#define LED_MODE_ON_START_R 255
+#define LED_MODE_ON_START_G 255
+#define LED_MODE_ON_START_B 255
+
+// color for 'off' mode
+#define LED_MODE_OFF_START_R 0
+#define LED_MODE_OFF_START_G 0
+#define LED_MODE_OFF_START_B 0
+
+// color for 'blink' mode
+#define LED_MODE_BLINK_START_R 255
+#define LED_MODE_BLINK_START_G 255
+#define LED_MODE_BLINK_START_B 255
+
+// color for 'fade' mode
+#define LED_MODE_FADE_START_R 255
+#define LED_MODE_FADE_START_G 255
+#define LED_MODE_FADE_START_B 255
+
+#define LED_MODE_FADE_END_R   0
+#define LED_MODE_FADE_END_G   0
+#define LED_MODE_FADE_END_B   0
+
+// color for 'rainbow' mode
+#define LED_MODE_RAINBOW_START_R 255
+#define LED_MODE_RAINBOW_START_G 0
+#define LED_MODE_RAINBOW_START_B 0
+
+#define LED_MODE_RAINBOW_END_R   0
+#define LED_MODE_RAINBOW_END_G   0
+#define LED_MODE_RAINBOW_END_B   255
+
+// color for 'loop' mode
+#define LED_MODE_LOOP_PATTERN_ON_R  255
+#define LED_MODE_LOOP_PATTERN_ON_G  255
+#define LED_MODE_LOOP_PATTERN_ON_B  255
+
+#define LED_MODE_LOOP_PATTERN_OFF_R 0
+#define LED_MODE_LOOP_PATTERN_OFF_G 0
+#define LED_MODE_LOOP_PATTERN_OFF_B 0
+
 // DNS Configuration (used for time sync)
 #define CUSTOM_DNS // if defined, custom DNS server is used
 #define DNS_SERVER 9, 9, 9, 9
