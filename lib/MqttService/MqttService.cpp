@@ -31,6 +31,7 @@ void MqttService::createTopics()
     const char* initMsg = "initialized";
     this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC), initMsg);
     this->publish(this->mqttStatusTopic(MQTT_STATUS_LOG_TOPIC), initMsg);
+    this->publish(this->mqttStatusTopic(MQTT_STATUS_LOG_LEVEL_TOPIC), initMsg);
     this->publish(this->mqttStatusTopic(MQTT_STATUS_DATETIME_TOPIC), initMsg);
 
     this->publish(this->mqttLedPubTopic(MQTT_LED_MODE_TOPIC), initMsg);

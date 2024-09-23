@@ -70,6 +70,10 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
                 this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_TOPIC).c_str(),
                 this->logMessageStr(logLevel, message).c_str()
             );
+            this->mqttService->publish(
+                this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_LEVEL_TOPIC).c_str(),
+                this->logLevelStr(logLevel).c_str()
+            );
         }
     }
 }
