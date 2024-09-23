@@ -50,6 +50,7 @@ class LedService {
         LedModes currentMode = MODE_NONE;
 
         int maxModeSteps = LED_MODE_CONFIG_MAX_STEPS;
+        int newInternalModeSteps = 0;
         int internalModeSteps = 0;
 
         void confirmMode();

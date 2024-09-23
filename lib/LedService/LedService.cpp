@@ -50,9 +50,9 @@ void LedService::setup()
 
 void LedService::loop()
 {
-    if (this->internalModeSteps >= this->maxModeSteps)
+    if (this->newInternalModeSteps >= this->maxModeSteps)
     {
-        this->internalModeSteps = 0;
+        this->newInternalModeSteps = 0;
     }
 
     switch (this->newCurrentMode)
@@ -85,7 +85,7 @@ void LedService::loop()
             break;
     }
 
-    this->internalModeSteps++;
+    this->internalModeSteps = this->newInternalModeSteps++;
 }
 
 void LedService::setMode(LedModes mode)
@@ -262,33 +262,101 @@ void LedService::mode_custom()
 
 void LedService::mode_automatic()
 {
-    // TODO: implement automatic mode
+    
 }
 
 void LedService::mode_blink()
 {
-    // TODO: implement blink mode
+    const int maxModeSteps = LED_NUM_LEDS;
+
+    if (this->isfirstModeTrigger(MODE_BLINK))
+    {
+        this->confirmMode();
+    }
+
+    for (int i = 0; i < LED_NUM_LEDS; i++)
+    {
+        if (random(100) % 15 == 0)
+        {
+            this->setLed(i, LED_MODE_BLINK_START_R, LED_MODE_BLINK_START_G, LED_MODE_BLINK_START_B);
+        }
+        else
+        {
+            this->setLed(i, 0, 0, 0);
+        }
+    }
+
+    this->confirmMode();
 }
 
 void LedService::mode_fade()
 {
-    // TODO: implement fade mode
+    const int maxModeSteps = LED_NUM_LEDS * 2;
+
+    if (this->isfirstModeTrigger(MODE_FADE))
+    {
+        this->setLed(LED_MODE_FADE_START_R, LED_MODE_FADE_START_G, LED_MODE_FADE_START_B);
+
+        this->confirmMode();
+    }
+
+    int step = this->internalModeSteps % maxModeSteps;
+
+    if (step >= LED_NUM_LEDS) {
+        step = maxModeSteps - step;
+    }
+
+    const int r = (step * LED_MODE_FADE_END_R + (LED_NUM_LEDS - step) * LED_MODE_FADE_START_R) / LED_NUM_LEDS;
+    const int g = (step * LED_MODE_FADE_END_G + (LED_NUM_LEDS - step) * LED_MODE_FADE_START_G) / LED_NUM_LEDS;
+    const int b = (step * LED_MODE_FADE_END_B + (LED_NUM_LEDS - step) * LED_MODE_FADE_START_B) / LED_NUM_LEDS;
+
+    for (int i = 0; i < LED_NUM_LEDS; i++)
+    {
+        this->setLed(i, r, g, b);
+    }
+
+    this->confirmMode();
 }
 
 void LedService::mode_rainbow()
 {
-    // TODO: implement rainbow mode
+    const int maxModeSteps = LED_NUM_LEDS;
+
+    for (int i = 0; i < maxModeSteps; i++) {
+        int hue = (i * 256 / maxModeSteps + this->newInternalModeSteps) % 256;
+        this->setLed(i, CHSV(hue, 255, 255));
+    }
+
+    this->confirmMode();
 }
 
 void LedService::mode_loop()
 {
-    int maxModeSteps = LED_NUM_LEDS;
+    const int maxModeSteps = LED_NUM_LEDS;
 
-    this->setLed(LED_MODE_LOOP_PATTERN_OFF_R, LED_MODE_LOOP_PATTERN_OFF_G, LED_MODE_LOOP_PATTERN_OFF_B);
+    if (this->isfirstModeTrigger(MODE_LOOP))
+    {
+        this->setLed(LED_MODE_LOOP_PATTERN_OFF_R, LED_MODE_LOOP_PATTERN_OFF_G, LED_MODE_LOOP_PATTERN_OFF_B);
+    }
 
-    this->setLed(this->internalModeSteps % maxModeSteps, LED_MODE_LOOP_PATTERN_ON_R, LED_MODE_LOOP_PATTERN_ON_G, LED_MODE_LOOP_PATTERN_ON_B);
+    const int r = this->internalModeSteps % maxModeSteps;
+    const int newR = this->newInternalModeSteps % maxModeSteps;
 
+    const int g = (this->internalModeSteps + maxModeSteps / 3) % maxModeSteps;
+    const int newG = (this->newInternalModeSteps + maxModeSteps / 3) % maxModeSteps;
 
+    const int b = (this->internalModeSteps + 2 * maxModeSteps / 3) % maxModeSteps;
+    const int newB = (this->newInternalModeSteps + 2 * maxModeSteps / 3) % maxModeSteps;
+
+    this->setLed(r, 0, 0, 0);
+    this->setLed(newR, LED_MODE_LOOP_PATTERN_ON_R, 0, 0);
+
+    this->setLed(g, 0, 0, 0);
+    this->setLed(newG, 0, LED_MODE_LOOP_PATTERN_ON_G, 0);
+
+    this->setLed(b, 0, 0, 0);
+    this->setLed(newB, 0, 0, LED_MODE_LOOP_PATTERN_ON_B);
+    
     this->confirmMode();
 }
 
