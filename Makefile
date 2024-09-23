@@ -4,6 +4,7 @@ BOARD = esp32dev
 SPEED = 115200
 PLATFORMIO = ~/.platformio/penv/bin/platformio
 
+
 # Ziele
 all: build
 
@@ -19,20 +20,21 @@ monitor:
 clean:
 	$(PLATFORMIO) run --environment $(BOARD) --target clean
 
-flash: clean upload monitor
+flash: upload monitor
 
 setup:
 	python ./setup.py
 
 help:
-	@echo "Verfügbare Makefile Commands:"
-	@echo "  setup    - Richtet die Entwicklungsumgebung ein"
-	@echo "  all      - Baut das Projekt"
-	@echo "  build    - Baut das Projekt"
-	@echo "  upload   - Lädt das Projekt auf den ESP32"
-	@echo "  monitor  - Öffnet ein Terminal zum ESP32"
-	@echo "  clean    - Löscht das Projekt"
-	@echo "  help     - Zeigt diese Hilfe an"
+	@echo "Available Makefile Commands:"
+	@echo "  setup    - Sets up the development environment"
+	@echo "  all      - Builds the project"
+	@echo "  build    - Builds the project"
+	@echo "  upload   - Uploads the project to the ESP32"
+	@echo "  monitor  - Opens a terminal to the ESP32"
+	@echo "  flash    - Uploads the project to the ESP32 and opens a terminal"
+	@echo "  clean    - Cleans the project"
+	@echo "  help     - Displays this help message"
 
 # Standardziel
 .PHONY: all build upload monitor clean setup help
