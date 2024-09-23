@@ -22,7 +22,7 @@
 #define MQTT_CLIENT_ID "esp32-fwodnd"
 
 // Device Configuration
-#define DEVICE_NAME     "LumiMQTT"
+#define DEVICE_NAME     "LumiESP"
 #define DEVICE_LOCATION "Living Room"
 
 // LED Configuration
@@ -60,7 +60,7 @@
 
 #define LOG_SERIAL_SPEED 115200
 
-// Example: "LumiMQTT (2020-01-01 00:00:00) [INFO] 'Message'"
+// Example: "LumiESP (2020-01-01 00:00:00) [INFO] 'Message'"
 #define LOG_STRING "%s (%s) [%s] '%s'"
 
 // --- MQTT topics ---
@@ -80,7 +80,7 @@
 
 #define MQTT_LED_STATE_STATE_TOPIC "sub/led/state"
 
-// global MQTT topic will start with the device name (e.g. "LumiMQTT/sub/led/r")
+// global MQTT topic will start with the device name (e.g. "LumiESP/sub/led/r")
 #define MQTT_TOPIC_STRING          "%s/%s"
 
 // --- Task timing ---

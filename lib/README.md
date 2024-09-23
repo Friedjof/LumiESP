@@ -1,6 +1,6 @@
-# LumiMQTT Library Services
+# LumiESP Library Services
 
-This repository contains various services used for the LumiMQTT project. The services are defined in the `/lib` directory and provide different functionalities such as logging, task management, time synchronization, and MQTT communication.
+This repository contains various services used for the LumiESP project. The services are defined in the `/lib` directory and provide different functionalities such as logging, task management, time synchronization, and MQTT communication.
 
 ## Table of Contents
 
@@ -61,7 +61,7 @@ The logging configuration is done in the `config.h` file:
 
 #define LOG_SERIAL_SPEED 115200
 
-// Example: "LumiMQTT (2020-01-01 00:00:00) [INFO] 'Message'"
+// Example: "LumiESP (2020-01-01 00:00:00) [INFO] 'Message'"
 #define LOG_STRING "%s (%s) [%s] '%s'"
 ```
 

@@ -1,5 +1,5 @@
-# LumiMQTT
-LumiMQTT is a project that uses an ESP32 microcontroller to control a 12V LED strip via MQTT. The project is designed to provide flexible and remote control over lighting, allowing integration into home automation systems.
+# LumiESP
+LumiESP is a project that uses an ESP32 microcontroller to control a 12V LED strip via MQTT. The project is designed to provide flexible and remote control over lighting, allowing integration into home automation systems.
 
 ## Features
 - Control 12V LED strip using ESP32 over MQTT
@@ -17,11 +17,11 @@ LumiMQTT is a project that uses an ESP32 microcontroller to control a 12V LED st
 PlatformIO is a cross-platform code builder and the easiest way to manage your embedded software environment. To install PlatformIO, follow the official instructions found [here](https://docs.platformio.org/en/latest/core/installation/methods/installer-script.html).
 
 ### 2. Clone the Repository
-Clone the LumiMQTT project repository to your local machine:
+Clone the LumiESP project repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/LumiMQTT.git
-cd LumiMQTT
+git clone https://github.com/friedjof/lumiESP.git
+cd LumiESP
 ```
 
 ### 3. Build, Upload, and Monitor
