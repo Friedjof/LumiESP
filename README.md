@@ -44,37 +44,68 @@ Start the MQTT broker
 docker compose up -d
 ```
 
-#### Commands
-- **Build the project:**
+#### Makefile
 
-  ```bash
-  make build
-  ```
+- **Build the project:** `make build`
+- **Upload the code to the ESP32:** `make upload`
+- **Monitor the serial output:** `make monitor`
+- **Clean the build files:** `make clean`
+- **Setup the repository:** `make setup`
+- **Clean, build, flash, and open the serial monitor:** `make flash`
 
-- **Upload the code to the ESP32:**
+### Repository structure
+```txt
+.
+├── config
+│   ├── config.h
+│   └── config.h-template
+├── include
+│   └── README.md
+├── lib
+│   ├── ClockService
+│   │   ├── ClockService.cpp
+│   │   └── ClockService.h
+│   ├── LoggingService
+│   │   ├── LoggingService.cpp
+│   │   └── LoggingService.h
+│   ├── MQTTService
+│   │   ├── MQTTService.cpp
+│   │   └── MQTTService.h
+│   ├── TaskService
+│   │   ├── TaskService.cpp
+│   │   └── TaskService.h
+│   └── README.md
+├── media
+│   ├── drawio
+│   │   └── sketches.drawio
+│   └── images
+│       └── services-overview.png
+├── mosquitto
+│   ├── config
+│   │   └── mosquitto.conf
+│   ├── data
+│   └── log
+├── src
+│   └── main.cpp
+├── test
+│   └── README
+├── .gitignore
+├── compose.yml
+├── Makefile
+├── platformio.ini
+├── README.md
+└── setup.py
+```
 
-  ```bash
-  make upload
-  ```
+#### Services
+- **ClockService**: Provides timekeeping functionality (including NTP synchronization).
+- **LoggingService**: Logs messages to the serial monitor and MQTT.
+- **MQTTService**: Handles MQTT communication with the broker.
+- **TaskService**: Manages tasks and schedules for the ESP32.
 
-- **Monitor the serial output:**
+![Services Overview](media/images/services-overview.png)
 
-  ```bash
-  make monitor
-  ```
 
-- **Clean the build files:**
-
-  ```bash
-  make clean
-  ```
-
-- **Setup the repository:**
-
-  ```bash
-  make setup
-  ```
-  
 ## Troubleshooting
 - Make sure the correct port is selected in the Makefile.
 - Ensure PlatformIO is installed correctly by checking the installation instructions linked above.

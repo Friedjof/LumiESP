@@ -1,7 +1,6 @@
 #ifndef LoggingService_h
 #define LoggingService_h
 
-#include <string>
 #include <PubSubClient.h>
 
 #include "MqttService.h"
