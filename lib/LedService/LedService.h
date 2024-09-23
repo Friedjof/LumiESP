@@ -1,6 +1,8 @@
 #ifndef LEDSERVICE_H
 #define LEDSERVICE_H
 
+#include <FastLED.h>
+
 #include "LoggingService.h"
 #include "MqttService.h"
 
@@ -10,6 +12,7 @@
 // LED modes as enum
 enum LedModes
 {
+    MODE_NONE,
     MODE_OFF,
     MODE_ON,
     MODE_CUSTOM,
@@ -26,7 +29,10 @@ class LedService {
         LoggingService *loggingService;
         MqttService *mqttService;
 
-        LedModes currentMode = MODE_OFF;
+        CRGB leds[LED_NUM_LEDS];
+
+        LedModes newCurrentMode = MODE_NONE;
+        LedModes currentMode = MODE_NONE;
 
         int maxModeSteps = LED_MODE_CONFIG_MAX_STEPS;
         int internalModeSteps = 0;
@@ -39,8 +45,10 @@ class LedService {
 
         void loop();
         void setMode(LedModes mode);
+        bool firstModeTrigger(LedModes mode);
+        String getModeStr(LedModes mode);
 
-        void setLed(short index, char r, char g, char b);
+        void setLed(short index, byte r, byte g, byte b);
 
         // modes
         void mode_on();

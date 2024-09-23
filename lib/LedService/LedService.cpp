@@ -3,22 +3,23 @@
 
 LedService::LedService()
 {
-    this->currentMode = MODE_OFF;
-    this->internalModeSteps = 0;
 }
 
 LedService::LedService(LoggingService *loggingService, MqttService *mqttService)
 {
     this->loggingService = loggingService;
     this->mqttService = mqttService;
-
-    this->currentMode = MODE_OFF;
-    this->internalModeSteps = 0;
 }
 
 void LedService::setup()
 {
-    pinMode(LED_PIN, OUTPUT);
+    FastLED.addLeds<WS2812, LED_PIN, GRB>(this->leds, LED_NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.setBrightness(LED_MODE_CONFIG_BRIGHTNESS);
+
+    // turn off LEDs on startup
+    this->setMode(MODE_OFF);
+
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service setup completed");
 }
 
 void LedService::loop()
@@ -28,7 +29,7 @@ void LedService::loop()
         this->internalModeSteps = 0;
     }
 
-    switch (this->currentMode)
+    switch (this->newCurrentMode)
     {
         case MODE_OFF:
             this->mode_off();
@@ -55,7 +56,6 @@ void LedService::loop()
             this->mode_loop();
             break;
         default:
-            this->mode_off();
             break;
     }
 
@@ -64,34 +64,109 @@ void LedService::loop()
 
 void LedService::setMode(LedModes mode)
 {
-    this->currentMode = mode;
+    this->newCurrentMode = mode;
 }
 
-void LedService::setLed(short index, char r, char g, char b)
+void LedService::setLed(short index, byte r, byte g, byte b)
 {
-    char log_msg[128];
-    snprintf(log_msg, 128, "Setting LED %d to RGB(%d, %d, %d)", index, r, g, b);
+    this->leds[index] = CRGB(r, g, b);
+}
 
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, log_msg);
+// ------- HELPER FUNCTIONS -------
+bool LedService::firstModeTrigger(LedModes mode)
+{
+    return this->newCurrentMode == mode && this->currentMode != mode;
+}
 
-    // TODO: set LED index to RGB(r, g, b)
+String LedService::getModeStr(LedModes mode)
+{
+    switch (mode)
+    {
+        case MODE_OFF:
+            return "off";
+        case MODE_ON:
+            return "on";
+        case MODE_CUSTOM:
+            return "custom";
+        case MODE_AUTOMATIC:
+            return "automatic";
+        case MODE_BLINK:
+            return "blink";
+        case MODE_FADE:
+            return "fade";
+        case MODE_RAINBOW:
+            return "rainbow";
+        case MODE_LOOP:
+            return "loop";
+        default:
+            return "unknown";
+    }
 }
 
 
-// ------- LED MODES -------
+// ------- START LED MODES -------
 void LedService::mode_on()
 {
-    int maxModeSteps = 0;
+    const int maxModeSteps = 0;
 
-    analogWrite(LED_PIN, 255);
+    if (this->firstModeTrigger(MODE_ON)) {
+        for (int i = 0; i < LED_NUM_LEDS; i++) {
+            this->setLed(i, LED_MODE_ON_START_R, LED_MODE_ON_START_G, LED_MODE_ON_START_B);
+        }
+
+        FastLED.show();
+
+        this->currentMode = MODE_ON;
+
+        this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LEDs turned on");
+    }
 }
 
 void LedService::mode_off()
 {
-    int maxModeSteps = 0;
+    const int maxModeSteps = 0;
 
-    analogWrite(LED_PIN, 0);
+    if (this->firstModeTrigger(MODE_OFF)) {
+        for (int i = 0; i < LED_NUM_LEDS; i++) {
+            this->setLed(i, LED_MODE_OFF_START_R, LED_MODE_OFF_START_G, LED_MODE_OFF_START_B);
+        }
+
+        FastLED.show();
+
+        this->currentMode = MODE_OFF;
+
+        this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LEDs turned off");
+    }
 }
 
-// TODO: implement more LED modes (see enum LedModes in LedService.h)
-    
+void LedService::mode_custom()
+{
+    // TODO: implement custom mode
+}
+
+void LedService::mode_automatic()
+{
+    // TODO: implement automatic mode
+}
+
+void LedService::mode_blink()
+{
+    // TODO: implement blink mode
+}
+
+void LedService::mode_fade()
+{
+    // TODO: implement fade mode
+}
+
+void LedService::mode_rainbow()
+{
+    // TODO: implement rainbow mode
+}
+
+void LedService::mode_loop()
+{
+    // TODO: implement loop mode
+}
+
+// ------- END LED MODES -------

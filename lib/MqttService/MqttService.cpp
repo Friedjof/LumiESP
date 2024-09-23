@@ -1,5 +1,6 @@
 #include "MqttService.h"
 
+
 MqttService::MqttService() : mqttClient(wifiClient)
 {
 }
@@ -101,6 +102,17 @@ void MqttService::publish(const char* subTopic, const char* message)
     }
 }
 
+void MqttService::callback(char* topic, byte* payload, unsigned int length)
+{
+    // TODO: implement callback
+}
+
+void MqttService::setCallback(void (*callback)(char*, byte*, unsigned int))
+{
+    mqttClient.setCallback(callback);
+}
+
+// ------- HELPER FUNCTIONS -------
 void MqttService::mqttGlobalTopic(const char* subTopic, char* globalTopic)
 {
     sprintf(globalTopic, MQTT_TOPIC_STRING, DEVICE_NAME, subTopic);

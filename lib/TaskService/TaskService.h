@@ -3,6 +3,7 @@
 
 #include "MqttService.h"
 #include "LoggingService.h"
+#include "LedService.h"
 #include "ClockService.h"
 
 #include "../../config/config.h"
@@ -14,14 +15,22 @@ class TaskService
         MqttService *mqttService;
         ClockService *clockService;
         LoggingService *loggingService;
+        LedService *ledService;
 
         bool initialized = false;
     public:
-        TaskService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService);
+        TaskService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService);
 
         void setup();
 
-        void mqttStatusUpdate();
+        // task wrappers
+        void mqttServiceStatusUpdateWrapper();
+        void mqttServiceLoopWrapper();
+        void mqttServiceUpdateDateTimeWrapper();
+        void mqttServiceCallbackWrapper(char* topic, byte* payload, unsigned int length);
+        void clockServiceTimeSyncWrapper();
+        void ledServiceLoopWrapper();
+
 };
 
 #endif

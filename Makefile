@@ -1,5 +1,5 @@
 # Variablen
-PORT = /dev/ttyUSB0
+PORT = /dev/ttyUSB1
 BOARD = esp32dev
 SPEED = 115200
 PLATFORMIO = ~/.platformio/penv/bin/platformio
