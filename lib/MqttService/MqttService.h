@@ -48,13 +48,31 @@ class MqttService
         String mqttStatusTopic(const char* subTopic);
         String mqttLedPubTopic(const char* subTopic);
         String mqttLedSubTopic(const char* subTopic);
-        String mqttLedModeCustomTopic(const char* subTopic);
+
+        String mqttLedModeOnSubTopic(const char* subTopic);
+        String mqttLedModeOnPubTopic(const char* subTopic);
+
+        String mqttLedModeOffSubTopic(const char* subTopic);
+        String mqttLedModeOffPubTopic(const char* subTopic);
+
+        String mqttLedModeCustomSubTopic(const char* subTopic);
+        String mqttLedModeCustomPubTopic(const char* subTopic);
+
+        String mqttLedModeBlinkSubTopic(const char* subTopic);
+        String mqttLedModeBlinkPubTopic(const char* subTopic);
+
+        String mqttLedModeFadeSubTopic(const char* subTopic);
+        String mqttLedModeFadePubTopic(const char* subTopic);
+
+        String mqttLedModeRainbowSubTopic(const char* subTopic);
+        String mqttLedModeRainbowPubTopic(const char* subTopic);
+
+        String mqttLedModeLoopSubTopic(const char* subTopic);
+        String mqttLedModeLoopPubTopic(const char* subTopic);
 
         bool isLedModeSubTopic(String topic);
         bool isLedModeCustomSubTopic(String topic);
-        bool isLedModeCustomRSubTopic(String topic);
-        bool isLedModeCustomGSubTopic(String topic);
-        bool isLedModeCustomBSubTopic(String topic);
+        bool isLedModeCustomHexSubTopic(String topic);
         bool isLedModeCustomBrightnessSubTopic(String topic);
         
         bool isConnected() { return this->mqttClient.connected(); }

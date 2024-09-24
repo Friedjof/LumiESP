@@ -40,10 +40,11 @@ void MqttService::createTopics()
     this->publish(this->mqttLedSubTopic(MQTT_LED_STATE_TOPIC), initMsg);
 
     // custom led mode topics
-    this->publish(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_R_TOPIC), initMsg);
-    this->publish(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_G_TOPIC), initMsg);
-    this->publish(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_B_TOPIC), initMsg);
-    this->publish(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC), initMsg);
+    this->publish(this->mqttLedModeCustomPubTopic(MQTT_LED_MODE_CUSTOM_HEX_TOPIC), initMsg);
+    this->publish(this->mqttLedModeCustomPubTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC), initMsg);
+    this->publish(this->mqttLedModeCustomSubTopic(MQTT_LED_MODE_CUSTOM_HEX_TOPIC), initMsg);
+    this->publish(this->mqttLedModeCustomSubTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC), initMsg);
+
 }
 
 void MqttService::loop()
@@ -224,12 +225,21 @@ String MqttService::mqttLedSubTopic(const char* subTopic)
 }
 
 // <device_name>/led/sub/custom/<sub_topic>
-String MqttService::mqttLedModeCustomTopic(const char* subTopic)
+String MqttService::mqttLedModeCustomSubTopic(const char* subTopic)
 {
     char result[64];
     sprintf(result, MQTT_LED_MODE_CUSTOM_TOPIC, subTopic);
 
     return this->mqttLedSubTopic(result);
+}
+
+// <device_name>/led/pub/custom/<sub_topic>
+String MqttService::mqttLedModeCustomPubTopic(const char* subTopic)
+{
+    char result[64];
+    sprintf(result, MQTT_LED_MODE_CUSTOM_TOPIC, subTopic);
+
+    return this->mqttLedPubTopic(result);
 }
 
 // ------- TOPIC CHECKS -------

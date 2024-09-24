@@ -105,6 +105,87 @@ docker compose up -d
 
 ![Services Overview](media/images/services-overview.png)
 
+## MQTT Topics
+```txt
+lumiESP
+├── status
+│   ├── msg
+│   ├── datetime
+│   ├── log
+│   └── level
+└── led
+    ├── pub
+    │   ├── mode
+    │   ├── state
+    │   ├── on
+    │   │   ├── hex
+    │   │   └── brightness
+    │   ├── off
+    │   │   ├── hex
+    │   │   └── brightness
+    │   ├── custom
+    │   │   ├── hex
+    │   │   └── brightness
+    │   ├── blink
+    │   │   ├── on
+    │   │   │   ├── hex
+    │   │   │   └── brightness
+    │   │   ├─ off
+    │   │   │   ├── hex
+    │   │   │   └── brightness
+    │   │   └── speed
+    │   ├── fade
+    │   │   ├── a
+    │   │   │   ├── hex
+    │   │   │   └── brightness
+    │   │   ├── b
+    │   │   │   ├── hex
+    │   │   │   └── brightness
+    │   │   └── speed
+    │   ├── rainbow
+    │   │   ├── speed
+    │   │   └── brightness
+    │   └── loop
+    │       ├── speed
+    │       ├── size
+    │       └── brightness
+    └── sub
+        ├── mode
+        ├── state
+        ├── on
+        │   ├── hex
+        │   └── brightness
+        ├── off
+        │   ├── hex
+        │   └── brightness
+        ├── custom
+        │   ├── hex
+        │   └── brightness
+        ├── blink
+        │   ├── on
+        │   │   ├── hex
+        │   │   └── brightness
+        │   ├─ off
+        │   │   ├── hex
+        │   │   └── brightness
+        │   └── speed
+        ├── fade
+        │   ├── a
+        │   │   ├── hex
+        │   │   └── brightness
+        │   ├── b
+        │   │   ├── hex
+        │   │   └── brightness
+        │   └── speed
+        ├── rainbow
+        │   ├── speed
+        │   └── brightness
+        └── loop
+            ├── speed
+            ├── size
+            └── brightness
+```
+
 
 ## Troubleshooting
 - Make sure the correct port is selected in the Makefile.

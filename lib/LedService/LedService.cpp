@@ -262,7 +262,7 @@ void LedService::mode_custom()
 
 void LedService::mode_automatic()
 {
-    
+    // TODO: implement automatic mode
 }
 
 void LedService::mode_blink()
