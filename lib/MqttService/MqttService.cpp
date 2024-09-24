@@ -127,10 +127,10 @@ void MqttService::subscribe()
     this->subscribe(this->mqttLedSubTopic(MQTT_LED_MODE_TOPIC));
 
     // custom led mode topics
-    this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_R_TOPIC));
-    this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_G_TOPIC));
-    this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_B_TOPIC));
-    this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC));
+    //this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_R_TOPIC));
+    //this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_G_TOPIC));
+    //this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_B_TOPIC));
+    //this->subscribe(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC));
 }
 
 void MqttService::subscribe(const char* subTopic)
@@ -250,25 +250,30 @@ bool MqttService::isLedModeSubTopic(String topic)
 
 bool MqttService::isLedModeCustomSubTopic(String topic)
 {
-    return topic.startsWith(this->mqttGlobalTopic(this->mqttLedModeCustomTopic("").c_str()));
+    return false;
+    //return topic.startsWith(this->mqttGlobalTopic(this->mqttLedModeCustomTopic("").c_str()));
 }
 
 bool MqttService::isLedModeCustomRSubTopic(String topic)
 {
-    return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_R_TOPIC).c_str());
+    return false;
+    //return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_R_TOPIC).c_str());
 }
 
 bool MqttService::isLedModeCustomGSubTopic(String topic)
 {
-    return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_G_TOPIC).c_str());
+    return false;
+    //return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_G_TOPIC).c_str());
 }
 
 bool MqttService::isLedModeCustomBSubTopic(String topic)
 {
-    return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_B_TOPIC).c_str());
+    return false;
+    //return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_B_TOPIC).c_str());
 }
 
 bool MqttService::isLedModeCustomBrightnessSubTopic(String topic)
 {
-    return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC).c_str());
+    return false;
+    //return topic == this->mqttGlobalTopic(this->mqttLedModeCustomTopic(MQTT_LED_MODE_CUSTOM_BRIGHTNESS_TOPIC).c_str());
 }
