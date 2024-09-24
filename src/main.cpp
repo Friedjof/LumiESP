@@ -7,7 +7,7 @@
 #include "ClockService.h"
 #include "LoggingService.h"
 #include "LedService.h"
-#include "TaskService.h"
+#include "ControllerService.h"
 
 // config
 #include "../config/config.h"
@@ -31,7 +31,7 @@ MqttService mqttService;
 ClockService clockService;
 LoggingService loggingService(&mqttService, &clockService);
 LedService ledService(&loggingService, &mqttService);
-TaskService taskService(&mqttService, &clockService, &loggingService, &ledService);
+ControllerService ControllerService(&mqttService, &clockService, &loggingService, &ledService);
 
 
 // tasks
@@ -48,7 +48,7 @@ void setup() {
     clockService.setup();
     loggingService.setup();
     ledService.setup();
-    taskService.setup();
+    ControllerService.setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
 
@@ -93,25 +93,25 @@ void loop() {
 
 // task wrappers
 void mqttServiceStatusUpdateWrapper() {
-    taskService.mqttServiceStatusUpdateWrapper();
+    ControllerService.mqttServiceStatusUpdateWrapper();
 }
 
 void mqttServiceLoopWrapper() {
-    taskService.mqttServiceLoopWrapper();
+    ControllerService.mqttServiceLoopWrapper();
 }
 
 void mqttServiceUpdateDateTimeWrapper() {
-    taskService.mqttServiceUpdateDateTimeWrapper();
+    ControllerService.mqttServiceUpdateDateTimeWrapper();
 }
 
 void clockServiceTimeSyncWrapper() {
-    taskService.clockServiceTimeSyncWrapper();
+    ControllerService.clockServiceTimeSyncWrapper();
 }
 
 void ledServiceLoopWrapper() {
-    taskService.ledServiceLoopWrapper();
+    ControllerService.ledServiceLoopWrapper();
 }
 
 void mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total) {
-    taskService.mqttServiceCallbackWrapper(properties, topic, payload, len, index, total);
+    ControllerService.mqttServiceCallbackWrapper(properties, topic, payload, len, index, total);
 }

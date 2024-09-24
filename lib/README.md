@@ -6,7 +6,7 @@ This repository contains various services used for the LumiESP project. The serv
 
 - [ClockService](#clockservice)
 - [LoggingService](#loggingservice)
-- [TaskService](#taskservice)
+- [ControllerService](#ControllerService)
 - [MQTTService](#mqttservice)
 
 ## ClockService
@@ -35,8 +35,8 @@ The `LoggingService` provides functions for logging messages at various levels a
 
 - **setup()**: Initializes the logging service.
 - **setup(short logLevel)**: Initializes the logging service with a specific log level.
-- **setup(ClockService clockService, TaskService taskService)**: Initializes the logging service with dependencies.
-- **setup(ClockService clockService, TaskService taskService, short logLevel)**: Initializes the logging service with dependencies and a specific log level.
+- **setup(ClockService clockService, ControllerService ControllerService)**: Initializes the logging service with dependencies.
+- **setup(ClockService clockService, ControllerService ControllerService, short logLevel)**: Initializes the logging service with dependencies and a specific log level.
 - **logMessage(short logLevel, short mode, char* message)**: Logs a message at the specified level and mode.
 - **logMessage(short logLevel, char* message)**: Logs a message at the specified level.
 - **logMessage(char* message)**: Logs a message.
@@ -65,9 +65,9 @@ The logging configuration is done in the `config.h` file:
 #define LOG_STRING "%s (%s) [%s] '%s'"
 ```
 
-## TaskService
+## ControllerService
 
-The `TaskService` manages various tasks and ensures they are executed correctly.
+The `ControllerService` manages various tasks and ensures they are executed correctly.
 
 ### Functions
 

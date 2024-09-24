@@ -1,7 +1,7 @@
-#include "TaskService.h"
+#include "ControllerService.h"
 
 
-TaskService::TaskService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService)
+ControllerService::ControllerService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService)
 {
     this->mqttService = mqttService;
     this->clockService = clockService;
@@ -9,12 +9,12 @@ TaskService::TaskService(MqttService *mqttService, ClockService *clockService, L
     this->ledService = ledService;
 }
 
-void TaskService::setup()
+void ControllerService::setup()
 {
     this->initialized = true;
 }
 
-void TaskService::mqttSubscribtion(String topic, String payload)
+void ControllerService::mqttSubscribtion(String topic, String payload)
 {
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT callback topic: " + topic + ", payload: " + payload);
 
@@ -50,17 +50,17 @@ void TaskService::mqttSubscribtion(String topic, String payload)
 }
 
 // ------- TASK WRAPPERS -------
-void TaskService::mqttServiceStatusUpdateWrapper()
+void ControllerService::mqttServiceStatusUpdateWrapper()
 {
     this->mqttService->mqttStatusUpdate();
 }
 
-void TaskService::mqttServiceLoopWrapper()
+void ControllerService::mqttServiceLoopWrapper()
 {
     this->mqttService->loop();
 }
 
-void TaskService::mqttServiceUpdateDateTimeWrapper()
+void ControllerService::mqttServiceUpdateDateTimeWrapper()
 {
     char datetime[128];
     this->clockService->getDateTime(datetime);
@@ -68,7 +68,7 @@ void TaskService::mqttServiceUpdateDateTimeWrapper()
     this->mqttService->mqttDatetimeUpdate(datetime);
 }
 
-void TaskService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
+void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
 {
     String playloadStr = "";
 
@@ -80,12 +80,12 @@ void TaskService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessagePr
     this->mqttSubscribtion(String(topic), playloadStr);
 }
 
-void TaskService::clockServiceTimeSyncWrapper()
+void ControllerService::clockServiceTimeSyncWrapper()
 {
     this->clockService->syncTime();
 }
 
-void TaskService::ledServiceLoopWrapper()
+void ControllerService::ledServiceLoopWrapper()
 {
     this->ledService->loop();
 }

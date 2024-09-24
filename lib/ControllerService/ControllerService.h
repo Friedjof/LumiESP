@@ -9,7 +9,7 @@
 #include "../../config/config.h"
 
 
-class TaskService
+class ControllerService
 {
     private:
         MqttService *mqttService;
@@ -19,7 +19,7 @@ class TaskService
 
         bool initialized = false;
     public:
-        TaskService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService);
+        ControllerService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService);
 
         void setup();
 

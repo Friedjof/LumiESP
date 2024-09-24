@@ -71,9 +71,9 @@ docker compose up -d
 │   ├── MQTTService
 │   │   ├── MQTTService.cpp
 │   │   └── MQTTService.h
-│   ├── TaskService
-│   │   ├── TaskService.cpp
-│   │   └── TaskService.h
+│   ├── ControllerService
+│   │   ├── ControllerService.cpp
+│   │   └── ControllerService.h
 │   └── README.md
 ├── media
 │   ├── drawio
@@ -101,7 +101,7 @@ docker compose up -d
 - **ClockService**: Provides timekeeping functionality (including NTP synchronization).
 - **LoggingService**: Logs messages to the serial monitor and MQTT.
 - **MQTTService**: Handles MQTT communication with the broker.
-- **TaskService**: Manages tasks and schedules for the ESP32.
+- **ControllerService**: Manages tasks and schedules for the ESP32.
 
 ![Services Overview](media/images/services-overview.png)
 
