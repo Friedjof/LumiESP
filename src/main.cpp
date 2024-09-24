@@ -9,6 +9,12 @@
 #include "LedService.h"
 #include "ControllerService.h"
 
+// modes
+#include "AbstractMode.h"
+
+#include "StaticMode.h"
+#include "LoopMode.h"
+
 // config
 #include "../config/config.h"
 
@@ -33,7 +39,6 @@ LoggingService loggingService(&mqttService, &clockService);
 LedService ledService(&loggingService, &mqttService);
 ControllerService controllerService(&mqttService, &clockService, &loggingService, &ledService);
 
-
 // tasks
 Task mqttStatusUpdateTask(MQTT_DATETIME_UPDATE_STATUS_INTERVAL, TASK_FOREVER, &mqttServiceStatusUpdateWrapper);
 Task mqttServiceUpdateDateTimeTask(MQTT_DATETIME_UPDATE_INTERVAL, TASK_FOREVER, &mqttServiceUpdateDateTimeWrapper);
@@ -52,20 +57,26 @@ void setup() {
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
 
-    // create mqtt topics
-    mqttService.createTopics();
+    // ----> SETUP YOUR MODES HERE <----
+    AbstractMode* staticMode = new StaticMode(&ledService, &loggingService, &mqttService);
+    //AbstractMode* loopMode = new LoopMode(&ledService, &loggingService, &mqttService);
 
-    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics created");
+    // setup modes
+    staticMode->setup();
+    //loopMode->setup();
+
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Modes setup completed");
+    // <---- MODE SETUP COMPLETED ---->
+
+    // create and subscribe to mqtt topics
+    mqttService.initTopics();
+
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics initialized");
 
     // set mqtt callback
-    mqttService.setCallback(&mqttServiceCallbackWrapper);
+    mqttService.setOnMessageCallback(&mqttServiceCallbackWrapper);
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT callback set");
-
-    // subscribe to mqtt topics
-    mqttService.subscribe();
-
-    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT subscribed");
 
     // add tasks to scheduler
     scheduler.addTask(mqttStatusUpdateTask);

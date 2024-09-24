@@ -66,6 +66,8 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
         }
 
         if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->mqttService->isConnected()) {
+            // TODO: implement mqtt logging
+            /*
             this->mqttService->publish(
                 this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_TOPIC).c_str(),
                 this->logMessageStr(logLevel, message).c_str()
@@ -74,6 +76,7 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
                 this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_LEVEL_TOPIC).c_str(),
                 this->logLevelStr(logLevel).c_str()
             );
+            */
         }
     }
 }
@@ -83,6 +86,10 @@ void LoggingService::logMessage(short logLevel, short mode, String message) {
 }
 
 void LoggingService::logMessage(short logLevel, const char* message) {
+    this->logMessage(logLevel, LOG_MODE, message);
+}
+
+void LoggingService::logMessage(short logLevel, String message) {
     this->logMessage(logLevel, LOG_MODE, message);
 }
 

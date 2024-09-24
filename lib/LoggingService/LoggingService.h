@@ -29,6 +29,7 @@ class LoggingService
         void logMessage(short logLevel, short mode, const char* message);
         void logMessage(short logLevel, short mode, String message);
         void logMessage(short logLevel, const char* message);
+        void logMessage(short logLevel, String message);
         void logMessage(const char* message);
 };
 

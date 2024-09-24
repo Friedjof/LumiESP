@@ -1,5 +1,5 @@
-#ifndef TASKSERVICE_H
-#define TASKSERVICE_H
+#ifndef CONTROLLERSERVICE_H
+#define CONTROLLERSERVICE_H
 
 #include "MqttService.h"
 #include "LoggingService.h"

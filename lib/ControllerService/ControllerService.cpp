@@ -14,41 +14,6 @@ void ControllerService::setup()
     this->initialized = true;
 }
 
-void ControllerService::mqttSubscribtion(String topic, String payload)
-{
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT callback topic: " + topic + ", payload: " + payload);
-
-    if (this->mqttService->isLedModeSubTopic(topic))
-    {
-        LedModes mode = this->ledService->getModeEnum(payload);
-        if (mode != MODE_NONE)
-        {
-            this->ledService->setMode(mode);
-        } else {
-            this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service requested mode is not valid: " + payload);
-        }
-    } else if (this->mqttService->isLedModeCustomSubTopic(topic)) {
-        this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service custom mode topic: " + topic);
-
-        long value = payload.toInt();
-        if (value < 0 || value > 255) {
-            this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Invalid value for byte conversion: " + payload);
-            return;
-        }
-        byte byteValue = static_cast<byte>(value);
-
-        if (this->mqttService->isLedModeCustomRSubTopic(topic)) {
-            this->ledService->setCustomColor(COLOR_R, byteValue);
-        } else if (this->mqttService->isLedModeCustomGSubTopic(topic)) {
-            this->ledService->setCustomColor(COLOR_G, byteValue);
-        } else if (this->mqttService->isLedModeCustomBSubTopic(topic)) {
-            this->ledService->setCustomColor(COLOR_B, byteValue);
-        } else if (this->mqttService->isLedModeCustomBrightnessSubTopic(topic)) {
-            this->ledService->setCustomColor(COLOR_BRIGHTNESS, byteValue);
-        }
-    }
-}
-
 // ------- TASK WRAPPERS -------
 void ControllerService::mqttServiceStatusUpdateWrapper()
 {
@@ -77,7 +42,14 @@ void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::Mes
         playloadStr += (char)payload[i];
     }
 
-    this->mqttSubscribtion(String(topic), playloadStr);
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT message received: " + String(topic) + " - " + playloadStr);
+
+    bool valid = this->mqttService->onMessageCallback(topic, playloadStr);
+
+    if (!valid)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "MQTT topic or payload invalid: " + String(topic) + " - " + playloadStr);
+    }
 }
 
 void ControllerService::clockServiceTimeSyncWrapper()
