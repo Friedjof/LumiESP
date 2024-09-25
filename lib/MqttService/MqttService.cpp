@@ -135,48 +135,19 @@ std::function<void(String payload)> MqttService::subscribeModeTopic(String modeN
     };
 }
 
-/*
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries, payloadType, topic_e::PUB_SUB, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries, payloadType, topic_e::PUB_SUB, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries, payload_e::INT, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payload_e::INT, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, float defaultPayload, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries_t(), payload_e::FLOAT, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payloadType, topic_e::PUB_SUB, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payload_e::STRING, topicCallback);
-}
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic) {
-    return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payload_e::STRING, nullptr);
-}
-
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType) {
     return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payloadType, topicType, nullptr);
 }
-
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payloadType, topicType, topicCallback);
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic) {
+    return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payload_e::STRING, topic_e::PUB_ONLY, nullptr);
 }
 
-*/
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback) {
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payloadType, topic_e::PUB_SUB, topicCallback);
+}
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback) {
+    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries, payloadType, topic_e::PUB_SUB, topicCallback);
+}
 
 void MqttService::publish(String subTopic, const char* message)
 {

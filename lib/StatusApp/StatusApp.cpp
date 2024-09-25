@@ -12,10 +12,10 @@ StatusApp::StatusApp(MqttService* mqttService) : AbstractApp(mqttService) {
 }
 
 void StatusApp::customSetup() {
-    this->logCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "log", payload_e::STRING, topic_e::PUB_ONLY);
-    this->levelCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "level", payload_e::STRING, topic_e::PUB_ONLY);
-    this->statusCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "status", payload_e::STRING, topic_e::PUB_ONLY);
-    this->datetimeCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "datetime", payload_e::STRING, topic_e::PUB_ONLY);
+    this->logCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "log");
+    this->levelCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "level");
+    this->statusCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "status");
+    this->datetimeCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "datetime");
 
     //this->modeCallback = this->mqttService->subscribeModeTopic(this->modeInternalName, "mode", payload_e::STRING, topic_e::PUB_SUB, std::function<void(String)>(std::bind(&StatusApp::modeCallback, this, std::placeholders::_1)));
 }

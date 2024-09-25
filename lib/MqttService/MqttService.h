@@ -41,16 +41,12 @@ class MqttService
         void connectToWiFi(); void mqttStatusUpdate(); void mqttDatetimeUpdate(const char* datetime);
 
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, int defaultPayload, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, float defaultPayload, std::function<void(String payload)> topicCallback);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic);
-        //std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
+        // StatusApp PUB_ONLY
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType);
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic);
+        // StaticMode PUB_SUB
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback);
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback);
 
         void publish(const char* subTopic, const char* message); void publish(String subTopic, const char* message); void publish(String subTopic, String message);
 
