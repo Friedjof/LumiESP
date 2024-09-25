@@ -5,7 +5,7 @@
 LoggingService::LoggingService() : logLevel(LOG_LEVEL), initialized(false) {}
 
 // Parameterized constructor
-LoggingService::LoggingService(MqttService *mqttService, ClockService *clockService) : mqttService(mqttService), clockService(clockService), logLevel(LOG_LEVEL), initialized(false) {}
+LoggingService::LoggingService(ClockService *clockService) : clockService(clockService), logLevel(LOG_LEVEL), initialized(false) {}
 
 // Setup method
 void LoggingService::setup() {
@@ -65,18 +65,8 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
             Serial.println(this->logMessageStr(logLevel, message));
         }
 
-        if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->mqttService->isConnected()) {
-            // TODO: implement mqtt logging
-            /*
-            this->mqttService->publish(
-                this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_TOPIC).c_str(),
-                this->logMessageStr(logLevel, message).c_str()
-            );
-            this->mqttService->publish(
-                this->mqttService->mqttStatusTopic(MQTT_STATUS_LOG_LEVEL_TOPIC).c_str(),
-                this->logLevelStr(logLevel).c_str()
-            );
-            */
+        if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->statusLoggingActive) {
+            this->statusApp->logMessage(this->logMessageStr(logLevel, message));
         }
     }
 }
@@ -95,4 +85,24 @@ void LoggingService::logMessage(short logLevel, String message) {
 
 void LoggingService::logMessage(const char* message) {
     this->logMessage(LOG_LEVEL_DEBUG, LOG_MODE, message);
+}
+
+void LoggingService::registerStatusApp(StatusApp *statusApp) {
+    this->statusApp = statusApp;
+
+    this->statusLoggingActive = true;
+}
+
+// Update status methods
+void LoggingService::updateEspStatus() {
+    if (this->statusLoggingActive) {
+        this->statusApp->logStatus("active");
+        this->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Status updated");
+    }
+}
+
+void LoggingService::updateStatusDateTime() {
+    if (this->statusLoggingActive) {
+        this->statusApp->logDatetime(this->clockService->getDateTime());
+    }
 }

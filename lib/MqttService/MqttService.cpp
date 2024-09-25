@@ -30,8 +30,15 @@ void MqttService::initTopics()
     for (auto const& topic : this->modeTopics)
     {
         // publish the default payloads
-        mqttClient.publish(topic.second.globalPubTopic.c_str(), 0, false, topic.second.defaultPayload.c_str());
-        mqttClient.publish(topic.first.c_str(), 0, false, topic.second.defaultPayload.c_str());
+        if (topic.second.topicType == topic_e::PUB_ONLY || topic.second.topicType == topic_e::PUB_SUB)
+        {
+            mqttClient.publish(topic.second.globalPubTopic.c_str(), 0, false, topic.second.defaultPayload.c_str());
+        }
+        
+        if (topic.second.topicType == topic_e::SUB_ONLY || topic.second.topicType == topic_e::PUB_SUB)
+        {
+            mqttClient.publish(topic.first.c_str(), 0, false, topic.second.defaultPayload.c_str());
+        }
 
         // subscribe to the topic
         this->subscribe(topic.first);
@@ -90,24 +97,6 @@ void MqttService::connect()
     }
 }
 
-void MqttService::mqttStatusUpdate()
-{
-    if (this->initialized)
-    {
-        // TODO: implement mqttStatusUpdate here
-        //this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC).c_str(), "alive");
-    }
-}
-
-void MqttService::mqttDatetimeUpdate(const char* datetime)
-{
-    if (this->initialized)
-    {
-        // TODO: implement mqttDatetimeUpdate here
-        //this->publish(this->mqttStatusTopic(MQTT_STATUS_DATETIME_TOPIC).c_str(), datetime);
-    }
-}
-
 void MqttService::publish(const char* subTopic, const char* message)
 {
     if (this->initialized)
@@ -134,41 +123,60 @@ void MqttService::subscribe(String subTopic)
 }
 
 // ------- SUBSCRIBE TOPICS -------
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_type_e payloadType, std::function<void(String payload)> topicCallback) {
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback) {
     // TODO: make the topics configurable in the config.h
-    String globalSubTopic = this->mqttGlobalTopic("modes/" + modeName + "/sub/" + localTopic);
-    String globalPubTopic = this->mqttGlobalTopic("modes/" + modeName + "/pub/" + localTopic);
+    String globalSubTopic = this->mqttGlobalTopic(modeName + "/sub/" + localTopic);
+    String globalPubTopic = this->mqttGlobalTopic(modeName + "/pub/" + localTopic);
 
-    this->modeTopics[globalSubTopic] = {modeName, localTopic, globalPubTopic, defaultPayload, boundaries, payloadType, topicCallback};
+    this->modeTopics[globalSubTopic] = {modeName, localTopic, globalPubTopic, defaultPayload, boundaries, payloadType, topicType, topicCallback};
 
     return [this, globalPubTopic](String payload) {
         this->publish(globalPubTopic, payload.c_str());
     };
 }
 
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_type_e payloadType, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries, payloadType, topicCallback);
+/*
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback) {
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries, payloadType, topic_e::PUB_SUB, topicCallback);
+}
+
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback) {
+    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries, payloadType, topic_e::PUB_SUB, topicCallback);
 }
 
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries, payload_type_e::INT, topicCallback);
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries, payload_e::INT, topicCallback);
 }
 
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, int defaultPayload, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payload_type_e::INT, topicCallback);
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payload_e::INT, topicCallback);
 }
 
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, float defaultPayload, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries_t(), payload_type_e::FLOAT, topicCallback);
+    return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries_t(), payload_e::FLOAT, topicCallback);
 }
 
-std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, payload_type_e payloadType, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payloadType, topicCallback);
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback) {
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payloadType, topic_e::PUB_SUB, topicCallback);
 }
 
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, std::function<void(String payload)> topicCallback) {
-    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payload_type_e::STRING, topicCallback);
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payload_e::STRING, topicCallback);
 }
+
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic) {
+    return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payload_e::STRING, nullptr);
+}
+
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType) {
+    return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payloadType, topicType, nullptr);
+}
+
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback) {
+    return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payloadType, topicType, topicCallback);
+}
+
+*/
 
 void MqttService::publish(String subTopic, const char* message)
 {
@@ -204,33 +212,44 @@ bool MqttService::onMessageCallback(String topic, String payload)
         return false;
     }
 
-    payload_type_e payloadType = it->second.payloadType;
+    if (it->second.topicCallback == nullptr) {
+        return false;
+    }
+
+    payload_e payloadType = it->second.payloadType;
     boundaries_t boundaries = it->second.boundaries;
 
     bool isValid = false;
 
     switch (payloadType)
     {
-        case payload_type_e::INT:
+        case payload_e::BYTE:
         {
             char* end;
             long value = strtol(payload.c_str(), &end, 10);
             isValid = (*end == '\0' && value >= boundaries.min && value <= boundaries.max);
             break;
         }
-        case payload_type_e::FLOAT:
+        case payload_e::INT:
+        {
+            char* end;
+            long value = strtol(payload.c_str(), &end, 10);
+            isValid = (*end == '\0' && value >= boundaries.min && value <= boundaries.max);
+            break;
+        }
+        case payload_e::FLOAT:
         {
             char* end;
             float value = strtof(payload.c_str(), &end);
             isValid = (*end == '\0' && value >= boundaries.min && value <= boundaries.max);
             break;
         }
-        case payload_type_e::COLOR:
+        case payload_e::COLOR:
         {
-            isValid = this->isValidHexColor(payload);
+            isValid = isHexColor(payload);
             break;
         }
-        case payload_type_e::STRING:
+        case payload_e::STRING:
         default:
             isValid = true;
             break;
@@ -266,20 +285,4 @@ String MqttService::mqttGlobalTopic(const char* subTopic)
 String MqttService::mqttGlobalTopic(String subTopic)
 {
     return this->mqttGlobalTopic(subTopic.c_str());
-}
-
-bool MqttService::isValidHexColor(String color) {
-    // Check if the string starts with '#' and is either 4 or 7 characters long
-    if ((color.length() != 4 && color.length() != 7) || color[0] != '#') {
-        return false;
-    }
-
-    // Check if all characters after '#' are valid hexadecimal digits
-    for (size_t i = 1; i < color.length(); ++i) {
-        if (!std::isxdigit(color[i])) {
-            return false;
-        }
-    }
-
-    return true;
 }

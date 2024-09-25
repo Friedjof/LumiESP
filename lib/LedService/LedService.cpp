@@ -75,6 +75,37 @@ void LedService::unregisterMode(String name) {
     this->modes.erase(name);
 }
 
+// ------- PUBLIC METHODS -------
+void LedService::setHexColor(String hexColor)
+{
+    if (!isHexColor(hexColor))
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service invalid hex color: " + hexColor);
+        return;
+    }
+    
+    CRGB color = CRGB::Black;
+
+    if (hexColor.length() == 7)
+    {
+        color = CRGB(
+            strtol(hexColor.substring(1, 3).c_str(), NULL, 16),
+            strtol(hexColor.substring(3, 5).c_str(), NULL, 16),
+            strtol(hexColor.substring(5, 7).c_str(), NULL, 16)
+        );
+    }
+
+    for (int i = 0; i < LED_NUM_LEDS; i++)
+    {
+        this->leds[i] = color;
+    }
+}
+
+void LedService::setBrightness(byte brightness)
+{
+    FastLED.setBrightness(brightness);
+}
+
 // ------- HELPER FUNCTIONS -------
 void LedService::setLed(short index, byte r, byte g, byte b)
 {

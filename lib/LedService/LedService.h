@@ -11,11 +11,14 @@
 
 #include "AbstractMode.h"
 
+#include "utils.h"
+
 #include "../../config/config.h"
 
 
 // forward declaration
 class AbstractMode;
+class LoggingService;
 
 
 class LedService {
@@ -48,6 +51,9 @@ class LedService {
 
         void loop();
         void setMode(String mode);
+
+        void setHexColor(String hexColor);
+        void setBrightness(byte brightness);
 
         // modes
         void registerMode(String name, AbstractMode* mode);

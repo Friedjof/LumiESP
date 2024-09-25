@@ -4,8 +4,8 @@
 #include <functional>
 #include <Arduino.h>
 
-
-enum payload_type_e {
+// --- enums ---
+enum payload_e {
     STRING,
     BYTE,
     INT,
@@ -13,6 +13,14 @@ enum payload_type_e {
     COLOR
 };
 
+enum topic_e {
+    PUB_SUB,
+    PUB_ONLY,
+    SUB_ONLY,
+    NONE
+};
+
+// --- structs ---
 struct boundaries_t {
     int min;
     int max;
@@ -24,7 +32,8 @@ struct mode_callback_t {
     String globalPubTopic;
     String defaultPayload;
     boundaries_t boundaries;
-    payload_type_e payloadType;
+    payload_e payloadType;
+    topic_e topicType;
     std::function<void(String payload)> topicCallback;
 };
 

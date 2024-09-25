@@ -1,8 +1,8 @@
-#ifndef LoggingService_h
-#define LoggingService_h
+#ifndef LOGGINGSERVICE_H
+#define LOGGINGSERVICE_H
 
-#include "MqttService.h"
 #include "ClockService.h"
+#include "StatusApp.h"
 
 #include "../../config/config.h"
 
@@ -10,14 +10,15 @@
 class LoggingService
 {
     private:
-        MqttService *mqttService;
         ClockService *clockService;
+        StatusApp *statusApp;
 
         short logLevel = LOG_LEVEL;
         bool initialized = false;
+        bool statusLoggingActive = false;
     public:
         LoggingService();
-        LoggingService(MqttService *mqttService, ClockService *clockService);
+        LoggingService(ClockService *clockService);
 
         void setup();
         void setup(short logLevel);
@@ -31,6 +32,11 @@ class LoggingService
         void logMessage(short logLevel, const char* message);
         void logMessage(short logLevel, String message);
         void logMessage(const char* message);
+
+        void updateEspStatus();
+        void updateStatusDateTime();
+
+        void registerStatusApp(StatusApp *statusApp);
 };
 
 #endif

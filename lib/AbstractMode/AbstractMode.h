@@ -30,6 +30,8 @@ class AbstractMode {
         String modeVersion;
         String modeLicense;
 
+        bool isHexColor(String hex);
+
     public:
         AbstractMode(LedService* ledService, LoggingService* loggingService, MqttService* mqttService);
         ~AbstractMode();

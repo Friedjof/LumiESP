@@ -15,6 +15,10 @@
 #include "StaticMode.h"
 #include "LoopMode.h"
 
+// apps
+#include "AbstractApp.h"
+#include "StatusApp.h"
+
 // config
 #include "../config/config.h"
 
@@ -35,7 +39,7 @@ Scheduler scheduler;
 // global services
 MqttService mqttService;
 ClockService clockService;
-LoggingService loggingService(&mqttService, &clockService);
+LoggingService loggingService(&clockService);
 LedService ledService(&loggingService, &mqttService);
 ControllerService controllerService(&mqttService, &clockService, &loggingService, &ledService);
 
@@ -57,16 +61,23 @@ void setup() {
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
 
-    // ----> SETUP YOUR MODES HERE <----
+    // ----> SETUP YOUR APP HERE <----
     AbstractMode* staticMode = new StaticMode(&ledService, &loggingService, &mqttService);
-    //AbstractMode* loopMode = new LoopMode(&ledService, &loggingService, &mqttService);
+    //AbstractApp* loopMode = new LoopMode(&ledService, &loggingService, &mqttService);
 
     // setup modes
     staticMode->setup();
     //loopMode->setup();
 
-    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Modes setup completed");
-    // <---- MODE SETUP COMPLETED ---->
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "App modes setup completed");
+    // <---- SETUP YOUR APP HERE ---->
+
+    // register status app for updating status messages over mqtt
+    StatusApp *statusApp = new StatusApp(&mqttService);
+    statusApp->setup();
+    loggingService.registerStatusApp(statusApp);
+
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Status app setup completed");
 
     // create and subscribe to mqtt topics
     mqttService.initTopics();
