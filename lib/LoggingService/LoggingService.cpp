@@ -87,7 +87,7 @@ void LoggingService::logMessage(const char* message) {
     this->logMessage(LOG_LEVEL_DEBUG, LOG_MODE, message);
 }
 
-void LoggingService::registerStatusApp(StatusApp *statusApp) {
+void LoggingService::registerStatusApp(LumiEsp *statusApp) {
     this->statusApp = statusApp;
 
     this->statusLoggingActive = true;

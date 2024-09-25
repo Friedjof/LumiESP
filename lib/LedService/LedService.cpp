@@ -41,6 +41,12 @@ void LedService::loop()
 
 void LedService::setMode(String mode)
 {
+    if (!this->modeExists(mode))
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service mode does not exist: " + mode);
+        return;
+    }
+
     // check if mode is already set
     if (this->newCurrentMode == mode)
     {

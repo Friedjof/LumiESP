@@ -13,6 +13,7 @@
 
 // forward declaration
 class LedService;
+class LoggingService;
 
 
 class AbstractMode {

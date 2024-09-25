@@ -2,7 +2,7 @@
 #define LOGGINGSERVICE_H
 
 #include "ClockService.h"
-#include "StatusApp.h"
+#include "LumiEsp.h"
 
 #include "../../config/config.h"
 
@@ -11,7 +11,7 @@ class LoggingService
 {
     private:
         ClockService *clockService;
-        StatusApp *statusApp;
+        LumiEsp *statusApp;
 
         short logLevel = LOG_LEVEL;
         bool initialized = false;
@@ -36,7 +36,7 @@ class LoggingService
         void updateEspStatus();
         void updateStatusDateTime();
 
-        void registerStatusApp(StatusApp *statusApp);
+        void registerStatusApp(LumiEsp *statusApp);
 };
 
 #endif

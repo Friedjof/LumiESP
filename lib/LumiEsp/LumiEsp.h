@@ -4,11 +4,15 @@
 
 #include <functional>
 
+#include "ControllerService.h"
+
 #include "AbstractApp.h"
 
 
-class StatusApp : public AbstractApp {
+class LumiEsp : public AbstractApp {
     private:
+        ControllerService* controllerService;
+
         // mqtt callbacks
         std::function<void(String payload)> logCallback;
         std::function<void(String payload)> levelCallback;
@@ -17,7 +21,7 @@ class StatusApp : public AbstractApp {
 
         std::function<void(String payload)> modeCallback;
     public:
-        StatusApp(MqttService* mqttService);
+        LumiEsp(MqttService* mqttService, ControllerService* controllerService);
 
         void customSetup() override;
         void customLoop(int steps) override;

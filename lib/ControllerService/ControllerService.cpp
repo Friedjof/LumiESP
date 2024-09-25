@@ -14,6 +14,18 @@ void ControllerService::setup()
     this->initialized = true;
 }
 
+// ------- CONTROLLER METHODS -------
+void ControllerService::setMode(String mode)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+
+    this->ledService->setMode(mode);
+}
+
 // ------- TASK WRAPPERS -------
 void ControllerService::mqttServiceStatusUpdateWrapper()
 {

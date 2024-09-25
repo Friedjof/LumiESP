@@ -25,6 +25,9 @@ class ControllerService
 
         void mqttSubscribtion(String topic, String payload);
 
+        // controller methods
+        void setMode(String mode);
+
         // task wrappers
         void mqttServiceStatusUpdateWrapper();
         void mqttServiceLoopWrapper();

@@ -41,10 +41,11 @@ class MqttService
         void connectToWiFi(); void mqttStatusUpdate(); void mqttDatetimeUpdate(const char* datetime);
 
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
-        // StatusApp PUB_ONLY
+        // LumiEsp
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType);
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic);
-        // StaticMode PUB_SUB
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
+        // StaticMode
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback);
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback);
 

@@ -17,7 +17,7 @@
 
 // apps
 #include "AbstractApp.h"
-#include "StatusApp.h"
+#include "LumiEsp.h"
 
 // config
 #include "../config/config.h"
@@ -73,7 +73,7 @@ void setup() {
     // <---- SETUP YOUR APP HERE ---->
 
     // register status app for updating status messages over mqtt
-    StatusApp *statusApp = new StatusApp(&mqttService);
+    LumiEsp *statusApp = new LumiEsp(&mqttService, &controllerService);
     statusApp->setup();
     loggingService.registerStatusApp(statusApp);
 
