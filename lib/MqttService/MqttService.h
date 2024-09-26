@@ -24,7 +24,6 @@ class MqttService
 
         bool initialized = false;
 
-        void onSubscribe(uint16_t packetId, const espMqttClientTypes::SubscribeReturncode* codes, size_t len);
         void onMessage(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total);
 
         void subscribe(const char* subTopic);

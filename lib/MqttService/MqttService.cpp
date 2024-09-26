@@ -4,7 +4,6 @@
 MqttService::MqttService()
 {
     // set mqtt callbacks
-    mqttClient.onSubscribe(std::bind(&MqttService::onSubscribe, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mqttClient.onMessage(std::bind(&MqttService::onMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
     
     mqttClient.setCleanSession(true);
@@ -74,14 +73,6 @@ void MqttService::connect()
     }
 }
 
-void MqttService::publish(const char* subTopic, const char* message)
-{
-    if (this->initialized)
-    {
-        mqttClient.publish(this->mqttGlobalTopic(subTopic).c_str(), 0, false, message);
-    }
-}
-
 // ------- GENERIC SUBSCRIBE -------
 void MqttService::subscribe(const char* subTopic)
 {
@@ -90,7 +81,6 @@ void MqttService::subscribe(const char* subTopic)
         mqttClient.subscribe(this->mqttGlobalTopic(subTopic).c_str(), 0);
     }
 }
-
 void MqttService::subscribe(String subTopic)
 {
     if (this->initialized)
@@ -101,9 +91,14 @@ void MqttService::subscribe(String subTopic)
 
 // ------- SUBSCRIBE TOPICS -------
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback) {
-    // TODO: make the topics configurable in the config.h
-    String globalSubTopic = this->mqttGlobalTopic(modeName + "/sub/" + localTopic);
-    String globalPubTopic = this->mqttGlobalTopic(modeName + "/pub/" + localTopic);
+    char subTopic[64];
+    char pubTopic[64];
+
+    sprintf(subTopic, MQTT_MODE_TOPIC_SUB_STRING, modeName.c_str(), localTopic.c_str());
+    sprintf(pubTopic, MQTT_MODE_TOPIC_PUB_STRING, modeName.c_str(), localTopic.c_str());
+
+    String globalSubTopic = this->mqttGlobalTopic(subTopic);
+    String globalPubTopic = this->mqttGlobalTopic(pubTopic);
 
     this->modeTopics[globalSubTopic] = {modeName, localTopic, globalPubTopic, defaultPayload, boundaries, payloadType, topicType, topicCallback};
 
@@ -129,6 +124,14 @@ std::function<void(String payload)> MqttService::subscribeModeTopic(String modeN
     return this->subscribeModeTopic(modeName, localTopic, String(defaultPayload), boundaries, payloadType, topic_e::PUB_SUB, topicCallback);
 }
 
+// ------- PUBLISH TOPICS -------
+void MqttService::publish(const char* subTopic, const char* message)
+{
+    if (this->initialized)
+    {
+        mqttClient.publish(this->mqttGlobalTopic(subTopic).c_str(), 0, false, message);
+    }
+}
 void MqttService::publish(String subTopic, const char* message)
 {
     if (this->initialized)
@@ -136,7 +139,6 @@ void MqttService::publish(String subTopic, const char* message)
         this->publish(subTopic.c_str(), message);
     }
 }
-
 void MqttService::publish(String subTopic, String message)
 {
     if (this->initialized)
@@ -146,11 +148,6 @@ void MqttService::publish(String subTopic, String message)
 }
 
 // ------- MQTT CALLBACKS -------
-void MqttService::onSubscribe(uint16_t packetId, const espMqttClientTypes::SubscribeReturncode* codes, size_t len)
-{
-    // TODO: implement onSubscribe here
-}
-
 void MqttService::onMessage(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
 {
     // TODO: implement onMessage here

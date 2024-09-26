@@ -16,7 +16,6 @@ void StaticMode::customSetup() {
         this->loop(steps);
     });
 
-    // TODO: topics and default values should be configurable in the config.h
     this->pushPubHexTopicFun = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "hex", "#000000", payload_e::COLOR, std::function<void(String)>(std::bind(&StaticMode::hexCallback, this, std::placeholders::_1)));
     this->pushPubBrightnessTopicFun = this->controllerService->subscribeModeTopic(
