@@ -45,7 +45,7 @@ LedService ledService;
 ControllerService controllerService(&mqttService, &clockService, &loggingService, &ledService);
 
 
-// tasks
+// scheduler tasks
 Task mqttStatusUpdateTask(MQTT_DATETIME_UPDATE_STATUS_INTERVAL, TASK_FOREVER, &mqttServiceStatusUpdateWrapper);
 Task mqttServiceUpdateDateTimeTask(MQTT_DATETIME_UPDATE_INTERVAL, TASK_FOREVER, &mqttServiceUpdateDateTimeWrapper);
 Task timeSyncTask(TIME_SYNC_INTERVAL, TASK_FOREVER, &clockServiceTimeSyncWrapper);
@@ -70,7 +70,7 @@ void setup() {
     WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(DNS_SERVER));
     #endif
 
-    Serial.println("Connecting to WiFi");
+    Serial.print("[INFO] Connecting to WiFi");
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -105,24 +105,30 @@ void setup() {
     LumiEsp *statusApp = new LumiEsp(&controllerService);
     statusApp->setup();
 
-    // register mqtt callbacks
-    controllerService.registerMqttLogFun([statusApp](const char* message) -> void {
+    // register callback functions
+    controllerService.registerPushLog([statusApp](const char* message) -> void {
         statusApp->logMessage(String(message));
     });
-    controllerService.registerMqttDatetimeFun([statusApp](const char* message) -> void {
+    controllerService.registerPushDateTime([statusApp](const char* message) -> void {
         statusApp->logDatetime(String(message));
     });
-    controllerService.registerMqttStatusFun([statusApp](const char* message) -> void {
+    controllerService.registerPushStatus([statusApp](const char* message) -> void {
         statusApp->logStatus(String(message));
     });
-    controllerService.registerMqttLevelFun([statusApp](const char* message) -> void {
+    controllerService.registerPushLevel([statusApp](const char* message) -> void {
         statusApp->logLevel(String(message));
+    });
+    controllerService.registerPushMode([statusApp](String mode) -> void {
+        statusApp->modeCallback(mode);
     });
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Status app setup completed");
 
     // create and subscribe to mqtt topics
     mqttService.initTopics();
+
+    // ----> SETUP INITIAL MODE <----
+    controllerService.setMode(staticMode->getModeInternalName());
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics initialized");
 
@@ -150,7 +156,10 @@ void setup() {
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Tasks enabled");
 
     // --- setup completed ---
+    controllerService.setStatus("Setup completed");
     loggingService.logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Setup completed");
+
+    controllerService.setStatus("alive");
 }
 
 void loop() {

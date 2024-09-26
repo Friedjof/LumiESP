@@ -22,8 +22,8 @@ class ControllerService
 
         String currentStatus = "none";
 
-        std::function<void(const char* message)> mqttStatusMessage = nullptr;
-        std::function<void(const char* message)> mqttDatetimeMessage = nullptr;
+        std::function<void(const char* message)> pushStatusMessage = nullptr;
+        std::function<void(const char* message)> pushDateTimeMessage = nullptr;
 
         bool initialized = false;
 
@@ -74,10 +74,11 @@ class ControllerService
         void logMessage(short logLevel, short mode, const char* message);
         void logMessage(short logLevel, short mode, String message);
 
-        void registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage);
-        void registerMqttDatetimeFun(std::function<void(const char* message)> mqttDatetimeMessage);
-        void registerMqttStatusFun(std::function<void(const char* message)> mqttStatusMessage);
-        void registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage);
+        void registerPushLog(std::function<void(const char* message)> pushLogMessage);
+        void registerPushDateTime(std::function<void(const char* message)> pushDateTimeMessage);
+        void registerPushStatus(std::function<void(const char* message)> pushStatusMessage);
+        void registerPushLevel(std::function<void(const char* message)> pushLevelMessage);
+        void registerPushMode(std::function<void(String mode)> pushMode);
 
         void registerGetDatetimeFun(std::function<std::string()> getDatetime);
 };

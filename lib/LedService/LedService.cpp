@@ -50,6 +50,11 @@ void LedService::setMode(String mode)
 
     this->newCurrentMode = mode;
 
+    if (this->pushModeCallback)
+    {
+        this->pushModeCallback(mode);
+    }
+
     this->log(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service requested mode: " + mode);
 
     // execute mode for the first time
@@ -170,6 +175,11 @@ bool LedService::registerLogFunction(std::function<void(short logLevel, short mo
     this->logFunction = logFunction;
 
     return true;
+}
+
+void  LedService::registerPushModeCallback(std::function<void(String mode)> pushModeCallback)
+{
+    this->pushModeCallback = pushModeCallback;
 }
 
 // ------- PRIVATE METHODS -------

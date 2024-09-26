@@ -11,7 +11,6 @@ ControllerService::ControllerService(MqttService *mqttService, ClockService *clo
 
 
 // ------- CONTROLLER METHODS -------
-
 void ControllerService::setup()
 {
     this->ledService->registerLogFunction([this](short logLevel, short mode, String message) {
@@ -44,6 +43,8 @@ void ControllerService::setMode(String mode)
         this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
         return;
     }
+
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "Setting mode: " + mode);
 
     this->ledService->setMode(mode);
 }
@@ -231,44 +232,54 @@ void ControllerService::logMessage(short logLevel, short mode, String message)
     this->logMessage(logLevel, mode, message.c_str());
 }
 
-void ControllerService::registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage)
+void ControllerService::registerPushLog(std::function<void(const char* message)> pushLogMessage)
 {
     if (!this->initialized)
     {
         return;
     }
 
-    this->loggingService->registerMqttLogFun(mqttLogMessage);
+    this->loggingService->registerPushLog(pushLogMessage);
 }
 
-void ControllerService::registerMqttDatetimeFun(std::function<void(const char* message)> mqttDatetimeMessage)
+void ControllerService::registerPushDateTime(std::function<void(const char* message)> pushDateTimeMessage)
 {
     if (!this->initialized)
     {
         return;
     }
 
-    this->mqttDatetimeMessage = mqttDatetimeMessage;
+    this->pushDateTimeMessage = pushDateTimeMessage;
 }
 
-void ControllerService::registerMqttStatusFun(std::function<void(const char* message)> mqttStatusMessage)
+void ControllerService::registerPushStatus(std::function<void(const char* message)> pushStatusMessage)
 {
     if (!this->initialized)
     {
         return;
     }
 
-    this->mqttStatusMessage = mqttStatusMessage;
+    this->pushStatusMessage = pushStatusMessage;
 }
 
-void ControllerService::registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage)
+void ControllerService::registerPushLevel(std::function<void(const char* message)> pushLevelMessage)
 {
     if (!this->initialized)
     {
         return;
     }
 
-    this->loggingService->registerMqttLevelFun(mqttLevelMessage);
+    this->loggingService->registerPushLevel(pushLevelMessage);
+}
+
+void ControllerService::registerPushMode(std::function<void(String mode)> modeCallback)
+{
+    if (!this->initialized)
+    {
+        return;
+    }
+
+    this->ledService->registerPushModeCallback(modeCallback);
 }
 
 void ControllerService::registerGetDatetimeFun(std::function<std::string()> getDatetime)
@@ -281,16 +292,15 @@ void ControllerService::registerGetDatetimeFun(std::function<std::string()> getD
     this->loggingService->registerGetDatetimeFun(getDatetime);
 }
 
-
 // ------- TASK WRAPPERS -------
 void ControllerService::mqttServiceStatusUpdateWrapper()
 {
-    if (!this->mqttStatusMessage)
+    if (!this->pushStatusMessage)
     {
         return;
     }
 
-    this->mqttStatusMessage(this->currentStatus.c_str());
+    this->pushStatusMessage(this->currentStatus.c_str());
 
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT status update");
 }
@@ -302,12 +312,12 @@ void ControllerService::mqttServiceLoopWrapper()
 
 void ControllerService::mqttServiceUpdateDateTimeWrapper()
 {
-    if (!this->mqttDatetimeMessage)
+    if (!this->pushDateTimeMessage)
     {
         return;
     }
 
-    this->mqttDatetimeMessage(this->clockService->getDateTime().c_str());
+    this->pushDateTimeMessage(this->clockService->getDateTime().c_str());
 
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT DateTime update");
 }

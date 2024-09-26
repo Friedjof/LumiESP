@@ -98,7 +98,7 @@ void LoggingService::logMessage(const char* message) {
 }
 
 // Register callback functions
-void LoggingService::registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage) {
+void LoggingService::registerPushLog(std::function<void(const char* message)> mqttLogMessage) {
     this->mqttLogMessage = mqttLogMessage;
     this->mqttLoggingActive = true;
 }
@@ -108,7 +108,7 @@ void LoggingService::registerGetDatetimeFun(std::function<std::string()> getDate
     this->datetimeLoggingIsActive = true;
 }
 
-void LoggingService::registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage) {
+void LoggingService::registerPushLevel(std::function<void(const char* message)> mqttLevelMessage) {
     this->mqttLevelMessage = mqttLevelMessage;
 
     this->mqttLevelLoggingActive = true;

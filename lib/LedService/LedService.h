@@ -25,7 +25,8 @@ class LedService {
         int internalModeSteps = 0;
 
         // simple log function
-        std::function<void(short logLevel, short mode, String message)> logFunction;
+        std::function<void(short logLevel, short mode, String message)> logFunction = nullptr;
+        std::function<void(String mode)> pushModeCallback = nullptr;
 
         // private helper functions
         String expandHexColor(String hexColor);
@@ -58,6 +59,7 @@ class LedService {
         // simple log functions
         void log(short logLevel, short mode, String message);
         bool registerLogFunction(std::function<void(short logLevel, short mode, String message)> logFunction);
+        void registerPushModeCallback(std::function<void(String mode)> pushModeCallback);
 };
 
 

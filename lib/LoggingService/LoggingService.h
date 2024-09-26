@@ -43,9 +43,9 @@ class LoggingService
         void logMessage(const char* message);
 
         // register callback functions
-        void registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage);
+        void registerPushLog(std::function<void(const char* message)> mqttLogMessage);
         void registerGetDatetimeFun(std::function<std::string()> getDatetime);
-        void registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage);
+        void registerPushLevel(std::function<void(const char* message)> mqttLevelMessage);
 };
 
 #endif

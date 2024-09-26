@@ -27,6 +27,15 @@ class AbstractApp {
         void setup();
         void loop(int steps);
 
+        // mode properties
+        String getModeTitle();
+        String getModeInternalName();
+        String getModeDescription();
+        String getModeAuthor();
+        String getModeContact();
+        String getModeVersion();
+        String getModeLicense();
+
         virtual void customSetup() = 0;
         virtual void customLoop(const int steps) = 0;
 };
