@@ -20,16 +20,20 @@ class ControllerService
         LoggingService *loggingService;
         LedService *ledService;
 
+        String currentStatus = "none";
+
         std::function<void(const char* message)> mqttStatusMessage = nullptr;
         std::function<void(const char* message)> mqttDatetimeMessage = nullptr;
 
         bool initialized = false;
+
     public:
         ControllerService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService);
 
         void setup();
 
-        void mqttSubscribtion(String topic, String payload);
+        void setStatus(String status);
+        String getStatus();
 
         // controller methods
         void setMode(String mode);

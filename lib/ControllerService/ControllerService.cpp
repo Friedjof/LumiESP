@@ -9,6 +9,9 @@ ControllerService::ControllerService(MqttService *mqttService, ClockService *clo
     this->ledService = ledService;
 }
 
+
+// ------- CONTROLLER METHODS -------
+
 void ControllerService::setup()
 {
     this->ledService->registerLogFunction([this](short logLevel, short mode, String message) {
@@ -24,7 +27,16 @@ void ControllerService::setup()
     });
 }
 
-// ------- CONTROLLER METHODS -------
+void ControllerService::setStatus(String status)
+{
+    this->currentStatus = status;
+}
+
+String ControllerService::getStatus()
+{
+    return this->currentStatus;
+}
+
 void ControllerService::setMode(String mode)
 {
     if (!this->initialized)
@@ -34,65 +46,6 @@ void ControllerService::setMode(String mode)
     }
 
     this->ledService->setMode(mode);
-}
-
-// ------- TASK WRAPPERS -------
-void ControllerService::mqttServiceStatusUpdateWrapper()
-{
-    if (!this->mqttStatusMessage)
-    {
-        return;
-    }
-
-    this->mqttStatusMessage(this->ledService->getMode().c_str());
-
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT status update");
-}
-
-void ControllerService::mqttServiceLoopWrapper()
-{
-    this->mqttService->loop();
-}
-
-void ControllerService::mqttServiceUpdateDateTimeWrapper()
-{
-    if (!this->mqttDatetimeMessage)
-    {
-        return;
-    }
-
-    this->mqttDatetimeMessage(this->clockService->getDateTime().c_str());
-    
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT DateTime update");
-}
-
-void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
-{
-    String playloadStr = "";
-
-    for (int i = 0; i < len; i++)
-    {
-        playloadStr += (char)payload[i];
-    }
-
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT message received: " + String(topic) + " > " + playloadStr);
-
-    bool valid = this->mqttService->onMessageCallback(topic, playloadStr);
-
-    if (!valid)
-    {
-        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "MQTT topic or payload invalid: " + String(topic) + " > " + playloadStr);
-    }
-}
-
-void ControllerService::clockServiceTimeSyncWrapper()
-{
-    this->clockService->syncTime();
-}
-
-void ControllerService::ledServiceLoopWrapper()
-{
-    this->ledService->loop();
 }
 
 // ------- LED SERVICE METHODS -------
@@ -196,7 +149,6 @@ void ControllerService::confirmLedConfig()
 }
 
 // ------- MQTT SERVICE METHODS -------
-
 std::function<void(String payload)> ControllerService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback)
 {
     if (!this->initialized)
@@ -327,4 +279,64 @@ void ControllerService::registerGetDatetimeFun(std::function<std::string()> getD
     }
 
     this->loggingService->registerGetDatetimeFun(getDatetime);
+}
+
+
+// ------- TASK WRAPPERS -------
+void ControllerService::mqttServiceStatusUpdateWrapper()
+{
+    if (!this->mqttStatusMessage)
+    {
+        return;
+    }
+
+    this->mqttStatusMessage(this->currentStatus.c_str());
+
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT status update");
+}
+
+void ControllerService::mqttServiceLoopWrapper()
+{
+    this->mqttService->loop();
+}
+
+void ControllerService::mqttServiceUpdateDateTimeWrapper()
+{
+    if (!this->mqttDatetimeMessage)
+    {
+        return;
+    }
+
+    this->mqttDatetimeMessage(this->clockService->getDateTime().c_str());
+
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT DateTime update");
+}
+
+void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
+{
+    String playloadStr = "";
+
+    for (int i = 0; i < len; i++)
+    {
+        playloadStr += (char)payload[i];
+    }
+
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT message received: " + String(topic) + " > " + playloadStr);
+
+    bool valid = this->mqttService->onMessageCallback(topic, playloadStr);
+
+    if (!valid)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "MQTT topic or payload invalid: " + String(topic) + " > " + playloadStr);
+    }
+}
+
+void ControllerService::clockServiceTimeSyncWrapper()
+{
+    this->clockService->syncTime();
+}
+
+void ControllerService::ledServiceLoopWrapper()
+{
+    this->ledService->loop();
 }
