@@ -11,13 +11,15 @@ LumiESP is a project that uses an ESP32 microcontroller to control an LED strip 
 
 ## Requirements
 - ESP32 microcontroller (e.g., ESP32 Dev Module)
-- PlatformIO installed on your system
-- LED strip (12V)
+- PlatformIO installed on your system or simply use this [nix-shell](/shell.nix)
+- LED strip (e.g., WS2812, WS2812B, WS2813)
 - MQTT broker (e.g., Mosquitto)
 
 ## Installation
 ### 1. Install PlatformIO
 PlatformIO is a cross-platform code builder and the easiest way to manage your embedded software environment. To install PlatformIO, follow the official instructions found [here](https://docs.platformio.org/en/latest/core/installation/methods/installer-script.html).
+
+> **Note:** If you are using NixOS, you can use the provided `shell.nix` file to enter a shell with PlatformIO installed.
 
 ### 2. Clone the Repository
 Clone the LumiESP project repository to your local machine:
@@ -30,13 +32,18 @@ cd LumiESP
 ### 3. Build, Upload, and Monitor
 The project includes a Makefile that simplifies the use of PlatformIO commands. Make sure to edit the variables in the Makefile according to your setup.
 
+> **Note:** You have to copy the `config/config.h-template` to `config/config.h` and fill in the necessary information. You can also use the `setup.py` script to do this for you (run `python setup.py` or `make setup`).
+
 #### Variables
 - `PORT`: Serial port of your ESP32 (e.g., `/dev/ttyUSB0`).
 - `BOARD`: The type of ESP32 board (e.g., `esp32dev`).
 - `SPEED`: Baud rate for the serial monitor (e.g., `115200`).
 
 ### Development Environment
-You can run a `mosquitto` MQTT broker locally on your machine for testing. To install `mosquitto`, run the following commands:
+You can run a `mosquitto` MQTT broker locally on your machine for testing. To run the MQTT broker using Docker, follow these steps:
+
+> **Note:** Make sure you have Docker installed on your system and you are in the root directory of this project.
+
 Setup the username and password for the MQTT broker (replace `<username>` with your desired username e.g., `esp`):
 ```bash
 docker run -it -v ./mosquitto/config:/mosquitto/config eclipse-mosquitto mosquitto_passwd -c /mosquitto/config/password.txt <username>
@@ -78,8 +85,10 @@ lumiESP
 …
 ```
 
+> **Note:** The system topic is used to publish and subscribe to system-related information, such as the current mode, status, and log messages. The other topics are used to control the LED strip and define custom modes.
+
 ## Define your own custom modes
-> Dokumentation is coming soon
+> Dokumentation is coming soon (e.g. see the [StaticMode](lib/StaticMode/StaticMode.cpp) for an example).
 
 ## Services and classes
 - **ClockService**: Provides timekeeping functionality (including NTP synchronization).
