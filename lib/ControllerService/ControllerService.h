@@ -20,6 +20,9 @@ class ControllerService
         LoggingService *loggingService;
         LedService *ledService;
 
+        std::function<void(const char* message)> mqttStatusMessage = nullptr;
+        std::function<void(const char* message)> mqttDatetimeMessage = nullptr;
+
         bool initialized = false;
     public:
         ControllerService(MqttService *mqttService, ClockService *clockService, LoggingService *loggingService, LedService *ledService);
@@ -66,8 +69,13 @@ class ControllerService
         // LoggingService methods
         void logMessage(short logLevel, short mode, const char* message);
         void logMessage(short logLevel, short mode, String message);
+
         void registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage);
-        void registerGetDatetimeFun(std::function<const char*()> getDatetime);
+        void registerMqttDatetimeFun(std::function<void(const char* message)> mqttDatetimeMessage);
+        void registerMqttStatusFun(std::function<void(const char* message)> mqttStatusMessage);
+        void registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage);
+
+        void registerGetDatetimeFun(std::function<std::string()> getDatetime);
 };
 
 #endif

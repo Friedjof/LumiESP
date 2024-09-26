@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <functional>
+#include <Wire.h>
 
 #include <TaskScheduler.h>
 
@@ -33,8 +34,7 @@ void ledServiceLoopWrapper();
 void mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total);
 
 
-// global objects
-WiFiClient wifiClient;
+// initialize scheduler
 Scheduler scheduler;
 
 // global services
@@ -43,6 +43,7 @@ ClockService clockService;
 LoggingService loggingService;
 LedService ledService;
 ControllerService controllerService(&mqttService, &clockService, &loggingService, &ledService);
+
 
 // tasks
 Task mqttStatusUpdateTask(MQTT_DATETIME_UPDATE_STATUS_INTERVAL, TASK_FOREVER, &mqttServiceStatusUpdateWrapper);
@@ -53,8 +54,34 @@ Task ledServiceLoopTask(LED_MODE_CONFIG_SPEED, TASK_FOREVER, &ledServiceLoopWrap
 
 
 void setup() {
-    // setup services
+    // ----> START INITIALIZATION <----
     Serial.begin(115200);
+    delay(10);
+
+    WiFi.setHostname(DEVICE_NAME);
+
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    WiFi.waitForConnectResult();
+
+    WiFi.persistent(false);
+    WiFi.setAutoConnect(true);
+
+    #ifdef CUSTOM_DNS
+    WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(DNS_SERVER));
+    #endif
+
+    Serial.println("Connecting to WiFi");
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("Connected");
+    // ----> END INITIALIZATION <----
+
+
+    // ----> SETUP SERVICES <----
     mqttService.setup();
     clockService.setup();
     loggingService.setup();
@@ -74,12 +101,22 @@ void setup() {
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "App modes setup completed");
     // <---- SETUP YOUR APP HERE ---->
 
-    // register status app for updating status messages over mqtt
+    // register functions for updating status messages over mqtt
     LumiEsp *statusApp = new LumiEsp(&controllerService);
     statusApp->setup();
 
+    // register mqtt callbacks
     controllerService.registerMqttLogFun([statusApp](const char* message) -> void {
         statusApp->logMessage(String(message));
+    });
+    controllerService.registerMqttDatetimeFun([statusApp](const char* message) -> void {
+        statusApp->logDatetime(String(message));
+    });
+    controllerService.registerMqttStatusFun([statusApp](const char* message) -> void {
+        statusApp->logStatus(String(message));
+    });
+    controllerService.registerMqttLevelFun([statusApp](const char* message) -> void {
+        statusApp->logLevel(String(message));
     });
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Status app setup completed");
@@ -104,7 +141,11 @@ void setup() {
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Tasks added to scheduler");
 
     // enable all tasks
-    scheduler.enableAll();
+    mqttStatusUpdateTask.enable();
+    mqttServiceUpdateDateTimeTask.enable();
+    timeSyncTask.enable();
+    mqttServiceLoopTask.enable();
+    ledServiceLoopTask.enable();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Tasks enabled");
 

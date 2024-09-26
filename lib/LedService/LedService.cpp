@@ -56,6 +56,11 @@ void LedService::setMode(String mode)
     this->modes[mode](this->newInternalModeSteps);
 }
 
+String LedService::getMode()
+{
+    return this->currentMode;
+}
+
 void LedService::registerMode(String name, std::function<void(int steps)> mode) {
     // check if mode already exists
     if (this->modes.find(name) != this->modes.end()) {

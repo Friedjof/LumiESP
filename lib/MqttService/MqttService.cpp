@@ -1,7 +1,7 @@
 #include "MqttService.h"
 
 
-MqttService::MqttService() : mqttClient()
+MqttService::MqttService()
 {
     // set mqtt callbacks
     mqttClient.onSubscribe(std::bind(&MqttService::onSubscribe, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -12,8 +12,6 @@ MqttService::MqttService() : mqttClient()
 
 void MqttService::setup()
 {
-    this->connectToWiFi();
-
     // set mqtt client settings
     mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
     mqttClient.setCredentials(MQTT_USERNAME, MQTT_PASSWORD);
@@ -60,34 +58,13 @@ void MqttService::loop()
     mqttClient.loop();
 }
 
-void MqttService::connectToWiFi()
-{
-    delay(10);
-
-    WiFi.setHostname(DEVICE_NAME);
-
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    //WiFi.waitForConnectResult();
-
-    WiFi.persistent(false);
-    WiFi.setAutoConnect(true);
-
-    #ifdef CUSTOM_DNS
-    WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(DNS_SERVER));
-    #endif
-
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-    }
-}
-
 void MqttService::connect()
 {
     while (!mqttClient.connected())
     {
         if (mqttClient.connect())
         {
-            // TODO: implement connect here
+            Serial.println("Connected to MQTT broker");
             //this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC).c_str(), "connected");
         }
         else

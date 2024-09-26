@@ -14,8 +14,14 @@ void ControllerService::setup()
     this->ledService->registerLogFunction([this](short logLevel, short mode, String message) {
         this->loggingService->logMessage(logLevel, mode, message);
     });
-    
+
     this->initialized = true;
+
+    this->registerGetDatetimeFun([this]() -> std::string {
+        char datetime[128];
+        this->clockService->getDateTime(datetime);
+        return std::string(datetime);
+    });
 }
 
 // ------- CONTROLLER METHODS -------
@@ -33,6 +39,13 @@ void ControllerService::setMode(String mode)
 // ------- TASK WRAPPERS -------
 void ControllerService::mqttServiceStatusUpdateWrapper()
 {
+    if (!this->mqttStatusMessage)
+    {
+        return;
+    }
+
+    this->mqttStatusMessage(this->ledService->getMode().c_str());
+
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT status update");
 }
 
@@ -43,6 +56,13 @@ void ControllerService::mqttServiceLoopWrapper()
 
 void ControllerService::mqttServiceUpdateDateTimeWrapper()
 {
+    if (!this->mqttDatetimeMessage)
+    {
+        return;
+    }
+
+    this->mqttDatetimeMessage(this->clockService->getDateTime().c_str());
+    
     this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT DateTime update");
 }
 
@@ -269,7 +289,37 @@ void ControllerService::registerMqttLogFun(std::function<void(const char* messag
     this->loggingService->registerMqttLogFun(mqttLogMessage);
 }
 
-void ControllerService::registerGetDatetimeFun(std::function<const char*()> getDatetime)
+void ControllerService::registerMqttDatetimeFun(std::function<void(const char* message)> mqttDatetimeMessage)
+{
+    if (!this->initialized)
+    {
+        return;
+    }
+
+    this->mqttDatetimeMessage = mqttDatetimeMessage;
+}
+
+void ControllerService::registerMqttStatusFun(std::function<void(const char* message)> mqttStatusMessage)
+{
+    if (!this->initialized)
+    {
+        return;
+    }
+
+    this->mqttStatusMessage = mqttStatusMessage;
+}
+
+void ControllerService::registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage)
+{
+    if (!this->initialized)
+    {
+        return;
+    }
+
+    this->loggingService->registerMqttLevelFun(mqttLevelMessage);
+}
+
+void ControllerService::registerGetDatetimeFun(std::function<std::string()> getDatetime)
 {
     if (!this->initialized)
     {

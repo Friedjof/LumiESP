@@ -18,11 +18,13 @@ class LoggingService
         // status flags
         bool initialized = false;
         bool mqttLoggingActive = false;
-        bool datetimeLoggingActive = false;
+        bool datetimeLoggingIsActive = false;
+        bool mqttLevelLoggingActive = false;
 
         // callback functions
         std::function<void(const char* message)> mqttLogMessage;
-        std::function<const char*()> getDateTime;
+        std::function<std::string()> getDateTime;
+        std::function<void(const char* message)> mqttLevelMessage;
 
     public:
         LoggingService();
@@ -42,7 +44,8 @@ class LoggingService
 
         // register callback functions
         void registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage);
-        void registerGetDatetimeFun(std::function<const char*()> getDatetime);
+        void registerGetDatetimeFun(std::function<std::string()> getDatetime);
+        void registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage);
 };
 
 #endif

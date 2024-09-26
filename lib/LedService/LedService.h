@@ -37,6 +37,7 @@ class LedService {
 
         void loop();
         void setMode(String mode);
+        String getMode();
 
         void setLed(short index, byte r, byte g, byte b);
         void setLed(short index, CRGB color);

@@ -49,8 +49,9 @@ String LoggingService::logMessageStr(short logLevel, const char* message) {
     String logLevelStr = this->logLevelStr(logLevel);
     char log_msg[256];
 
-    if (this->datetimeLoggingActive) {
-        String datetime = this->getDateTime();
+    if (this->datetimeLoggingIsActive) {
+        std::string datetime = this->getDateTime();
+
         snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime.c_str(), logLevelStr.c_str(), message);
     } else {
         snprintf(log_msg, 256, LOG_STRING_NO_DATETIME, DEVICE_NAME, logLevelStr.c_str(), message);
@@ -62,12 +63,20 @@ String LoggingService::logMessageStr(short logLevel, const char* message) {
 // Log message methods
 void LoggingService::logMessage(short logLevel, short mode, const char* message) {
     if (this->initialized && logLevel <= this->logLevel) {
+        // log message to serial
         if (mode == LOG_MODE_ALL || mode == LOG_MODE_SERIAL) {
             Serial.println(this->logMessageStr(logLevel, message));
         }
 
+        // log message to mqtt
         if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->mqttLoggingActive) {
-            this->mqttLogMessage(this->logMessageStr(logLevel, message).c_str());
+            if (this->mqttLevelLoggingActive) {
+                this->mqttLevelMessage(this->logLevelStr(logLevel).c_str());
+            }
+
+            String logMessage = this->logMessageStr(logLevel, message);
+
+            this->mqttLogMessage(logMessage.c_str());
         }
     }
 }
@@ -94,7 +103,13 @@ void LoggingService::registerMqttLogFun(std::function<void(const char* message)>
     this->mqttLoggingActive = true;
 }
 
-void LoggingService::registerGetDatetimeFun(std::function<const char*()> getDatetime) {
+void LoggingService::registerGetDatetimeFun(std::function<std::string()> getDatetime) {
     this->getDateTime = getDatetime;
-    this->datetimeLoggingActive = true;
+    this->datetimeLoggingIsActive = true;
+}
+
+void LoggingService::registerMqttLevelFun(std::function<void(const char* message)> mqttLevelMessage) {
+    this->mqttLevelMessage = mqttLevelMessage;
+
+    this->mqttLevelLoggingActive = true;
 }

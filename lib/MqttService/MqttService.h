@@ -18,7 +18,6 @@
 class MqttService
 {
     private:
-        WiFiClient wifiClient;
         espMqttClient mqttClient;
 
         std::map<String, mode_callback_t> modeTopics;
@@ -38,7 +37,8 @@ class MqttService
 
         void setup(); void initTopics(); void loop(); void connect();
 
-        void connectToWiFi(); void mqttStatusUpdate(); void mqttDatetimeUpdate(const char* datetime);
+        void mqttStatusUpdate();
+        void mqttDatetimeUpdate(const char* datetime);
 
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
         // LumiEsp
