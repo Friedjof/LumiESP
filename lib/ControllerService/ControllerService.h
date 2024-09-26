@@ -53,8 +53,8 @@ class ControllerService
         void setLed(short index, byte r, byte g, byte b);
         void setLed(short index, CRGB color);
         void setLed(short index, CHSV color);
+        void setLed(short index, String hexColor);
         void setLed(byte r, byte g, byte b);
-
         void setHexColor(String hexColor);
         void setBrightness(byte brightness);
 

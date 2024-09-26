@@ -10,7 +10,8 @@ enum payload_e {
     BYTE,
     INT,
     FLOAT,
-    COLOR
+    COLOR,
+    BOOL
 };
 
 enum topic_e {

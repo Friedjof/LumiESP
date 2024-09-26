@@ -105,6 +105,17 @@ void ControllerService::setLed(short index, CHSV color)
     this->ledService->setLed(index, color);
 }
 
+void ControllerService::setLed(short index, String hexColor)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+
+    this->ledService->setLed(index, hexColor);
+}
+
 void ControllerService::setLed(byte r, byte g, byte b)
 {
     if (!this->initialized)

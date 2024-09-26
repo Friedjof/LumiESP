@@ -92,11 +92,11 @@ void setup() {
 
     // ----> SETUP YOUR APP HERE <----
     AbstractMode* staticMode = new StaticMode(&controllerService);
-    //AbstractApp* loopMode = new LoopMode(&controllerService);
+    AbstractMode* loopMode = new LoopMode(&controllerService);
 
     // setup modes
     staticMode->setup();
-    //loopMode->setup();
+    loopMode->setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "App modes setup completed");
     // <---- SETUP YOUR APP HERE ---->

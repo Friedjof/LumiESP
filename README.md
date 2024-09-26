@@ -65,7 +65,7 @@ docker compose up -d
 
 ## MQTT Topics
 ```txt
-lumiESP
+LumiESP
 ├── LumiESP     // this defines the system topic
 │   ├── pub
 │   │   ├── status     // the system status

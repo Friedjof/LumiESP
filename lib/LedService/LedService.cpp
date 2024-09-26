@@ -149,6 +149,35 @@ void LedService::setLed(short index, CHSV color)
     this->leds[index] = color;
 }
 
+void LedService::setLed(short index, String hexColor)
+{
+    if (!isHexColor(hexColor))
+    {
+        this->log(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service invalid hex color: " + hexColor);
+        return;
+    }
+
+    CRGB color = CRGB::Black;
+
+    if (hexColor.length() == 7) {
+        color = CRGB(
+            strtol(hexColor.substring(1, 3).c_str(), NULL, 16),
+            strtol(hexColor.substring(3, 5).c_str(), NULL, 16),
+            strtol(hexColor.substring(5, 7).c_str(), NULL, 16)
+        );
+    } else if (hexColor.length() == 4) {
+        hexColor = this->expandHexColor(hexColor);
+
+        color = CRGB(
+            strtol(hexColor.substring(1, 3).c_str(), NULL, 16),
+            strtol(hexColor.substring(3, 5).c_str(), NULL, 16),
+            strtol(hexColor.substring(5, 7).c_str(), NULL, 16)
+        );
+    }
+
+    this->leds[index] = color;
+}
+
 void LedService::setLed(byte r, byte g, byte b)
 {
     for (int i = 0; i < LED_NUM_LEDS; i++)
