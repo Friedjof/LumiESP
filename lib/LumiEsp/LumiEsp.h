@@ -4,8 +4,6 @@
 
 #include <functional>
 
-#include "ControllerService.h"
-
 #include "AbstractApp.h"
 
 
@@ -19,17 +17,20 @@ class LumiEsp : public AbstractApp {
         std::function<void(String payload)> statusCallback;
         std::function<void(String payload)> datetimeCallback;
 
-        std::function<void(String payload)> modeCallback;
+        std::function<void(String payload)> modeSubFun;
     public:
-        LumiEsp(MqttService* mqttService, ControllerService* controllerService);
+        LumiEsp(ControllerService* controllerService);
 
         void customSetup() override;
         void customLoop(int steps) override;
 
-        void logMessage(String message);
+        void logMessage(String message);    
+        void logMessage(const char* message);
         void logLevel(String level);
         void logStatus(String status);
         void logDatetime(String datetime);
+
+        void modeCallback(String payload);
 };
 
 #endif

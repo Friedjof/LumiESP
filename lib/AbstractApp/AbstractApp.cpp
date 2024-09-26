@@ -1,9 +1,9 @@
 #include "AbstractApp.h"
 
 
-AbstractApp::AbstractApp(MqttService* mqttService)
+AbstractApp::AbstractApp(ControllerService* controllerService)
 {
-    this->mqttService = mqttService;
+    this->controllerService = controllerService;
 }
 
 AbstractApp::~AbstractApp()

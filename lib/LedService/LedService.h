@@ -6,28 +6,14 @@
 
 #include <FastLED.h>
 
-#include "LoggingService.h"
-#include "MqttService.h"
-
-#include "AbstractMode.h"
-
 #include "utils.h"
-
 #include "../../config/config.h"
-
-
-// forward declaration
-class AbstractMode;
-class LoggingService;
 
 
 class LedService {
     private:
-        LoggingService *loggingService;
-        MqttService *mqttService;
-
         // store for all modes
-        std::map<String, AbstractMode*> modes;
+        std::map<String, std::function<void(int steps)>> modes;
 
         CRGB leds[LED_NUM_LEDS];
 
@@ -43,9 +29,14 @@ class LedService {
         void setLed(short index, CHSV color);
         void setLed(byte r, byte g, byte b);
 
+        // simple log function
+        std::function<void(short logLevel, short mode, String message)> logFunction;
+
+        // private helper functions
+        String expandHexColor(String hexColor);
+
     public:
         LedService();
-        LedService(LoggingService *loggingService, MqttService *mqttService);
 
         void setup();
 
@@ -56,10 +47,16 @@ class LedService {
         void setBrightness(byte brightness);
 
         // modes
-        void registerMode(String name, AbstractMode* mode);
+        void registerMode(String name, std::function<void(int steps)> mode);
         void unregisterMode(String name);
 
         bool modeExists(String name);
+
+        void confirmLedConfig();
+
+        // simple log functions
+        void log(short logLevel, short mode, String message);
+        bool registerLogFunction(std::function<void(short logLevel, short mode, String message)> logFunction);
 };
 
 

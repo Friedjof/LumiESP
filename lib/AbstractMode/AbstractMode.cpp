@@ -1,11 +1,9 @@
 #include "AbstractMode.h"
 
 
-AbstractMode::AbstractMode(LedService* ledService, LoggingService* loggingService, MqttService* mqttService)
+AbstractMode::AbstractMode(ControllerService* controllerService)
 {
-    this->ledService = ledService;
-    this->loggingService = loggingService;
-    this->mqttService = mqttService;
+    this->controllerService = controllerService;
 }
 
 AbstractMode::~AbstractMode()
@@ -17,7 +15,7 @@ void AbstractMode::setup()
     // call custom setup
     this->customSetup();
 
-    this->loggingService->logMessage(LOG_LEVEL_INFO, "Mode setup completed for: " + this->modeInternalName);
+    this->controllerService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Mode setup completed for: " + this->modeInternalName);
 }
 
 void AbstractMode::loop(const int steps)

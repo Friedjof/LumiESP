@@ -1,8 +1,11 @@
 #ifndef LOGGINGSERVICE_H
 #define LOGGINGSERVICE_H
 
-#include "ClockService.h"
-#include "LumiEsp.h"
+
+#include <functional>
+
+#include <Arduino.h>
+
 
 #include "../../config/config.h"
 
@@ -10,15 +13,19 @@
 class LoggingService
 {
     private:
-        ClockService *clockService;
-        LumiEsp *statusApp;
-
         short logLevel = LOG_LEVEL;
+
+        // status flags
         bool initialized = false;
-        bool statusLoggingActive = false;
+        bool mqttLoggingActive = false;
+        bool datetimeLoggingActive = false;
+
+        // callback functions
+        std::function<void(const char* message)> mqttLogMessage;
+        std::function<const char*()> getDateTime;
+
     public:
         LoggingService();
-        LoggingService(ClockService *clockService);
 
         void setup();
         void setup(short logLevel);
@@ -33,10 +40,9 @@ class LoggingService
         void logMessage(short logLevel, String message);
         void logMessage(const char* message);
 
-        void updateEspStatus();
-        void updateStatusDateTime();
-
-        void registerStatusApp(LumiEsp *statusApp);
+        // register callback functions
+        void registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage);
+        void registerGetDatetimeFun(std::function<const char*()> getDatetime);
 };
 
 #endif

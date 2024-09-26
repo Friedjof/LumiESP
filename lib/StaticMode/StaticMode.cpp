@@ -1,7 +1,7 @@
 #include "StaticMode.h"
 
 
-StaticMode::StaticMode(LedService* ledService, LoggingService* loggingService, MqttService* mqttService) : AbstractMode(ledService, loggingService, mqttService) {
+StaticMode::StaticMode(ControllerService* controllerService) : AbstractMode(controllerService) {
     this->modeTitle = "Static Mode";
     this->modeDescription = "This mode sets the LEDs to a static color configured via MQTT.";
     this->modeInternalName = "StaticMode";
@@ -12,17 +12,19 @@ StaticMode::StaticMode(LedService* ledService, LoggingService* loggingService, M
 }
 
 void StaticMode::customSetup() {
-    this->ledService->registerMode(this->modeInternalName, this);
+    this->controllerService->registerMode(this->modeInternalName, [this](int steps) {
+        this->loop(steps);
+    });
 
     // TODO: topics and default values should be configurable in the config.h
-    this->pushPubHexTopicFun = this->mqttService->subscribeModeTopic(
+    this->pushPubHexTopicFun = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "hex", "#000000", payload_e::COLOR, std::function<void(String)>(std::bind(&StaticMode::hexCallback, this, std::placeholders::_1)));
-    this->pushPubBrightnessTopicFun = this->mqttService->subscribeModeTopic(
+    this->pushPubBrightnessTopicFun = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "brightness", 255, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&StaticMode::brightnessCallback, this, std::placeholders::_1)));
 }
 
 void StaticMode::hexCallback(String payload) {
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, "StaticMode hex callback: " + payload);
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode hex callback: " + payload);
 
     this->newHexColor = payload;
 
@@ -31,7 +33,7 @@ void StaticMode::hexCallback(String payload) {
 }
 
 void StaticMode::brightnessCallback(String payload) {
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, "StaticMode brightness callback: " + payload);
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode brightness callback: " + payload);
 
     this->newBrightness = payload.toInt();
 
@@ -41,17 +43,21 @@ void StaticMode::brightnessCallback(String payload) {
 
 void StaticMode::customLoop(int steps) {
     if (this->isNewHexColor()) {
-        this->ledService->setHexColor(this->newHexColor);
+        this->controllerService->setHexColor(this->newHexColor);
         this->hexColor = this->newHexColor;
 
-        this->loggingService->logMessage(LOG_LEVEL_DEBUG, "StaticMode set hex color: " + this->hexColor);
+        this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode set hex color: " + this->hexColor);
+
+        this->controllerService->confirmLedConfig();
     }
 
     if (this->isNewBrightness()) {
-        this->ledService->setBrightness(this->newBrightness);
+        this->controllerService->setBrightness(this->newBrightness);
         this->brightness = this->newBrightness;
 
-        this->loggingService->logMessage(LOG_LEVEL_DEBUG, "StaticMode set brightness: " + String(this->brightness));
+        this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode set brightness: " + String(this->brightness));
+
+        this->controllerService->confirmLedConfig();
     }
 }
 

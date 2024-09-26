@@ -4,23 +4,12 @@
 
 #include <functional>
 
-#include "LedService.h"
-#include "LoggingService.h"
-#include "MqttService.h"
-
-#include "../../config/config.h"
-
-
-// forward declaration
-class LedService;
-class LoggingService;
+#include "ControllerService.h"
 
 
 class AbstractMode {
     protected:
-        LedService* ledService;
-        LoggingService* loggingService;
-        MqttService* mqttService;
+        ControllerService* controllerService;
 
         // mode properties
         String modeTitle;
@@ -34,7 +23,7 @@ class AbstractMode {
         bool isHexColor(String hex);
 
     public:
-        AbstractMode(LedService* ledService, LoggingService* loggingService, MqttService* mqttService);
+        AbstractMode(ControllerService* controllerService);
         ~AbstractMode();
 
         void setup();

@@ -4,14 +4,12 @@
 
 #include <functional>
 
-#include "MqttService.h"
-
-#include "../../config/config.h"
+#include "ControllerService.h"
 
 
 class AbstractApp {
     protected:
-        MqttService* mqttService;
+        ControllerService* controllerService;
 
         // mode properties
         String modeTitle;
@@ -23,7 +21,7 @@ class AbstractApp {
         String modeLicense;
 
     public:
-        AbstractApp(MqttService* mqttService);
+        AbstractApp(ControllerService* controllerService);
         ~AbstractApp();
 
         void setup();

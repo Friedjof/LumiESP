@@ -67,7 +67,7 @@ void MqttService::connectToWiFi()
     WiFi.setHostname(DEVICE_NAME);
 
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    WiFi.waitForConnectResult();
+    //WiFi.waitForConnectResult();
 
     WiFi.persistent(false);
     WiFi.setAutoConnect(true);

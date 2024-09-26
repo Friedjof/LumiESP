@@ -4,9 +4,6 @@
 // Default constructor
 LoggingService::LoggingService() : logLevel(LOG_LEVEL), initialized(false) {}
 
-// Parameterized constructor
-LoggingService::LoggingService(ClockService *clockService) : clockService(clockService), logLevel(LOG_LEVEL), initialized(false) {}
-
 // Setup method
 void LoggingService::setup() {
     Serial.begin(LOG_SERIAL_SPEED);
@@ -50,10 +47,14 @@ String LoggingService::logLevelStr(short logLevel) {
 
 String LoggingService::logMessageStr(short logLevel, const char* message) {
     String logLevelStr = this->logLevelStr(logLevel);
-    String datetime = this->clockService->getDateTime();
-
     char log_msg[256];
-    snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime.c_str(), logLevelStr.c_str(), message);
+
+    if (this->datetimeLoggingActive) {
+        String datetime = this->getDateTime();
+        snprintf(log_msg, 256, LOG_STRING, DEVICE_NAME, datetime.c_str(), logLevelStr.c_str(), message);
+    } else {
+        snprintf(log_msg, 256, LOG_STRING_NO_DATETIME, DEVICE_NAME, logLevelStr.c_str(), message);
+    }
 
     return String(log_msg);
 }
@@ -65,8 +66,8 @@ void LoggingService::logMessage(short logLevel, short mode, const char* message)
             Serial.println(this->logMessageStr(logLevel, message));
         }
 
-        if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->statusLoggingActive) {
-            this->statusApp->logMessage(this->logMessageStr(logLevel, message));
+        if ((mode == LOG_MODE_ALL || mode == LOG_MODE_MQTT) && this->mqttLoggingActive) {
+            this->mqttLogMessage(this->logMessageStr(logLevel, message).c_str());
         }
     }
 }
@@ -87,22 +88,13 @@ void LoggingService::logMessage(const char* message) {
     this->logMessage(LOG_LEVEL_DEBUG, LOG_MODE, message);
 }
 
-void LoggingService::registerStatusApp(LumiEsp *statusApp) {
-    this->statusApp = statusApp;
-
-    this->statusLoggingActive = true;
+// Register callback functions
+void LoggingService::registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage) {
+    this->mqttLogMessage = mqttLogMessage;
+    this->mqttLoggingActive = true;
 }
 
-// Update status methods
-void LoggingService::updateEspStatus() {
-    if (this->statusLoggingActive) {
-        this->statusApp->logStatus("active");
-        this->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Status updated");
-    }
-}
-
-void LoggingService::updateStatusDateTime() {
-    if (this->statusLoggingActive) {
-        this->statusApp->logDatetime(this->clockService->getDateTime());
-    }
+void LoggingService::registerGetDatetimeFun(std::function<const char*()> getDatetime) {
+    this->getDateTime = getDatetime;
+    this->datetimeLoggingActive = true;
 }

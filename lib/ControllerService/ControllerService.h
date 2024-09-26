@@ -1,11 +1,14 @@
 #ifndef CONTROLLERSERVICE_H
 #define CONTROLLERSERVICE_H
 
+#include <functional>
+
 #include "MqttService.h"
+#include "ClockService.h"
 #include "LoggingService.h"
 #include "LedService.h"
-#include "ClockService.h"
 
+#include "CommonTypes.h"
 #include "../../config/config.h"
 
 
@@ -36,6 +39,30 @@ class ControllerService
         void clockServiceTimeSyncWrapper();
         void ledServiceLoopWrapper();
 
+        // LedService methods
+        void registerMode(String name, std::function<void(int steps)> mode);
+        void unregisterMode(String name);
+
+        void setHexColor(String hexColor);
+        void setBrightness(byte brightness);
+
+        void confirmLedConfig();
+
+        // MqttService methods
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
+        // LumiEsp
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType);
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic);
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
+        // StaticMode
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, std::function<void(String payload)> topicCallback);
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, int defaultPayload, boundaries_t boundaries, payload_e payloadType, std::function<void(String payload)> topicCallback);
+
+        // LoggingService methods
+        void logMessage(short logLevel, short mode, const char* message);
+        void logMessage(short logLevel, short mode, String message);
+        void registerMqttLogFun(std::function<void(const char* message)> mqttLogMessage);
+        void registerGetDatetimeFun(std::function<const char*()> getDatetime);
 };
 
 #endif

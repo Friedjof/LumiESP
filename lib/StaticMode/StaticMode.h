@@ -27,7 +27,7 @@ class StaticMode : public AbstractMode {
         bool isNewBrightness();
 
     public:
-        StaticMode(LedService* ledService, LoggingService* loggingService, MqttService* mqttService);
+        StaticMode(ControllerService* controllerService);
 
         void customSetup() override;
         void customLoop(int steps) override;

@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <functional>
 
 #include <TaskScheduler.h>
 
@@ -39,8 +40,8 @@ Scheduler scheduler;
 // global services
 MqttService mqttService;
 ClockService clockService;
-LoggingService loggingService(&clockService);
-LedService ledService(&loggingService, &mqttService);
+LoggingService loggingService;
+LedService ledService;
 ControllerService controllerService(&mqttService, &clockService, &loggingService, &ledService);
 
 // tasks
@@ -53,6 +54,7 @@ Task ledServiceLoopTask(LED_MODE_CONFIG_SPEED, TASK_FOREVER, &ledServiceLoopWrap
 
 void setup() {
     // setup services
+    Serial.begin(115200);
     mqttService.setup();
     clockService.setup();
     loggingService.setup();
@@ -62,8 +64,8 @@ void setup() {
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
 
     // ----> SETUP YOUR APP HERE <----
-    AbstractMode* staticMode = new StaticMode(&ledService, &loggingService, &mqttService);
-    //AbstractApp* loopMode = new LoopMode(&ledService, &loggingService, &mqttService);
+    AbstractMode* staticMode = new StaticMode(&controllerService);
+    //AbstractApp* loopMode = new LoopMode(&controllerService);
 
     // setup modes
     staticMode->setup();
@@ -73,9 +75,12 @@ void setup() {
     // <---- SETUP YOUR APP HERE ---->
 
     // register status app for updating status messages over mqtt
-    LumiEsp *statusApp = new LumiEsp(&mqttService, &controllerService);
+    LumiEsp *statusApp = new LumiEsp(&controllerService);
     statusApp->setup();
-    loggingService.registerStatusApp(statusApp);
+
+    controllerService.registerMqttLogFun([statusApp](const char* message) -> void {
+        statusApp->logMessage(String(message));
+    });
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Status app setup completed");
 
