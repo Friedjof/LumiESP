@@ -9,7 +9,7 @@ LedService::LedService()
 // ------- SETUP & LOOP -------
 void LedService::setup()
 {
-    FastLED.addLeds<WS2812, LED_PIN, GRB>(this->leds, LED_NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.addLeds<LED_TYPE, LED_PIN, GRB>(this->leds, LED_NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(LED_MODE_CONFIG_BRIGHTNESS);
 
     this->log(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service setup completed");
@@ -51,6 +51,9 @@ void LedService::setMode(String mode)
     this->newCurrentMode = mode;
 
     this->log(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service requested mode: " + mode);
+
+    // execute mode for the first time
+    this->modes[mode](this->newInternalModeSteps);
 }
 
 void LedService::registerMode(String name, std::function<void(int steps)> mode) {
@@ -94,7 +97,7 @@ void LedService::setHexColor(String hexColor)
         );
     } else if (hexColor.length() == 4) {
         hexColor = this->expandHexColor(hexColor);
-        
+
         color = CRGB(
             strtol(hexColor.substring(1, 3).c_str(), NULL, 16),
             strtol(hexColor.substring(3, 5).c_str(), NULL, 16),

@@ -98,6 +98,50 @@ void ControllerService::unregisterMode(String name)
     this->ledService->unregisterMode(name);
 }
 
+void ControllerService::setLed(short index, byte r, byte g, byte b)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+
+    this->ledService->setLed(index, r, g, b);
+}
+
+void ControllerService::setLed(short index, CRGB color)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+
+    this->ledService->setLed(index, color);
+}
+
+void ControllerService::setLed(short index, CHSV color)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+
+    this->ledService->setLed(index, color);
+}
+
+void ControllerService::setLed(byte r, byte g, byte b)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+
+    this->ledService->setLed(r, g, b);
+}
+
 void ControllerService::setHexColor(String hexColor)
 {
     if (!this->initialized)

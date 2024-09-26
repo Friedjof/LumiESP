@@ -24,11 +24,6 @@ class LedService {
         int newInternalModeSteps = 0;
         int internalModeSteps = 0;
 
-        void setLed(short index, byte r, byte g, byte b);
-        void setLed(short index, CRGB color);
-        void setLed(short index, CHSV color);
-        void setLed(byte r, byte g, byte b);
-
         // simple log function
         std::function<void(short logLevel, short mode, String message)> logFunction;
 
@@ -42,6 +37,11 @@ class LedService {
 
         void loop();
         void setMode(String mode);
+
+        void setLed(short index, byte r, byte g, byte b);
+        void setLed(short index, CRGB color);
+        void setLed(short index, CHSV color);
+        void setLed(byte r, byte g, byte b);
 
         void setHexColor(String hexColor);
         void setBrightness(byte brightness);
