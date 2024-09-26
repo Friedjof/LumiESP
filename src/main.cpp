@@ -14,11 +14,14 @@
 // modes
 #include "AbstractMode.h"
 
+// custom modes
 #include "StaticMode.h"
 #include "LoopMode.h"
+#include "RainbowMode.h"
 
 // apps
 #include "AbstractApp.h"
+
 #include "LumiEsp.h"
 
 // config
@@ -93,10 +96,12 @@ void setup() {
     // ----> SETUP YOUR APP HERE <----
     AbstractMode* staticMode = new StaticMode(&controllerService);
     AbstractMode* loopMode = new LoopMode(&controllerService);
+    AbstractMode* rainbowMode = new RainbowMode(&controllerService);
 
     // setup modes
     staticMode->setup();
     loopMode->setup();
+    rainbowMode->setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "App modes setup completed");
     // <---- SETUP YOUR APP HERE ---->
