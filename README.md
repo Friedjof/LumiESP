@@ -1,10 +1,13 @@
 # LumiESP
-LumiESP is a project that uses an ESP32 microcontroller to control a 12V LED strip via MQTT. The project is designed to provide flexible and remote control over lighting, allowing integration into home automation systems.
+LumiESP is a project that uses an ESP32 microcontroller to control an LED strip over MQTT. The project is designed to be easily customizable and extensible, allowing you to define your own custom modes and settings. The project includes a Makefile that simplifies the use of PlatformIO commands for building, uploading, and monitoring the code.
+
+> **Note:** This project is still in development and may contain bugs or incomplete features. Please report any issues you encounter.
 
 ## Features
-- Control 12V LED strip using ESP32 over MQTT
+- Control LED strip using ESP32 over MQTT (e.g. LED strip `WS2812`, `WS2812B`, `WS2813`, etc.)
 - Customizable settings for port, board, and speed
 - Easy build, upload, and monitor using PlatformIO commands
+- Define custom modes and settings for the LED strip
 
 ## Requirements
 - ESP32 microcontroller (e.g., ESP32 Dev Module)
@@ -82,6 +85,7 @@ lumiESP
 - **ClockService**: Provides timekeeping functionality (including NTP synchronization).
 - **LoggingService**: Logs messages to the serial monitor and MQTT.
 - **MQTTService**: Handles MQTT communication with the broker.
+- **LedService**: Controls the LED strip using PWM signals.
 - **ControllerService**: Manages tasks and schedules for the ESP32.
 
 ![Services Overview](media/images/classes-overview.png)

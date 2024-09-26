@@ -11,14 +11,14 @@
 #define CONFIG_H
 
 // WiFi Configuration
-#define WIFI_SSID "<ssid>"
-#define WIFI_PASSWORD "<password>"
+#define WIFI_SSID "<wifi-ssid>"
+#define WIFI_PASSWORD "<wifi-password>"
 
 // MQTT Configuration
-#define MQTT_BROKER    "<mqtt-broker-ip"
+#define MQTT_BROKER    "<mqtt-broker>"
 #define MQTT_PORT      1883
-#define MQTT_USERNAME  "<username>"
-#define MQTT_PASSWORD  "<password>"
+#define MQTT_USERNAME  "<mqtt-username>"
+#define MQTT_PASSWORD  "<mqtt-password>"
 #define MQTT_CLIENT_ID "esp32-fwodnd"
 
 // Device Configuration
@@ -26,9 +26,10 @@
 #define DEVICE_LOCATION "Living Room"
 
 // LED Configuration
+#define LED_TYPE                   WS2812 // e.g. WS2812, WS2812B, WS2813
 #define LED_PIN                    2  // GPIO pin of the LED strip
-#define LED_NUM_LEDS               64 // number of LEDs in the strip
-#define LED_MODE_CONFIG_SPEED      5  // one step every 5ms
+#define LED_NUM_LEDS               300 // number of LEDs in the strip (e.g. 300, 60)
+#define LED_MODE_CONFIG_SPEED      10 // speed of the LED mode in ms
 #define LED_MODE_CONFIG_MAX_STEPS  10240
 #define LED_MODE_CONFIG_BRIGHTNESS 255
 
@@ -62,26 +63,16 @@
 
 // Example: "LumiESP (2020-01-01 00:00:00) [INFO] 'Message'"
 #define LOG_STRING "%s (%s) [%s] '%s'"
+#define LOG_STRING_NO_DATETIME "%s [%s] '%s'"
 
 // --- MQTT topics ---
-// status topics (pub)
-#define MQTT_STATUS_TOPIC          "status/pub/%s"
+// <device_name>/<sub_topics>
+#define MQTT_TOPIC_STRING "%s/%s"
 
-#define MQTT_STATUS_MSG_TOPIC      "msg"
-#define MQTT_STATUS_LOG_TOPIC      "log"
-#define MQTT_STATUS_DATETIME_TOPIC "datetime"
-
-// LED topics (pub/sub)
-#define MQTT_LED_PUB_TOPIC         "led/pub/%s"
-#define MQTT_LED_SUB_TOPIC         "led/sub/%s"
-
-#define MQTT_LED_MODE_TOPIC        "mode"
-#define MQTT_LED_STATE_TOPIC       "state"
-
-#define MQTT_LED_STATE_STATE_TOPIC "sub/led/state"
-
-// global MQTT topic will start with the device name (e.g. "LumiESP/sub/led/r")
-#define MQTT_TOPIC_STRING          "%s/%s"
+// <mode_name>/<mode_name>/sub/<local_topic>
+#define MQTT_MODE_TOPIC_SUB_STRING "%s/sub/%s"
+// <mode_name>/<mode_name>/pub/<local_topic>
+#define MQTT_MODE_TOPIC_PUB_STRING "%s/pub/%s"
 
 // --- Task timing ---
 // MQTT status update interval
@@ -92,49 +83,5 @@
 
 // DateTime sync interval
 #define TIME_SYNC_INTERVAL                   60000 * 60 // 1 hour
-
-
-// LED Mode Configuration
-// color for 'on' mode
-#define LED_MODE_ON_START_R 255
-#define LED_MODE_ON_START_G 255
-#define LED_MODE_ON_START_B 255
-
-// color for 'off' mode
-#define LED_MODE_OFF_START_R 0
-#define LED_MODE_OFF_START_G 0
-#define LED_MODE_OFF_START_B 0
-
-// color for 'blink' mode
-#define LED_MODE_BLINK_START_R 255
-#define LED_MODE_BLINK_START_G 255
-#define LED_MODE_BLINK_START_B 255
-
-// color for 'fade' mode
-#define LED_MODE_FADE_START_R 255
-#define LED_MODE_FADE_START_G 255
-#define LED_MODE_FADE_START_B 255
-
-#define LED_MODE_FADE_END_R   0
-#define LED_MODE_FADE_END_G   0
-#define LED_MODE_FADE_END_B   0
-
-// color for 'rainbow' mode
-#define LED_MODE_RAINBOW_START_R 255
-#define LED_MODE_RAINBOW_START_G 0
-#define LED_MODE_RAINBOW_START_B 0
-
-#define LED_MODE_RAINBOW_END_R   0
-#define LED_MODE_RAINBOW_END_G   0
-#define LED_MODE_RAINBOW_END_B   255
-
-// color for 'loop' mode
-#define LED_MODE_LOOP_PATTERN_ON_R  255
-#define LED_MODE_LOOP_PATTERN_ON_G  255
-#define LED_MODE_LOOP_PATTERN_ON_B  255
-
-#define LED_MODE_LOOP_PATTERN_OFF_R 0
-#define LED_MODE_LOOP_PATTERN_OFF_G 0
-#define LED_MODE_LOOP_PATTERN_OFF_B 0
 
 #endif
