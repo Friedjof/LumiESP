@@ -45,147 +45,46 @@ docker compose up -d
 ```
 
 #### Makefile
-
 - **Build the project:** `make build`
 - **Upload the code to the ESP32:** `make upload`
 - **Monitor the serial output:** `make monitor`
 - **Clean the build files:** `make clean`
 - **Setup the repository:** `make setup`
 - **Clean, build, flash, and open the serial monitor:** `make flash`
+- **print the help message:** `make help`
 
-### Repository structure
+## MQTT Topics
 ```txt
-.
-├── config
-│   ├── config.h
-│   └── config.h-template
-├── include
-│   └── README.md
-├── lib
-│   ├── ClockService
-│   │   ├── ClockService.cpp
-│   │   └── ClockService.h
-│   ├── LoggingService
-│   │   ├── LoggingService.cpp
-│   │   └── LoggingService.h
-│   ├── MQTTService
-│   │   ├── MQTTService.cpp
-│   │   └── MQTTService.h
-│   ├── ControllerService
-│   │   ├── ControllerService.cpp
-│   │   └── ControllerService.h
-│   └── README.md
-├── media
-│   ├── drawio
-│   │   └── sketches.drawio
-│   └── images
-│       └── services-overview.png
-├── mosquitto
-│   ├── config
-│   │   └── mosquitto.conf
-│   ├── data
-│   └── log
-├── src
-│   └── main.cpp
-├── test
-│   └── README
-├── .gitignore
-├── compose.yml
-├── Makefile
-├── platformio.ini
-├── README.md
-└── setup.py
+lumiESP
+├── LumiESP     // this defines the system topic
+│   ├── pub
+│   │   ├── status     // the system status
+│   │   ├── datetime   // the current date and time
+│   │   ├── log        // the log message
+│   │   ├── level      // the log level
+│   │   └── mode       // the current mode
+│   └── sub
+│       └── mode       // set the new mode
+├── StaticMode  // this is a basic mode that sets the LED strip to a static color
+│   ├── pub
+│   │   ├── brightness // the current brightness
+│   │   └── hex        // the current color in hex format
+│   └── sub
+│       ├── brightness // set the new brightness
+│       └── hex        // set the new color in hex format
+…
 ```
 
-#### Services
+## Define your own custom modes
+> Dokumentation is coming soon
+
+## Services and classes
 - **ClockService**: Provides timekeeping functionality (including NTP synchronization).
 - **LoggingService**: Logs messages to the serial monitor and MQTT.
 - **MQTTService**: Handles MQTT communication with the broker.
 - **ControllerService**: Manages tasks and schedules for the ESP32.
 
-![Services Overview](media/images/services-overview.png)
-
-## MQTT Topics
-```txt
-lumiESP
-├── status
-│   ├── msg
-│   ├── datetime
-│   ├── log
-│   └── level
-└── led
-    ├── pub
-    │   ├── mode
-    │   ├── state
-    │   ├── on
-    │   │   ├── hex
-    │   │   └── brightness
-    │   ├── off
-    │   │   ├── hex
-    │   │   └── brightness
-    │   ├── custom
-    │   │   ├── hex
-    │   │   └── brightness
-    │   ├── blink
-    │   │   ├── on
-    │   │   │   ├── hex
-    │   │   │   └── brightness
-    │   │   ├─ off
-    │   │   │   ├── hex
-    │   │   │   └── brightness
-    │   │   └── speed
-    │   ├── fade
-    │   │   ├── a
-    │   │   │   ├── hex
-    │   │   │   └── brightness
-    │   │   ├── b
-    │   │   │   ├── hex
-    │   │   │   └── brightness
-    │   │   └── speed
-    │   ├── rainbow
-    │   │   ├── speed
-    │   │   └── brightness
-    │   └── loop
-    │       ├── speed
-    │       ├── size
-    │       └── brightness
-    └── sub
-        ├── mode
-        ├── state
-        ├── on
-        │   ├── hex
-        │   └── brightness
-        ├── off
-        │   ├── hex
-        │   └── brightness
-        ├── custom
-        │   ├── hex
-        │   └── brightness
-        ├── blink
-        │   ├── on
-        │   │   ├── hex
-        │   │   └── brightness
-        │   ├─ off
-        │   │   ├── hex
-        │   │   └── brightness
-        │   └── speed
-        ├── fade
-        │   ├── a
-        │   │   ├── hex
-        │   │   └── brightness
-        │   ├── b
-        │   │   ├── hex
-        │   │   └── brightness
-        │   └── speed
-        ├── rainbow
-        │   ├── speed
-        │   └── brightness
-        └── loop
-            ├── speed
-            ├── size
-            └── brightness
-```
-
+![Services Overview](media/images/classes-overview.png)
 
 ## Troubleshooting
 - Make sure the correct port is selected in the Makefile.
@@ -194,3 +93,6 @@ lumiESP
 ## Acknowledgements
 - PlatformIO for providing a versatile environment for embedded development.
 - MQTT protocol for enabling efficient communication between devices.
+
+## Author
+- [Friedjof Noweck](https://github.com/Friedjof)
