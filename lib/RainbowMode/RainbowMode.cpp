@@ -39,7 +39,7 @@ void RainbowMode::saturationCallback(String payload) {
     this->pushSaturationTopicFun(payload);
 }
 
-void RainbowMode::customLoop(int steps) {
+void RainbowMode::customLoop(unsigned long long steps) {
     if (this->isNewBrightness()) {
         this->controllerService->setBrightness(this->newBrightness);
         this->brightness = this->newBrightness;

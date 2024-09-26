@@ -51,7 +51,7 @@ void LoopMode::brightnessCallback(String payload) {
     this->pushPubBrightnessTopicFun(payload);
 }
 
-void LoopMode::customLoop(int steps) {
+void LoopMode::customLoop(unsigned long long steps) {
     if (this->isNewBrightness()) {
         this->controllerService->setBrightness(this->newBrightness);
         this->brightness = this->newBrightness;

@@ -18,7 +18,7 @@ void AbstractMode::setup()
     this->controllerService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Mode setup completed for: " + this->modeInternalName);
 }
 
-void AbstractMode::loop(const int steps)
+void AbstractMode::loop(unsigned long long steps)
 {
     this->customLoop(steps);
 }

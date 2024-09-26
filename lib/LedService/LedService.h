@@ -13,16 +13,16 @@
 class LedService {
     private:
         // store for all modes
-        std::map<String, std::function<void(int steps)>> modes;
+        std::map<String, std::function<void(unsigned long long steps)>> modes;
 
         CRGB leds[LED_NUM_LEDS];
 
         String newCurrentMode = "none";
         String currentMode = "none";
 
-        int maxModeSteps = LED_MODE_CONFIG_MAX_STEPS;
-        int newInternalModeSteps = 0;
-        int internalModeSteps = 0;
+        unsigned long long maxModeSteps = LED_MODE_CONFIG_MAX_STEPS;
+        unsigned long long newInternalModeSteps = 0;
+        unsigned long long internalModeSteps = 0;
 
         // simple log function
         std::function<void(short logLevel, short mode, String message)> logFunction = nullptr;

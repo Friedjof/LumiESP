@@ -30,7 +30,7 @@ class StaticMode : public AbstractMode {
         StaticMode(ControllerService* controllerService);
 
         void customSetup() override;
-        void customLoop(int steps) override;
+        void customLoop(unsigned long long steps) override;
 };
 
 #endif

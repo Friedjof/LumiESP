@@ -33,7 +33,7 @@ class LoopMode : public AbstractMode {
         LoopMode(ControllerService* controllerService);
 
         void customSetup() override;
-        void customLoop(int steps) override;
+        void customLoop(unsigned long long steps) override;
 };
 
 #endif

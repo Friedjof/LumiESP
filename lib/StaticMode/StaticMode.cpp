@@ -40,7 +40,7 @@ void StaticMode::brightnessCallback(String payload) {
     this->pushPubBrightnessTopicFun(payload);
 }
 
-void StaticMode::customLoop(int steps) {
+void StaticMode::customLoop(unsigned long long steps) {
     if (this->isNewHexColor()) {
         this->controllerService->setHexColor(this->newHexColor);
         this->hexColor = this->newHexColor;

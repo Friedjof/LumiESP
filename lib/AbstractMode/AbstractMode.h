@@ -27,7 +27,7 @@ class AbstractMode {
         ~AbstractMode();
 
         void setup();
-        void loop(int steps);
+        void loop(unsigned long long steps);
 
         // mode properties
         String getModeTitle();
@@ -39,7 +39,7 @@ class AbstractMode {
         String getModeLicense();
 
         virtual void customSetup() = 0;
-        virtual void customLoop(const int steps) = 0;
+        virtual void customLoop(unsigned long long steps) = 0;
 };
 
 #endif

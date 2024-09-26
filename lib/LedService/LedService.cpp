@@ -17,7 +17,7 @@ void LedService::setup()
 
 void LedService::loop()
 {
-    if (this->newInternalModeSteps >= this->maxModeSteps)
+    if (this->newInternalModeSteps >= LED_MODE_CONFIG_MAX_STEPS)
     {
         this->newInternalModeSteps = 0;
     }

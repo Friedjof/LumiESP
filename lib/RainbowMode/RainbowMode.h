@@ -28,7 +28,7 @@ class RainbowMode : public AbstractMode {
         RainbowMode(ControllerService* controllerService);
 
         void customSetup() override;
-        void customLoop(int steps) override;
+        void customLoop(unsigned long long steps) override;
 };
 
 #endif
