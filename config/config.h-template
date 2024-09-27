@@ -19,7 +19,7 @@
 #define MQTT_PORT      1883
 #define MQTT_USERNAME  "<mqtt-username>"
 #define MQTT_PASSWORD  "<mqtt-password>"
-#define MQTT_CLIENT_ID "esp32-fwodnd"
+#define MQTT_CLIENT_ID "LumiESP-8W869hQ8"
 
 // Device Configuration
 #define DEVICE_NAME     "LumiESP"
