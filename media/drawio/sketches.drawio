@@ -157,7 +157,7 @@
         <mxCell id="1w3i_42cOFCZzfp6BKsr-22" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="NXHdnz_TH19PiPouynxO-1" source="1w3i_42cOFCZzfp6BKsr-13" target="1w3i_42cOFCZzfp6BKsr-11">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="1w3i_42cOFCZzfp6BKsr-13" value="LoopMode" style="shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;whiteSpace=wrap;html=1;shadow=0;fillColor=#76608a;fontColor=#ffffff;strokeColor=#432D57;rounded=1;" vertex="1" parent="NXHdnz_TH19PiPouynxO-1">
+        <mxCell id="1w3i_42cOFCZzfp6BKsr-13" value="SnakeMode" style="shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;whiteSpace=wrap;html=1;shadow=0;fillColor=#76608a;fontColor=#ffffff;strokeColor=#432D57;rounded=1;" vertex="1" parent="NXHdnz_TH19PiPouynxO-1">
           <mxGeometry x="522" y="467" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="1w3i_42cOFCZzfp6BKsr-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="NXHdnz_TH19PiPouynxO-1" source="1w3i_42cOFCZzfp6BKsr-14" target="1w3i_42cOFCZzfp6BKsr-10">

@@ -12,6 +12,10 @@ AbstractMode::~AbstractMode()
 
 void AbstractMode::setup()
 {
+    this->controllerService->registerMode(this->modeInternalName, [this](int steps) {
+        this->loop(steps);
+    });
+    
     // call custom setup
     this->customSetup();
 
@@ -20,7 +24,11 @@ void AbstractMode::setup()
 
 void AbstractMode::loop(unsigned long long steps)
 {
+    this->firstRun = steps > this->lastSteps + 1 || steps == 0;
+
     this->customLoop(steps);
+
+    this->lastSteps = steps;
 }
 
 // ------- MODE PROPERTIES -------
@@ -59,4 +67,8 @@ String AbstractMode::getModeLicense()
     return this->modeLicense;
 }
 
-// ------- CUSTOM METHODS -------
+// ------- PRIVATE METHODS -------
+bool AbstractMode::isFirstRun()
+{
+    return this->firstRun;
+}

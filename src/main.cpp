@@ -16,7 +16,7 @@
 
 // custom modes
 #include "StaticMode.h"
-#include "LoopMode.h"
+#include "SnakeMode.h"
 #include "RainbowMode.h"
 
 // apps
@@ -95,12 +95,12 @@ void setup() {
 
     // ----> SETUP YOUR APP HERE <----
     AbstractMode* staticMode = new StaticMode(&controllerService);
-    AbstractMode* loopMode = new LoopMode(&controllerService);
+    AbstractMode* snakeMode = new SnakeMode(&controllerService);
     AbstractMode* rainbowMode = new RainbowMode(&controllerService);
 
     // setup modes
     staticMode->setup();
-    loopMode->setup();
+    snakeMode->setup();
     rainbowMode->setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "App modes setup completed");

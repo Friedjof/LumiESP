@@ -96,7 +96,7 @@ void LedService::setHexColor(String hexColor)
         this->log(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service invalid hex color: " + hexColor);
         return;
     }
-    
+
     CRGB color = CRGB::Black;
 
     if (hexColor.length() == 7) {
@@ -119,8 +119,6 @@ void LedService::setHexColor(String hexColor)
     {
         this->leds[i] = color;
     }
-
-    FastLED.show();
 }
 
 void LedService::setBrightness(byte brightness)

@@ -10,11 +10,11 @@
 class StaticMode : public AbstractMode {
     private:
         // internal properties
-        String hexColor = "none";
-        String newHexColor = "#000000";
+        String hexColor = "#a300a3";
+        String newHexColor = "#a300a3";
 
-        byte brightness = 255;
-        byte newBrightness = 255;
+        byte brightness = 0;
+        byte newBrightness = 0;
 
         // internal methods
         void hexCallback(String payload);

@@ -12,14 +12,38 @@ StaticMode::StaticMode(ControllerService* controllerService) : AbstractMode(cont
 }
 
 void StaticMode::customSetup() {
-    this->controllerService->registerMode(this->modeInternalName, [this](int steps) {
-        this->loop(steps);
-    });
-
+    // register mqtt topics
     this->pushPubHexTopicFun = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "hex", "#000000", payload_e::COLOR, std::function<void(String)>(std::bind(&StaticMode::hexCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "hex", this->hexColor.c_str(), payload_e::COLOR, std::function<void(String)>(std::bind(&StaticMode::hexCallback, this, std::placeholders::_1)));
     this->pushPubBrightnessTopicFun = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "brightness", 255, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&StaticMode::brightnessCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "brightness", this->brightness, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&StaticMode::brightnessCallback, this, std::placeholders::_1)));
+}
+
+void StaticMode::customLoop(unsigned long long steps) {
+    if (this->isFirstRun()) {
+        this->controllerService->setBrightness(this->brightness);
+        this->controllerService->setHexColor(this->hexColor);
+
+        this->controllerService->confirmLedConfig();
+    }
+
+    if (this->isNewHexColor()) {
+        this->controllerService->setHexColor(this->newHexColor);
+        this->hexColor = this->newHexColor;
+
+        this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode set hex color: " + this->hexColor);
+
+        this->controllerService->confirmLedConfig();
+    }
+
+    if (this->isNewBrightness()) {
+        this->controllerService->setBrightness(this->newBrightness);
+        this->brightness = this->newBrightness;
+
+        this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode set brightness: " + String(this->brightness));
+
+        this->controllerService->confirmLedConfig();
+    }
 }
 
 void StaticMode::hexCallback(String payload) {
@@ -38,26 +62,6 @@ void StaticMode::brightnessCallback(String payload) {
 
     // publish the brightness to the pub topic
     this->pushPubBrightnessTopicFun(payload);
-}
-
-void StaticMode::customLoop(unsigned long long steps) {
-    if (this->isNewHexColor()) {
-        this->controllerService->setHexColor(this->newHexColor);
-        this->hexColor = this->newHexColor;
-
-        this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode set hex color: " + this->hexColor);
-
-        this->controllerService->confirmLedConfig();
-    }
-
-    if (this->isNewBrightness()) {
-        this->controllerService->setBrightness(this->newBrightness);
-        this->brightness = this->newBrightness;
-
-        this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode set brightness: " + String(this->brightness));
-
-        this->controllerService->confirmLedConfig();
-    }
 }
 
 bool StaticMode::isNewHexColor() {

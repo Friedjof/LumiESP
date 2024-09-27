@@ -8,6 +8,10 @@
 
 
 class AbstractMode {
+    private:
+        unsigned long long lastSteps = 0;
+        bool firstRun = true;
+
     protected:
         ControllerService* controllerService;
 
@@ -20,14 +24,14 @@ class AbstractMode {
         String modeVersion;
         String modeLicense;
 
-        bool isHexColor(String hex);
-
     public:
         AbstractMode(ControllerService* controllerService);
         ~AbstractMode();
 
         void setup();
         void loop(unsigned long long steps);
+
+        bool isFirstRun();
 
         // mode properties
         String getModeTitle();
