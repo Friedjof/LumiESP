@@ -10,13 +10,13 @@
 class SnakeMode : public AbstractMode {
     private:
         // internal properties
-        String onHexColor = "#ffffff";
+        String onHexColor = "#a35200";
         String newOnHexColor = this->onHexColor;
-        String offHexColor = "#000000";
+        String offHexColor = "#5c2e00";
         String newOffHexColor = this->offHexColor;
         byte brightness = 255;
         byte newBrightness = this->brightness;
-        int snakeLength = 3;
+        int snakeLength = LED_NUM_LEDS / 2;
         int newSnakeLength = this->snakeLength;
         bool direction = true;
         bool newDirection = this->direction;

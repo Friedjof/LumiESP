@@ -3,7 +3,7 @@
 
 FlashMode::FlashMode(ControllerService* controllerService) : AbstractMode(controllerService) {
     this->modeTitle = "Init Mode";
-    this->modeDescription = "This mode runs at the beginning of the application and blink the LEDs in a specific color.";
+    this->modeDescription = "This mode crossfades the LEDs between two colors.";
     this->modeInternalName = "FlashMode";
     this->modeAuthor = "Friedjof Noweck";
     this->modeContact = "programming@noweck.info";
@@ -14,17 +14,19 @@ FlashMode::FlashMode(ControllerService* controllerService) : AbstractMode(contro
 void FlashMode::customSetup() {
     // register mqtt topics
     this->pushStartColor = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "startColor", this->startColorHex.c_str(), payload_e::COLOR, std::function<void(String)>(std::bind(&FlashMode::startColorCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "startcolor", this->startColorHex.c_str(), payload_e::COLOR, std::function<void(String)>(std::bind(&FlashMode::startColorCallback, this, std::placeholders::_1)));
     this->pushStopColor = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "stopColor", this->stopColorHex.c_str(), payload_e::COLOR, std::function<void(String)>(std::bind(&FlashMode::stopColorCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "stopcolor", this->stopColorHex.c_str(), payload_e::COLOR, std::function<void(String)>(std::bind(&FlashMode::stopColorCallback, this, std::placeholders::_1)));
     this->pushBrightness = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "brightness", this->brightness, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&FlashMode::brightnessCallback, this, std::placeholders::_1)));
     this->pushMaxFlashNum = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "maxFlashNum", this->maxFlashNum, boundaries_t{1, 100}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxFlashNumCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "number", this->maxFlashNum, boundaries_t{1, 100}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxFlashNumCallback, this, std::placeholders::_1)));
     this->pushMaxCrossfadeSteps = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "maxCrossfadeSteps", this->maxCrossfadeSteps, boundaries_t{1, 200}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxCrossfadeStepsCallback, this, std::placeholders::_1)));
-    this->pushInfiniteFlash = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "infiniteFlash", this->infiniteFlash ? "true" : "false", payload_e::BOOL, std::function<void(String)>(std::bind(&FlashMode::infiniteFlashCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "crossfade", this->maxCrossfadeSteps, boundaries_t{1, 200}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxCrossfadeStepsCallback, this, std::placeholders::_1)));
+    this->pushInfinityFlash = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "infinity", this->infinityFlash ? "true" : "false", payload_e::BOOL, std::function<void(String)>(std::bind(&FlashMode::infinityFlashCallback, this, std::placeholders::_1)));
+    this->pushNextMode = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "next", this->nextMode.c_str(), payload_e::STRING, std::function<void(String)>(std::bind(&FlashMode::nextModeCallback, this, std::placeholders::_1)));
 }
 
 void FlashMode::customLoop(unsigned long long steps) {
@@ -36,6 +38,9 @@ void FlashMode::customLoop(unsigned long long steps) {
 
         this->blinkCounter = 0;
         this->stepCounter = 0;
+        this->newBrightness = DEFUALT_BRIGHTNESS;
+
+        this->pushBrightness(String(this->newBrightness));
 
         this->startColor = this->hexColor2CRGB(this->startColorHex);
         this->endColor = this->hexColor2CRGB(this->stopColorHex);
@@ -57,6 +62,8 @@ void FlashMode::customLoop(unsigned long long steps) {
 
     if (this->isNewBrightness()) {
         this->brightness = this->newBrightness;
+
+        this->controllerService->setBrightness(this->brightness);
     }
 
     if (this->isNewMaxFlashNum()) {
@@ -67,26 +74,35 @@ void FlashMode::customLoop(unsigned long long steps) {
         this->maxCrossfadeSteps = this->newMaxCrossfadeSteps;
     }
 
-    if (this->isNewInfiniteFlash()) {
-        this->infiniteFlash = this->newInfiniteFlash;
+    if (this->isNewInfinityFlash()) {
+        this->infinityFlash = this->newInfinityFlash;
+
+        this->blinkCounter = 0;
+        this->stepCounter = 0;
+
+        if (this->infinityFlash) {
+            this->newBrightness = DEFUALT_BRIGHTNESS;
+        }
+
+        this->pushBrightness(String(this->newBrightness));
     }
 
-    float fraction = (this->blinkCounter % 2 != 0 ? (this->maxCrossfadeSteps - 1) - (this->stepCounter % this->maxCrossfadeSteps) : (this->stepCounter % this->maxCrossfadeSteps)) / float(this->maxCrossfadeSteps - 1);
-    CRGB currentColor = interpolateColor(this->startColor, this->endColor, fraction);
+    if (this->isNewNextMode()) {
+        this->nextMode = this->newNextMode;
+    }
 
-    this->controllerService->setColor(currentColor);
+    if ((this->blinkCounter / 2 < this->maxFlashNum || this->infinityFlash) && this->brightness != 0) {
+        float fraction = (this->blinkCounter % 2 != 0 ? (this->maxCrossfadeSteps - 1) - (this->stepCounter % this->maxCrossfadeSteps) : (this->stepCounter % this->maxCrossfadeSteps)) / float(this->maxCrossfadeSteps - 1);
+        CRGB currentColor = interpolateColor(this->startColor, this->endColor, fraction);
 
-    this->controllerService->confirmLedConfig();
+        this->controllerService->setColor(currentColor);
 
-    if (this->blinkCounter / 2 >= this->maxFlashNum && !this->infiniteFlash) {
+        this->controllerService->confirmLedConfig();
+    } else if (this->blinkCounter / 2 >= this->maxFlashNum && !this->infinityFlash && this->nextMode != NONE_MODE) {
         this->controllerService->setMode(this->nextMode);
     }
 
     this->stepCounter++;
-}
-
-void FlashMode::setNextMode(String nextMode) {
-    this->nextMode = nextMode;
 }
 
 CRGB FlashMode::interpolateColor(CRGB start, CRGB end, float fraction) {
@@ -177,13 +193,22 @@ void FlashMode::maxCrossfadeStepsCallback(String payload) {
     this->pushMaxCrossfadeSteps(payload);
 }
 
-void FlashMode::infiniteFlashCallback(String payload) {
-    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "FlashMode infinite blink callback: " + payload);
+void FlashMode::infinityFlashCallback(String payload) {
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "FlashMode infinity blink callback: " + payload);
 
-    this->newInfiniteFlash = payload == "true";
+    this->newInfinityFlash = payload == "true";
 
-    // publish the infinite blink to the pub topic
-    this->pushInfiniteFlash(payload);
+    // publish the infinity blink to the pub topic
+    this->pushInfinityFlash(payload);
+}
+
+void FlashMode::nextModeCallback(String payload) {
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "FlashMode next mode callback: " + payload);
+
+    this->newNextMode = payload;
+
+    // publish the next mode to the pub topic
+    this->pushNextMode(payload);
 }
 
 bool FlashMode::isNewStartColor() {
@@ -206,6 +231,10 @@ bool FlashMode::isNewMaxCrossfadeSteps() {
     return this->maxCrossfadeSteps != this->newMaxCrossfadeSteps;
 }
 
-bool FlashMode::isNewInfiniteFlash() {
-    return this->infiniteFlash != this->newInfiniteFlash;
+bool FlashMode::isNewInfinityFlash() {
+    return this->infinityFlash != this->newInfinityFlash;
+}
+
+bool FlashMode::isNewNextMode() {
+    return this->nextMode != this->newNextMode;
 }

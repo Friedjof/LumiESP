@@ -63,7 +63,7 @@ void MqttService::connect()
     {
         if (mqttClient.connect())
         {
-            Serial.println("Connected to MQTT broker");
+            Serial.println("[INFO] Connect to MQTT Broker…");
             //this->publish(this->mqttStatusTopic(MQTT_STATUS_MSG_TOPIC).c_str(), "connected");
         }
         else
@@ -161,16 +161,12 @@ void MqttService::onMessage(const espMqttClientTypes::MessageProperties& propert
 
 bool MqttService::onMessageCallback(String topic, String payload)
 {
-    Serial.println("onMessageCallback: " + topic + " - " + payload);
-
     auto it = this->modeTopics.find(topic);
     if (it == this->modeTopics.end()) {
-        Serial.println("Topic not found");
         return false;
     }
 
     if (it->second.topicCallback == nullptr) {
-        Serial.println("No callback found");
         return false;
     }
 
@@ -220,10 +216,7 @@ bool MqttService::onMessageCallback(String topic, String payload)
     }
 
     if (isValid) {
-        Serial.println("valid payload");
         it->second.topicCallback(payload);
-    } else {
-        Serial.println("invalid payload");
     }
 
     return isValid;

@@ -78,7 +78,7 @@ void setup() {
 
 
     // ----> SETUP YOUR APP HERE <----
-    FlashMode* initMode = new FlashMode(&controllerService);
+    FlashMode* flashMode = new FlashMode(&controllerService);
 
     AbstractMode* offMode = new OffMode(&controllerService);
     AbstractMode* staticMode = new StaticMode(&controllerService);
@@ -86,7 +86,7 @@ void setup() {
     AbstractMode* rainbowMode = new RainbowMode(&controllerService);
 
     // setup modes
-    initMode->setup();
+    flashMode->setup();
 
     offMode->setup();
     staticMode->setup();
@@ -125,8 +125,7 @@ void setup() {
     mqttService.initTopics();
 
     // ----> SETUP INITIAL MODE <----
-    initMode->setNextMode(offMode->getModeInternalName());
-    controllerService.setMode(initMode->getModeInternalName());
+    controllerService.setMode(flashMode->getModeInternalName());
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics initialized");
 
