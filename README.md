@@ -70,19 +70,19 @@ docker compose up -d
 ```txt
 LumiESP
 ├── LumiESP     // this defines the system topic
-│   ├── pub
+│   ├── sub
 │   │   ├── status     // the system status
 │   │   ├── datetime   // the current date and time
 │   │   ├── log        // the log message
 │   │   ├── level      // the log level
 │   │   └── mode       // the current mode
-│   └── sub
+│   └── pub
 │       └── mode       // set the new mode
 ├── StaticMode  // this is a basic mode that sets the LED strip to a static color
-│   ├── pub
+│   ├── sub
 │   │   ├── brightness // the current brightness
 │   │   └── hex        // the current color in hex format
-│   └── sub
+│   └── pub
 │       ├── brightness // set the new brightness
 │       └── hex        // set the new color in hex format
 …
