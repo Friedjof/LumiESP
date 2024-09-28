@@ -15,7 +15,7 @@ class FlashMode : public AbstractMode {
         // internal states
         String startColorHex = "#000000";
         String newStartColorHex = this->startColorHex;
-        String stopColorHex = "#120e0e";
+        String stopColorHex = "#7f7f7f";
         String newStopColorHex = this->stopColorHex;
         String nextMode = NONE_MODE;
         String newNextMode = this->nextMode;

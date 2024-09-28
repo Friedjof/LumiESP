@@ -22,7 +22,7 @@ void FlashMode::customSetup() {
     this->pushMaxFlashNum = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "number", this->maxFlashNum, boundaries_t{1, 100}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxFlashNumCallback, this, std::placeholders::_1)));
     this->pushMaxCrossfadeSteps = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "crossfade", this->maxCrossfadeSteps, boundaries_t{1, 200}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxCrossfadeStepsCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "crossfade", this->maxCrossfadeSteps, boundaries_t{1, 500}, payload_e::INT, std::function<void(String)>(std::bind(&FlashMode::maxCrossfadeStepsCallback, this, std::placeholders::_1)));
     this->pushInfinityFlash = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "infinity", this->infinityFlash ? "true" : "false", payload_e::BOOL, std::function<void(String)>(std::bind(&FlashMode::infinityFlashCallback, this, std::placeholders::_1)));
     this->pushNextMode = this->controllerService->subscribeModeTopic(
