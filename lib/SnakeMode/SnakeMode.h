@@ -11,19 +11,21 @@ class SnakeMode : public AbstractMode {
     private:
         // internal properties
         String onHexColor = "#ffffff";
-        String newOnHexColor = "#ffffff";
+        String newOnHexColor = this->onHexColor;
         String offHexColor = "#000000";
-        String newOffHexColor = "#000000";
+        String newOffHexColor = this->offHexColor;
         byte brightness = 255;
-        byte newBrightness = 255;
+        byte newBrightness = this->brightness;
         int snakeLength = 3;
-        int newSnakeLength = 3;
+        int newSnakeLength = this->snakeLength;
         bool direction = true;
-        bool newDirection = true;
+        bool newDirection = this->direction;
         bool crawling = true;
-        bool newCrawling = true;
+        bool newCrawling = this->crawling;
         int position = 0;
-        int newPosition = 0;
+        int newPosition = this->position;
+        byte speed = 4;
+        byte newSpeed = this->speed;
 
         unsigned int snakeHead = 0;
 
@@ -35,6 +37,7 @@ class SnakeMode : public AbstractMode {
         void directionCallback(String payload);
         void crawlingCallback(String payload);
         void positionCallback(String payload);
+        void speedCallback(String payload);
 
         std::function<void(String payload)> pushOnHexTopic = nullptr;
         std::function<void(String payload)> pushOffHexTopic = nullptr;
@@ -43,6 +46,7 @@ class SnakeMode : public AbstractMode {
         std::function<void(String payload)> pushDirectionTopic = nullptr;
         std::function<void(String payload)> pushCrawlingTopic = nullptr;
         std::function<void(String payload)> pushPositionTopic = nullptr;
+        std::function<void(String payload)> pushSpeedTopic = nullptr;
 
         bool isNewBrightness();
         bool isNewOnHexColor();
@@ -51,6 +55,7 @@ class SnakeMode : public AbstractMode {
         bool isNewDirection();
         bool isNewCrawling();
         bool isNewPosition();
+        bool isNewSpeed();
 
     public:
         SnakeMode(ControllerService* controllerService);

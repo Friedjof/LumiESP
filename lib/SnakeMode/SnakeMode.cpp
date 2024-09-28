@@ -20,13 +20,15 @@ void SnakeMode::customSetup() {
     this->pushBrightnessTopic = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "brightness", this->brightness, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&SnakeMode::brightnessCallback, this, std::placeholders::_1)));
     this->pushSnakeLengthTopic = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "queuelength", this->snakeLength, boundaries_t{1, LED_NUM_LEDS}, payload_e::INT, std::function<void(String)>(std::bind(&SnakeMode::snakeLengthCallback, this, std::placeholders::_1)));
+        this->modeInternalName, "snakelength", this->snakeLength, boundaries_t{1, LED_NUM_LEDS}, payload_e::INT, std::function<void(String)>(std::bind(&SnakeMode::snakeLengthCallback, this, std::placeholders::_1)));
     this->pushDirectionTopic = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "direction", this->direction? "true": "false", payload_e::BOOL, std::function<void(String)>(std::bind(&SnakeMode::directionCallback, this, std::placeholders::_1)));
     this->pushCrawlingTopic = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "crawling", this->crawling? "true": "false", payload_e::BOOL, std::function<void(String)>(std::bind(&SnakeMode::crawlingCallback, this, std::placeholders::_1)));
     this->pushPositionTopic = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "position", this->position, boundaries_t{0, LED_NUM_LEDS - 1}, payload_e::INT, std::function<void(String)>(std::bind(&SnakeMode::positionCallback, this, std::placeholders::_1)));
+    this->pushSpeedTopic = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "speed", this->speed, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&SnakeMode::speedCallback, this, std::placeholders::_1)));
 }
 
 void SnakeMode::customLoop(unsigned long long steps) {
@@ -72,6 +74,10 @@ void SnakeMode::customLoop(unsigned long long steps) {
         }
     }
 
+    if (this->isNewSpeed()) {
+        this->speed = this->newSpeed;
+    }
+
     // set the off color for all leds
     this->controllerService->setHexColor(this->offHexColor);
 
@@ -81,7 +87,9 @@ void SnakeMode::customLoop(unsigned long long steps) {
     }
 
     // move the snake
-    this->snakeHead = (this->snakeHead + (this->crawling ? (this->direction ? 1 : LED_NUM_LEDS - 1) : 0)) % LED_NUM_LEDS;
+    if (steps % (this->speed + 1) == 0) {
+        this->snakeHead = (this->snakeHead + (this->crawling ? (this->direction ? 1 : LED_NUM_LEDS - 1) : 0)) % LED_NUM_LEDS;
+    }
 
     this->controllerService->confirmLedConfig();
 }
@@ -141,7 +149,7 @@ void SnakeMode::snakeLengthCallback(String payload) {
 void SnakeMode::directionCallback(String payload) {
     this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "SnakeMode direction callback: " + payload);
 
-    this->newDirection = payload == "true" || payload == "1";
+    this->newDirection = payload == "true";
 
     // publish the direction to the pub topic
     if (this->pushDirectionTopic != nullptr) {
@@ -154,7 +162,7 @@ void SnakeMode::directionCallback(String payload) {
 void SnakeMode::crawlingCallback(String payload) {
     this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "SnakeMode crawling callback: " + payload);
 
-    this->newCrawling = payload == "true" || payload == "1";
+    this->newCrawling = payload == "true";
 
     // publish the crawling to the pub topic
     if (this->pushCrawlingTopic != nullptr) {
@@ -174,6 +182,19 @@ void SnakeMode::positionCallback(String payload) {
         this->pushPositionTopic(payload);
     } else {
         this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "SnakeMode position topic is not set. pushPositionTopic is null.");
+    }
+}
+
+void SnakeMode::speedCallback(String payload) {
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "SnakeMode speed callback: " + payload);
+
+    this->newSpeed = payload.toInt();
+
+    // publish the speed to the pub topic
+    if (this->pushSpeedTopic != nullptr) {
+        this->pushSpeedTopic(payload);
+    } else {
+        this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "SnakeMode speed topic is not set. pushSpeedTopic is null.");
     }
 }
 
@@ -203,4 +224,8 @@ bool SnakeMode::isNewCrawling() {
 
 bool SnakeMode::isNewPosition() {
     return this->position != this->newPosition;
+}
+
+bool SnakeMode::isNewSpeed() {
+    return this->speed != this->newSpeed;
 }

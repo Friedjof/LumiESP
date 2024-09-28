@@ -28,6 +28,8 @@
 #include "../config/config.h"
 
 
+void connectToWiFi();
+
 // task wrappers prototypes
 void mqttServiceStatusUpdateWrapper();
 void mqttServiceLoopWrapper();
@@ -57,32 +59,9 @@ Task ledServiceLoopTask(LED_MODE_CONFIG_SPEED, TASK_FOREVER, &ledServiceLoopWrap
 
 
 void setup() {
-    // ----> START INITIALIZATION <----
-    Serial.begin(115200);
-    delay(10);
+    Serial.begin(LOG_SERIAL_SPEED);
 
-    WiFi.setHostname(DEVICE_NAME);
-
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    WiFi.waitForConnectResult();
-
-    WiFi.persistent(false);
-    WiFi.setAutoConnect(true);
-
-    #ifdef CUSTOM_DNS
-    WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(DNS_SERVER));
-    #endif
-
-    Serial.print("[INFO] Connecting to WiFi");
-
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-
-    Serial.println("Connected");
-    // ----> END INITIALIZATION <----
-
+    connectToWiFi();
 
     // ----> SETUP SERVICES <----
     mqttService.setup();
@@ -92,6 +71,8 @@ void setup() {
     controllerService.setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Services setup completed");
+
+
 
     // ----> SETUP YOUR APP HERE <----
     AbstractMode* staticMode = new StaticMode(&controllerService);
@@ -103,8 +84,10 @@ void setup() {
     snakeMode->setup();
     rainbowMode->setup();
 
-    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "App modes setup completed");
+    loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Modes setup completed");
     // <---- SETUP YOUR APP HERE ---->
+
+
 
     // register functions for updating status messages over mqtt
     LumiEsp *statusApp = new LumiEsp(&controllerService);
@@ -172,6 +155,27 @@ void loop() {
     vTaskDelay(1);
 }
 
+
+void connectToWiFi() {
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    WiFi.waitForConnectResult();
+
+    WiFi.persistent(false);
+    WiFi.setAutoConnect(true);
+
+    #ifdef CUSTOM_DNS
+    WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(DNS_SERVER));
+    #endif
+
+    Serial.print("[INFO] Connecting to WiFi");
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("Connected");
+}
 
 // task wrappers
 void mqttServiceStatusUpdateWrapper() {

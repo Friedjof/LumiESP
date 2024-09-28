@@ -13,12 +13,63 @@ RainbowMode::RainbowMode(ControllerService* controllerService) : AbstractMode(co
 
 void RainbowMode::customSetup() {
     // register mqtt topics
-    this->pushSaturationTopicFun = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "saturation", 255, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&RainbowMode::saturationCallback, this, std::placeholders::_1)));
-    this->pushBrightnessTopicFun = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "brightness", 255, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&RainbowMode::brightnessCallback, this, std::placeholders::_1)));
-    this->pushPositionTopicFun = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "position", 0, boundaries_t{0, LED_NUM_LEDS}, payload_e::INT, std::function<void(String)>(std::bind(&RainbowMode::positionCallback, this, std::placeholders::_1)));
+    this->pushSaturation = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "saturation", this->saturation, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&RainbowMode::saturationCallback, this, std::placeholders::_1)));
+    this->pushBrightness = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "brightness", this->brightness, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&RainbowMode::brightnessCallback, this, std::placeholders::_1)));
+    this->pushPosition = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "position", this->position, boundaries_t{0, LED_NUM_LEDS}, payload_e::INT, std::function<void(String)>(std::bind(&RainbowMode::positionCallback, this, std::placeholders::_1)));
+    this->pushMoving = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "moving", this->moving ? "true" : "false", payload_e::BOOL, std::function<void(String)>(std::bind(&RainbowMode::movingCallback, this, std::placeholders::_1)));
+    this->pushSpeed = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "speed", this->speed, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&RainbowMode::speedCallback, this, std::placeholders::_1)));
+}
+
+void RainbowMode::customLoop(unsigned long long steps) {
+    if (this->isFirstRun()) {
+        this->controllerService->setBrightness(this->brightness);
+    }
+
+    if (this->isNewBrightness()) {
+        this->brightness = this->newBrightness;
+        this->controllerService->setBrightness(this->brightness);
+    }
+
+    if (this->isNewSaturation()) {
+        this->saturation = this->newSaturation;
+    }
+
+    if (this->isNewPosition()) {
+        this->position = this->newPosition;
+    }
+
+    if (this->isNewSpeed()) {
+        this->speed = this->newSpeed;
+    }
+
+    if (this->isNewMoving()) {
+        this->moving = this->newMoving;
+
+        if (!this->moving) {
+            this->position = this->currentStep % LED_NUM_LEDS;
+
+            // publish the position
+            this->pushPosition(String(this->position % LED_NUM_LEDS));
+        }
+    }
+
+    for (int i = 0; i < LED_NUM_LEDS; i++) {
+        int hue = map((i + (this->moving ? this->currentStep : this->position)) % LED_NUM_LEDS, 0, LED_NUM_LEDS, 0, 255);
+
+        CRGB color = CHSV(hue, this->saturation, this->brightness);
+        this->controllerService->setLed(i, color);
+    }
+
+    if (steps % (this->speed + 1) == 0) {
+        this->currentStep += this->moving ? 1 : 0;
+    }
+
+    this->controllerService->confirmLedConfig();
 }
 
 void RainbowMode::brightnessCallback(String payload) {
@@ -27,7 +78,11 @@ void RainbowMode::brightnessCallback(String payload) {
     this->newBrightness = payload.toInt();
 
     // publish the brightness to the pub topic
-    this->pushBrightnessTopicFun(payload);
+    if (this->pushBrightness != nullptr) {
+        this->pushBrightness(payload);
+    } else {
+        this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "RainbowMode brightness callback: pushBrightnessTopicFun is null");
+    }
 }
 
 void RainbowMode::saturationCallback(String payload) {
@@ -36,7 +91,11 @@ void RainbowMode::saturationCallback(String payload) {
     this->newSaturation = payload.toInt();
 
     // publish the saturation to the pub topic
-    this->pushSaturationTopicFun(payload);
+    if (this->pushSaturation != nullptr) {
+        this->pushSaturation(payload);
+    } else {
+        this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "RainbowMode saturation callback: pushSaturationTopicFun is null");
+    }
 }
 
 void RainbowMode::positionCallback(String payload) {
@@ -45,39 +104,37 @@ void RainbowMode::positionCallback(String payload) {
     this->newPosition = payload.toInt();
 
     // publish the position to the pub topic
-    this->pushPositionTopicFun(payload);
+    if (this->pushPosition != nullptr) {
+        this->pushPosition(payload);
+    } else {
+        this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "RainbowMode position callback: pushPositionTopicFun is null");
+    }
 }
 
-void RainbowMode::customLoop(unsigned long long steps) {
-    bool setLed = this->isFirstRun();
+void RainbowMode::movingCallback(String payload) {
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "RainbowMode moving callback: " + payload);
 
-    if (this->isNewBrightness()) {
-        this->controllerService->setBrightness(this->newBrightness);
-        this->brightness = this->newBrightness;
-        setLed = true;
+    this->newMoving = payload == "true";
+
+    // publish the moving to the pub topic
+    if (this->pushMoving != nullptr) {
+        this->pushMoving(payload);
+    } else {
+        this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "RainbowMode moving callback: pushMovingTopicFun is null");
     }
+}
 
-    if (this->isNewSaturation()) {
-        this->saturation = this->newSaturation;
-        setLed = true;
+void RainbowMode::speedCallback(String payload) {
+    this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "RainbowMode speed callback: " + payload);
+
+    this->newSpeed = payload.toInt();
+
+    // publish the speed to the pub topic
+    if (this->pushSpeed != nullptr) {
+        this->pushSpeed(payload);
+    } else {
+        this->controllerService->logMessage(LOG_LEVEL_ERROR, LOG_MODE_ALL, "RainbowMode speed callback: pushSpeedTopicFun is null");
     }
-
-    if (this->isNewPosition()) {
-        this->position = this->newPosition;
-        setLed = true;
-    }
-
-    if (setLed) {
-        for (int i = 0; i < LED_NUM_LEDS; i++) {
-            int colorIndex = map(i, 0, LED_NUM_LEDS, 0, 255);
-            int hue = colorIndex + this->position;
-
-            CRGB color = CHSV(hue, this->saturation, this->brightness);
-            this->controllerService->setLed(i, color);
-        }
-    }
-
-    this->controllerService->confirmLedConfig();
 }
 
 bool RainbowMode::isNewBrightness() {
@@ -90,4 +147,12 @@ bool RainbowMode::isNewSaturation() {
 
 bool RainbowMode::isNewPosition() {
     return this->position != this->newPosition;
+}
+
+bool RainbowMode::isNewMoving() {
+    return this->moving != this->newMoving;
+}
+
+bool RainbowMode::isNewSpeed() {
+    return this->speed != this->newSpeed;
 }

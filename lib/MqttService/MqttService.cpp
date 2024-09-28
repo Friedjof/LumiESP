@@ -204,6 +204,7 @@ bool MqttService::onMessageCallback(String topic, String payload)
         case payload_e::BOOL:
         {
             isValid = (payload == "true" || payload == "false" || payload == "1" || payload == "0");
+            payload = (payload == "true" || payload == "1") ? "true" : "false";
             break;
         }
         case payload_e::STRING:

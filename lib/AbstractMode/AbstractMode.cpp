@@ -24,7 +24,7 @@ void AbstractMode::setup()
 
 void AbstractMode::loop(unsigned long long steps)
 {
-    this->firstRun = steps > this->lastSteps + 1 || steps == 0;
+    this->firstRun = steps > this->lastSteps + 1 || (steps == 0 && this->lastSteps == 0);
 
     this->customLoop(steps);
 
