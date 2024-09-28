@@ -18,7 +18,7 @@ class RainbowMode : public AbstractMode {
         int newPosition = this->position;
         bool moving = true;
         bool newMoving = this->moving;
-        byte speed = 0;
+        byte speed = 4;
         byte newSpeed = this->speed;
 
         unsigned int currentStep = 0;

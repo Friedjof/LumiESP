@@ -15,6 +15,7 @@
 #include "AbstractMode.h"
 
 // custom modes
+#include "OffMode.h"
 #include "StaticMode.h"
 #include "SnakeMode.h"
 #include "RainbowMode.h"
@@ -75,11 +76,13 @@ void setup() {
 
 
     // ----> SETUP YOUR APP HERE <----
+    AbstractMode* offMode = new OffMode(&controllerService);
     AbstractMode* staticMode = new StaticMode(&controllerService);
     AbstractMode* snakeMode = new SnakeMode(&controllerService);
     AbstractMode* rainbowMode = new RainbowMode(&controllerService);
 
     // setup modes
+    offMode->setup();
     staticMode->setup();
     snakeMode->setup();
     rainbowMode->setup();
