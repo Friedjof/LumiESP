@@ -6,7 +6,7 @@ RainbowMode::RainbowMode(ControllerService* controllerService) : AbstractMode(co
     this->modeDescription = "This mode loops through all LEDs.";
     this->modeInternalName = "RainbowMode";
     this->modeAuthor = "Friedjof Noweck";
-    this->modeContact = "git@noweck.info";
+    this->modeContact = "programming@noweck.info";
     this->modeVersion = "0.1.0";
     this->modeLicense = "MIT";
 }

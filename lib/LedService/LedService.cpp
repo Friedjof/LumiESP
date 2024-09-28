@@ -121,6 +121,14 @@ void LedService::setHexColor(String hexColor)
     }
 }
 
+void LedService::setColor(CRGB color)
+{
+    for (int i = 0; i < LED_NUM_LEDS; i++)
+    {
+        this->leds[i] = color;
+    }
+}
+
 void LedService::setBrightness(byte brightness)
 {
     FastLED.setBrightness(brightness);

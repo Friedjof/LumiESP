@@ -6,7 +6,7 @@ StaticMode::StaticMode(ControllerService* controllerService) : AbstractMode(cont
     this->modeDescription = "This mode sets the LEDs to a static color configured via MQTT.";
     this->modeInternalName = "StaticMode";
     this->modeAuthor = "Friedjof Noweck";
-    this->modeContact = "git@noweck.info";
+    this->modeContact = "programming@noweck.info";
     this->modeVersion = "0.1.0";
     this->modeLicense = "MIT";
 }

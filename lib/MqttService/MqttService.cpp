@@ -71,6 +71,12 @@ void MqttService::connect()
             delay(5000);
         }
     }
+
+    // subscribe to all topics
+    for (auto const& topic : this->modeTopics)
+    {
+        this->subscribe(topic.first);
+    }
 }
 
 // ------- GENERIC SUBSCRIBE -------

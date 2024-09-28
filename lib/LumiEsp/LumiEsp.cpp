@@ -6,7 +6,7 @@ LumiEsp::LumiEsp(ControllerService* controllerService) : AbstractApp(controllerS
     this->modeDescription = "This app sends LumiESP status messages to MQTT";
     this->modeInternalName = "LumiEsp";
     this->modeAuthor = "Friedjof Noweck";
-    this->modeContact = "git@noweck.info";
+    this->modeContact = "programming@noweck.info";
     this->modeVersion = "0.1.0";
     this->modeLicense = "MIT";
 
@@ -14,12 +14,12 @@ LumiEsp::LumiEsp(ControllerService* controllerService) : AbstractApp(controllerS
 }
 
 void LumiEsp::customSetup() {
-    this->logCallback = this->controllerService->subscribeModeTopic(this->modeInternalName, "log");
-    this->levelCallback = this->controllerService->subscribeModeTopic(this->modeInternalName, "level");
-    this->statusCallback = this->controllerService->subscribeModeTopic(this->modeInternalName, "status");
-    this->datetimeCallback = this->controllerService->subscribeModeTopic(this->modeInternalName, "datetime");
+    this->pushLog = this->controllerService->subscribeModeTopic(this->modeInternalName, "log");
+    this->pushLevel = this->controllerService->subscribeModeTopic(this->modeInternalName, "level");
+    this->pushStatus = this->controllerService->subscribeModeTopic(this->modeInternalName, "status");
+    this->pushDatetime = this->controllerService->subscribeModeTopic(this->modeInternalName, "datetime");
 
-    this->modeSubFun = this->controllerService->subscribeModeTopic(this->modeInternalName, "mode", "", payload_e::STRING, topic_e::PUB_SUB, std::function<void(String)>(std::bind(&LumiEsp::modeCallback, this, std::placeholders::_1)));
+    this->pushMode = this->controllerService->subscribeModeTopic(this->modeInternalName, "mode", "", payload_e::STRING, topic_e::PUB_SUB, std::function<void(String)>(std::bind(&LumiEsp::modeCallback, this, std::placeholders::_1)));
 }
 
 void LumiEsp::customLoop(int steps) {
@@ -27,29 +27,39 @@ void LumiEsp::customLoop(int steps) {
 }
 
 void LumiEsp::logMessage(String message) {
-    this->logCallback(message);
+    if (this->pushLog != nullptr) {
+        this->pushLog(message);
+    }
 }
 
 void LumiEsp::logMessage(const char* message) {
-    this->logCallback(message);
+    if (this->pushLog != nullptr) {
+        this->pushLog(message);
+    }
 }
 
 void LumiEsp::logLevel(String level) {
-    this->levelCallback(level);
+    if (this->pushLevel != nullptr) {
+        this->pushLevel(level);
+    }
 }
 
 void LumiEsp::logStatus(String status) {
-    this->statusCallback(status);
+    if (this->pushStatus != nullptr) {
+        this->pushStatus(status);
+    }
 }
 
 void LumiEsp::logDatetime(String datetime) {
-    this->datetimeCallback(datetime);
+    if (this->pushDatetime != nullptr) {
+        this->pushDatetime(datetime);
+    }
 }
 
 void LumiEsp::modeCallback(String payload) {
     this->controllerService->setMode(payload);
 
-    if (this->modeSubFun) {
-        this->modeSubFun(payload);
+    if (this->pushMode != nullptr) {
+        this->pushMode(payload);
     }
 }

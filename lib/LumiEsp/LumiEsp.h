@@ -12,12 +12,12 @@ class LumiEsp : public AbstractApp {
         ControllerService* controllerService;
 
         // mqtt callbacks
-        std::function<void(String payload)> logCallback;
-        std::function<void(String payload)> levelCallback;
-        std::function<void(String payload)> statusCallback;
-        std::function<void(String payload)> datetimeCallback;
+        std::function<void(String payload)> pushLog = nullptr;
+        std::function<void(String payload)> pushLevel = nullptr;
+        std::function<void(String payload)> pushStatus = nullptr;
+        std::function<void(String payload)> pushDatetime = nullptr;
+        std::function<void(String payload)> pushMode = nullptr;
 
-        std::function<void(String payload)> modeSubFun;
     public:
         LumiEsp(ControllerService* controllerService);
 

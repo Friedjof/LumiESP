@@ -46,6 +46,7 @@ class LedService {
         void setLed(short index, String hexColor);
         void setLed(byte r, byte g, byte b);
 
+        void setColor(CRGB color);
         void setHexColor(String hexColor);
         void setBrightness(byte brightness);
 

@@ -15,6 +15,7 @@
 #include "AbstractMode.h"
 
 // custom modes
+#include "FlashMode.h"
 #include "OffMode.h"
 #include "StaticMode.h"
 #include "SnakeMode.h"
@@ -23,6 +24,7 @@
 // apps
 #include "AbstractApp.h"
 
+// custom apps
 #include "LumiEsp.h"
 
 // config
@@ -76,12 +78,16 @@ void setup() {
 
 
     // ----> SETUP YOUR APP HERE <----
+    FlashMode* initMode = new FlashMode(&controllerService);
+
     AbstractMode* offMode = new OffMode(&controllerService);
     AbstractMode* staticMode = new StaticMode(&controllerService);
     AbstractMode* snakeMode = new SnakeMode(&controllerService);
     AbstractMode* rainbowMode = new RainbowMode(&controllerService);
 
     // setup modes
+    initMode->setup();
+
     offMode->setup();
     staticMode->setup();
     snakeMode->setup();
@@ -119,7 +125,8 @@ void setup() {
     mqttService.initTopics();
 
     // ----> SETUP INITIAL MODE <----
-    controllerService.setMode(staticMode->getModeInternalName());
+    initMode->setNextMode(offMode->getModeInternalName());
+    controllerService.setMode(initMode->getModeInternalName());
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT topics initialized");
 

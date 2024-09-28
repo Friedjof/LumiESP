@@ -138,6 +138,17 @@ void ControllerService::setHexColor(String hexColor)
     this->ledService->setHexColor(hexColor);
 }
 
+void ControllerService::setColor(CRGB color)
+{
+    if (!this->initialized)
+    {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return;
+    }
+    
+    this->ledService->setColor(color);
+}
+
 void ControllerService::setBrightness(byte brightness)
 {
     if (!this->initialized)

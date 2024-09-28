@@ -6,7 +6,7 @@ SnakeMode::SnakeMode(ControllerService* controllerService) : AbstractMode(contro
     this->modeDescription = "This mode creates a snake on the LED strip.";
     this->modeInternalName = "SnakeMode";
     this->modeAuthor = "Friedjof Noweck";
-    this->modeContact = "git@noweck.info";
+    this->modeContact = "programming@noweck.info";
     this->modeVersion = "0.1.0";
     this->modeLicense = "MIT";
 }
