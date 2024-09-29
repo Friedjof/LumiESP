@@ -105,23 +105,6 @@ void setup() {
     LumiEsp *statusApp = new LumiEsp(&controllerService);
     statusApp->setup();
 
-    // register callback functions
-    controllerService.registerPushLog([statusApp](const char* message) -> void {
-        statusApp->logMessage(String(message));
-    });
-    controllerService.registerPushDateTime([statusApp](const char* message) -> void {
-        statusApp->logDatetime(String(message));
-    });
-    controllerService.registerPushStatus([statusApp](const char* message) -> void {
-        statusApp->logStatus(String(message));
-    });
-    controllerService.registerPushLevel([statusApp](const char* message) -> void {
-        statusApp->logLevel(String(message));
-    });
-    controllerService.registerPushMode([statusApp](String mode) -> void {
-        statusApp->modeCallback(mode);
-    });
-
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Status app setup completed");
 
     // create and subscribe to mqtt topics

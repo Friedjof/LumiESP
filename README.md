@@ -14,7 +14,7 @@ LumiESP is a project utilizing an ESP32 microcontroller to control an LED strip 
 
 > **Note:** This project is in active development and may have bugs or incomplete features. Please report any issues you encounter.
 
-## What are the ESP32 and MQTT?
+## What are the ESP32 and what is MQTT?
 The ESP32 is a powerful, low-cost microcontroller with integrated Wi-Fi and Bluetooth, making it perfect for IoT (*Internet of Things*) applications. It enables devices to connect to the internet and interact wirelessly. MQTT (*Message Queuing Telemetry Transport*) is a lightweight protocol designed for reliable messaging between devices, especially in low-bandwidth or resource-constrained environments. It allows efficient, real-time communication by transmitting messages between devices over a network, making it an ideal choice for IoT systems.
 
 ![lumiesp-hardware-6_new.jpg](media/images/demo/hardware/lumiesp-hardware-6.jpg)

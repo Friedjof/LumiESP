@@ -14,12 +14,23 @@ LumiEsp::LumiEsp(ControllerService* controllerService) : AbstractApp(controllerS
 }
 
 void LumiEsp::customSetup() {
+    // register logging callbacks
+    this->controllerService->registerPushLog([this](const char* message) -> void { this->logMessage(String(message)); });
+    this->controllerService->registerPushDateTime([this](const char* message) -> void { this->logDatetime(String(message)); });
+    this->controllerService->registerPushStatus([this](const char* message) -> void { this->logStatus(String(message)); });
+    this->controllerService->registerPushLevel([this](const char* message) -> void { this->logLevel(String(message)); });
+
+    // subscribe to mqtt topics
     this->pushLog = this->controllerService->subscribeModeTopic(this->modeInternalName, "log");
     this->pushLevel = this->controllerService->subscribeModeTopic(this->modeInternalName, "level");
     this->pushStatus = this->controllerService->subscribeModeTopic(this->modeInternalName, "status");
     this->pushDatetime = this->controllerService->subscribeModeTopic(this->modeInternalName, "datetime");
 
-    this->pushMode = this->controllerService->subscribeModeTopic(this->modeInternalName, "mode", "", payload_e::STRING, topic_e::PUB_SUB, std::function<void(String)>(std::bind(&LumiEsp::modeCallback, this, std::placeholders::_1)));
+    this->pushMode = this->controllerService->subscribeModeTopic(
+        this->modeInternalName, "mode", this->currentMode.c_str(), payload_e::STRING, topic_e::PUB_SUB,
+        std::function<void(String)>(std::bind(&LumiEsp::modeCallback, this, std::placeholders::_1)));
+
+    this->controllerService->registerPushMode([this](String mode) -> void { this->pushMode(mode); });
 }
 
 void LumiEsp::customLoop(int steps) {
@@ -57,9 +68,9 @@ void LumiEsp::logDatetime(String datetime) {
 }
 
 void LumiEsp::modeCallback(String payload) {
-    this->controllerService->setMode(payload);
-
-    if (this->pushMode != nullptr) {
-        this->pushMode(payload);
+    if (payload == this->currentMode) {
+        return;
     }
+
+    this->controllerService->setMode(payload);
 }

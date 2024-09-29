@@ -9,7 +9,6 @@
 
 class AbstractMode {
     private:
-        unsigned long long lastSteps = 0;
         bool firstRun = true;
 
     protected:
@@ -24,14 +23,23 @@ class AbstractMode {
         String modeVersion;
         String modeLicense;
 
+        // helper methods
+        bool isFirstRun();
+        void enableFirstRun();
+        void disableFirstRun();
+
+        // abstract methods
+        virtual void customSetup() = 0;
+        virtual void customLoop(unsigned long long steps) = 0;
+
+        void loop(unsigned long long steps);
+
     public:
         AbstractMode(ControllerService* controllerService);
         ~AbstractMode();
 
+        // setup method called once when the mode is initialized in the main.cpp
         void setup();
-        void loop(unsigned long long steps);
-
-        bool isFirstRun();
 
         // mode properties
         String getModeTitle();
@@ -41,9 +49,6 @@ class AbstractMode {
         String getModeContact();
         String getModeVersion();
         String getModeLicense();
-
-        virtual void customSetup() = 0;
-        virtual void customLoop(unsigned long long steps) = 0;
 };
 
 #endif

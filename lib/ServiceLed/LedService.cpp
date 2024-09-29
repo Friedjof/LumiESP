@@ -17,20 +17,24 @@ void LedService::setup()
 
 void LedService::loop()
 {
-    if (this->newInternalModeSteps >= LED_MODE_CONFIG_MAX_STEPS)
+    if (this->internalModeSteps >= LED_SERVICE_MAX_STEPS)
     {
-        this->newInternalModeSteps = 0;
+        this->internalModeSteps = 0;
     }
 
-    // check if mode is set
-    if (this->modeExists(this->newCurrentMode))
+    if (this->isNewMode())
     {
-        this->modes[this->newCurrentMode](this->newInternalModeSteps);
-
         this->currentMode = this->newCurrentMode;
+
+        this->internalModeSteps = 0;
+
+        // enable first run for the new mode
+        this->modes[this->currentMode].enableFirstRun();
     }
 
-    this->internalModeSteps = this->newInternalModeSteps++;
+    this->modes[this->currentMode].modeLoop(this->internalModeSteps);
+
+    this->internalModeSteps++;
 }
 
 void LedService::setMode(String mode)
@@ -42,23 +46,22 @@ void LedService::setMode(String mode)
     }
 
     // check if mode is already set
-    if (this->newCurrentMode == mode)
+    if (this->currentMode == mode)
     {
         this->log(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service requested mode is already set: " + mode);
         return;
     }
 
+    this->log(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service requested mode: " + mode);
+
     this->newCurrentMode = mode;
 
-    if (this->pushModeCallback)
+    if (this->pushModeCallback != nullptr)
     {
         this->pushModeCallback(mode);
     }
 
-    this->log(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service requested mode: " + mode);
-
-    // execute mode for the first time
-    this->modes[mode](this->newInternalModeSteps);
+    this->log(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "LED Service mode set: " + mode);
 }
 
 String LedService::getMode()
@@ -66,7 +69,7 @@ String LedService::getMode()
     return this->currentMode;
 }
 
-void LedService::registerMode(String name, std::function<void(int steps)> mode) {
+void LedService::registerMode(String name, std::function<void(int steps)> mode, std::function<void()> enableFirstRun) {
     // check if mode already exists
     if (this->modes.find(name) != this->modes.end()) {
         this->log(LOG_LEVEL_WARN, LOG_MODE_ALL, "LED Service mode already exists: " + name);
@@ -75,7 +78,7 @@ void LedService::registerMode(String name, std::function<void(int steps)> mode) 
 
     this->log(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "LED Service mode registered: " + name);
 
-    this->modes[name] = mode;
+    this->modes[name] = {mode, enableFirstRun};
 }
 
 void LedService::unregisterMode(String name) {
@@ -215,6 +218,11 @@ bool LedService::registerLogFunction(std::function<void(short logLevel, short mo
 void  LedService::registerPushModeCallback(std::function<void(String mode)> pushModeCallback)
 {
     this->pushModeCallback = pushModeCallback;
+}
+
+bool LedService::isNewMode()
+{
+    return this->currentMode != this->newCurrentMode;
 }
 
 // ------- PRIVATE METHODS -------

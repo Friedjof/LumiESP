@@ -30,7 +30,7 @@
 #define LED_PIN                    2      // GPIO pin of the LED strip
 #define LED_NUM_LEDS               60     // number of LEDs in the strip (e.g. 300, 60)
 #define LED_MODE_CONFIG_SPEED      10     // speed of the LED mode in ms
-#define LED_MODE_CONFIG_MAX_STEPS  10240000
+#define LED_SERVICE_MAX_STEPS  10240000
 #define LED_MODE_CONFIG_BRIGHTNESS 255
 
 // DNS Configuration (used for time sync)

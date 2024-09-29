@@ -6,12 +6,22 @@ LoggingService::LoggingService() : logLevel(LOG_LEVEL), initialized(false) {}
 
 // Setup method
 void LoggingService::setup() {
+    if (this->initialized) {
+        this->logMessage(LOG_LEVEL_DEBUG, LOG_MODE, "Logging service already initialized");
+        return;
+    }
+
     Serial.begin(LOG_SERIAL_SPEED);
 
     this->initialized = true;
 }
 
 void LoggingService::setup(short logLevel) {
+    if (this->initialized) {
+        this->logMessage(LOG_LEVEL_DEBUG, LOG_MODE, "Logging service already initialized");
+        return;
+    }
+
     Serial.begin(LOG_SERIAL_SPEED);
 
     this->logLevel = logLevel;

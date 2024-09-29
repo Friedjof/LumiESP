@@ -10,23 +10,30 @@
 #include "../../config/config.h"
 
 
+struct Mode {
+    std::function<void(int steps)> modeLoop;
+    std::function<void()> enableFirstRun;
+};
+
+
 class LedService {
     private:
         // store for all modes
-        std::map<String, std::function<void(unsigned long long steps)>> modes;
+        std::map<String, Mode> modes;
 
         CRGB leds[LED_NUM_LEDS];
 
-        String newCurrentMode = "none";
-        String currentMode = "none";
+        String currentMode = "";
+        String newCurrentMode = this->currentMode;
 
-        unsigned long long maxModeSteps = LED_MODE_CONFIG_MAX_STEPS;
-        unsigned long long newInternalModeSteps = 0;
+        unsigned long long maxModeSteps = LED_SERVICE_MAX_STEPS;
         unsigned long long internalModeSteps = 0;
 
         // simple log function
         std::function<void(short logLevel, short mode, String message)> logFunction = nullptr;
         std::function<void(String mode)> pushModeCallback = nullptr;
+
+        bool isNewMode();
 
         // private helper functions
         String expandHexColor(String hexColor);
@@ -51,7 +58,7 @@ class LedService {
         void setBrightness(byte brightness);
 
         // modes
-        void registerMode(String name, std::function<void(int steps)> mode);
+        void registerMode(String name, std::function<void(int steps)> mode, std::function<void()> enableFirstRun);
         void unregisterMode(String name);
 
         bool modeExists(String name);

@@ -38,9 +38,6 @@ void FlashMode::customLoop(unsigned long long steps) {
 
         this->blinkCounter = 0;
         this->stepCounter = 0;
-        this->newBrightness = DEFUALT_BRIGHTNESS;
-
-        this->pushBrightness(String(this->newBrightness));
 
         this->startColor = this->hexColor2CRGB(this->startColorHex);
         this->endColor = this->hexColor2CRGB(this->stopColorHex);

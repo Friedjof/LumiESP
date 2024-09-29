@@ -65,11 +65,12 @@ class FlashMode : public AbstractMode {
         CRGB hexColor2CRGB(String hexColor);
         String expandHexColor(String hexColor);
 
-    public:
-        FlashMode(ControllerService* controllerService);
-
+    protected:
         void customSetup() override;
         void customLoop(unsigned long long steps) override;
+
+    public:
+        FlashMode(ControllerService* controllerService);
 };
 
 #endif

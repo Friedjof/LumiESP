@@ -50,7 +50,7 @@ void ControllerService::setMode(String mode)
 }
 
 // ------- LED SERVICE METHODS -------
-void ControllerService::registerMode(String name, std::function<void(int steps)> mode)
+void ControllerService::registerMode(String name, std::function<void(int steps)> modeLoop, std::function<void()> enableFirstRun)
 {
     if (!this->initialized)
     {
@@ -58,7 +58,7 @@ void ControllerService::registerMode(String name, std::function<void(int steps)>
         return;
     }
 
-    this->ledService->registerMode(name, mode);
+    this->ledService->registerMode(name, modeLoop, enableFirstRun);
 }
 
 void ControllerService::unregisterMode(String name)
@@ -341,7 +341,7 @@ void ControllerService::mqttServiceUpdateDateTimeWrapper()
 
     this->pushDateTimeMessage(this->clockService->getDateTime().c_str());
 
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT DateTime update");
+    this->loggingService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "MQTT DateTime update");
 }
 
 void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
@@ -353,13 +353,13 @@ void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::Mes
         playloadStr += (char)payload[i];
     }
 
-    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT message received: " + String(topic) + " > " + playloadStr);
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "MQTT message received: " + String(topic) + " = " + playloadStr);
 
     bool valid = this->mqttService->onMessageCallback(topic, playloadStr);
 
     if (!valid)
     {
-        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "MQTT topic or payload invalid: " + String(topic) + " > " + playloadStr);
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "MQTT topic or payload invalid: " + String(topic) + " = " + playloadStr);
     }
 }
 

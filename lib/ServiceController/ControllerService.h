@@ -47,7 +47,7 @@ class ControllerService
         void ledServiceLoopWrapper();
 
         // LedService methods
-        void registerMode(String name, std::function<void(int steps)> mode);
+        void registerMode(String name, std::function<void(int steps)> modeLoop, std::function<void()> enableFirstRun);
         void unregisterMode(String name);
 
         void setLed(short index, byte r, byte g, byte b);
