@@ -18,7 +18,7 @@ class UnicornMode : public AbstractMode {
         String newHexColorOn = this->hexColorOn;
         String hexColorOff = "#000000";
         String newHexColorOff = this->hexColorOff;
-        byte brightness = 0;
+        byte brightness = 255;
         byte newBrightness = this->brightness;
         unsigned int intensity = 0;
         unsigned int newIntensity = this->intensity;
