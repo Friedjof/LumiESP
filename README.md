@@ -227,7 +227,6 @@ bool CustomMode::isNewCustomBrightness() {
 }
 ```
 
-```markdown
 4. Include the New Mode in the `main.cpp` File:
 ```cpp
 //…
