@@ -1,25 +1,42 @@
 # LumiESP
 LumiESP is a project utilizing an ESP32 microcontroller to control an LED strip via MQTT. It is designed for easy customization and extension, enabling the creation of custom modes and settings. The included Makefile streamlines PlatformIO commands for building, uploading, and monitoring the code.
 
+<div style="display: flex; flex-wrap: nowrap; gap: 10px;">
+    <img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" style="flex: 1 1 20%; max-width: 24%;">
+    <img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" style="flex: 1 1 20%; max-width: 24%;">
+    <img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" style="flex: 1 1 20%; max-width: 24%;">
+    <img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" style="flex: 1 1 20%; max-width: 24%;">
+</div>
+
+*Example modes: Flash, Rainbow, Snake, and Unicorn*
+
 > **Note:** This project is in active development and may have bugs or incomplete features. Please report any issues you encounter.
 
 ## What are the ESP32 and MQTT?
-The ESP32 is a powerful, low-cost microcontroller with integrated Wi-Fi and Bluetooth, making it perfect for IoT (Internet of Things) applications. It enables devices to connect to the internet and interact wirelessly. MQTT (Message Queuing Telemetry Transport) is a lightweight protocol designed for reliable messaging between devices, especially in low-bandwidth or resource-constrained environments. It allows efficient, real-time communication by transmitting messages between devices over a network, making it an ideal choice for IoT systems.
+The ESP32 is a powerful, low-cost microcontroller with integrated Wi-Fi and Bluetooth, making it perfect for IoT (*Internet of Things*) applications. It enables devices to connect to the internet and interact wirelessly. MQTT (*Message Queuing Telemetry Transport*) is a lightweight protocol designed for reliable messaging between devices, especially in low-bandwidth or resource-constrained environments. It allows efficient, real-time communication by transmitting messages between devices over a network, making it an ideal choice for IoT systems.
+
+![lumiesp-hardware-6_new.jpg](media/images/demo/hardware/lumiesp-hardware-6.jpg)
 
 ## Features
-- Control LED strips using the ESP32 over MQTT (e.g., LED strips like `WS2812`, `WS2812B`, `WS2813`, etc.)
-- Customizable settings for LED strips, such as brightness and color and custom modes
-- Simplified build, upload, and monitoring process using PlatformIO commands
-- Ability to define custom modes and settings for the LED strips
+- Control LED strips with the ESP32 via MQTT (supports LED types like `WS2812`, `WS2812B`, `WS2813`, etc.)
+- Customizable settings for WiFi, MQTT, device, and LED strip configurations (see the [Configuration](#3-configure-the-project) section)
+- Simplified build, upload, and monitoring with PlatformIO commands
+- Compatible with the `IoT MQTT Panel` app for easy LED strip control using a pre-configured panel
+- Ability to define and implement custom modes for LED strips (see the [Custom Modes](#define-your-own-custom-modes) section)
+- I hope a good documentation and a good code structure
 
 ## Requirements
-- An ESP32 microcontroller (e.g., ESP32 Dev Module)
+- An ESP32 microcontroller (e.g., `ESP32 Dev Module`)
+- A compatible LED strip (e.g., `WS2812`, `WS2812B`, `WS2813`)
 - PlatformIO installed on your system, or use the provided [nix-shell](/shell.nix)
-- A compatible LED strip (e.g., WS2812, WS2812B, WS2813)
-- An MQTT broker (e.g., Mosquitto)
+- MQTT broker (e.g., `Mosquitto`)
+
+*Some recommended tools and software:*
+- [MQTT Explorer](https://mqtt-explorer.com/) app for monitoring MQTT messages
+- [IoT MQTT Panel](https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod) app for controlling the LED strip via MQTT
+- [Docker](https://www.docker.com/) for running a local MQTT broker
 
 ## Installation
-
 ### 1. Install PlatformIO
 PlatformIO is a cross-platform code builder and an easy way to manage embedded software environments. Follow the official [installation guide](https://docs.platformio.org/en/latest/core/installation/methods/installer-script.html) to set it up.
 
@@ -45,16 +62,16 @@ Before using the LumiESP project, ensure that the following key settings in the 
 - `MQTT_PORT`: Typically set to `1883`.
 - `MQTT_USERNAME`: Your MQTT broker username.
 - `MQTT_PASSWORD`: Your MQTT broker password.
+- `MQTT_CLIENT_ID`: Unique client ID for the ESP32. This is important for MQTT communication.
 
 #### Device Configuration
-- `DEVICE_NAME`: Name of your device (e.g., "LumiESP").
-- `DEVICE_LOCATION`: Physical location of the device (e.g., "Living Room").
+- `DEVICE_NAME`: Name of your device (e.g., "LumiESP"). This will be used in MQTT topics and should be unique if you have multiple devices.
+- `DEVICE_LOCATION`: Physical location of the device (e.g., "Living Room", not required).
 
 #### LED Configuration
 - `LED_TYPE`: Type of your LED strip (e.g., `WS2812`).
 - `LED_PIN`: GPIO pin connected to the LED strip.
 - `LED_NUM_LEDS`: Number of LEDs in the strip.
-- `LED_MODE_CONFIG_BRIGHTNESS`: Set the initial brightness (0-255). 
 
 Make sure to adjust these settings according to your specific setup to ensure proper operation of your LumiESP project.
 
@@ -67,6 +84,30 @@ Use the Makefile to simplify PlatformIO commands. Edit variables in the Makefile
 - `PORT`: ESP32 serial port (e.g., `/dev/ttyUSB0`).
 - `BOARD`: ESP32 board type (e.g., `esp32dev`).
 - `SPEED`: Baud rate for the serial monitor (e.g., `115200`).
+
+### 5. Control the LED Strip via MQTT with the IoT MQTT Panel App
+It takes some time to configure a good panel for controlling the LED strip. Therefore, I have used the [IoT MQTT Panel](https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod) app to control the LED strip. The app is easy to use and allows you to customize the panel according to your needs. You can see some screenshots of the panel below and a tutorial on how to load the `panel.json` configuration file.
+
+<div style="display: flex; flex-wrap: nowrap; gap: 10px; justify-content: space-between;">
+    <img src="media/images/demo/screenshorts/iot-mqtt-panel_modes-and-static.png" alt="iot-mqtt-panel_modes-and-static" style="flex: 1 1 auto; max-width: 18%;">
+    <img src="media/images/demo/screenshorts/iot-mqtt-panel_snake.png" alt="iot-mqtt-panel_snake" style="flex: 1 1 auto; max-width: 18%;">
+    <img src="media/images/demo/screenshorts/iot-mqtt-panel_flash.png" alt="iot-mqtt-panel_flash" style="flex: 1 1 auto; max-width: 18%;">
+    <img src="media/images/demo/screenshorts/iot-mqtt-panel_rainbow.png" alt="iot-mqtt-panel_rainbow" style="flex: 1 1 auto; max-width: 18%;">
+    <img src="media/images/demo/screenshorts/iot-mqtt-panel_unicorn.png" alt="iot-mqtt-panel_unicorn" style="flex: 1 1 auto; max-width: 18%;">
+</div>
+
+This panel allows you to control the LED strip using MQTT messages. You can set the color, brightness, and mode of the LED strip using the app.
+If you would like to use the samen panel, you can download the app from the [Google Play Store](https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod) and load this [panel.json](media/iot-mqtt-panel/panel.json) configuration file.
+
+To load the `panel.json` configuration file, follow these steps:
+1. Open the IoT MQTT Panel app on your device
+2. Create a new connection to your MQTT broker
+3. Click on the three dots of the created connection
+4. Select the "share" option
+5. Configure a mqtt topic and click "subscribe and wait"
+6. Open the "MQTT Explorer" on your desktop
+7. Copy the JSON configuration from the `panel.json` file
+8. Publish the JSON configuration to the topic you have configured in the app
 
 ### Development Environment
 You can run a `mosquitto` MQTT broker locally on your machine for testing. To run the MQTT broker using Docker, follow these steps:
@@ -83,7 +124,14 @@ Start the MQTT broker
 docker compose up -d
 ```
 
-#### Makefile
+#### The Makefile provides the following commands:
+Configure the Makefile variables to match your setup:
+- **PORT**: The serial port of the ESP32.
+- **BOARD**: The ESP32 board type.
+- **SPEED**: The baud rate for the serial monitor.
+- **PLATFORMIO**: The path to the PlatformIO executable.
+
+The Makefile provides the following commands:
 - **Build the project:** `make build`
 - **Upload the code to the ESP32:** `make upload`
 - **Monitor the serial output:** `make monitor`
@@ -95,7 +143,7 @@ docker compose up -d
 ## MQTT Topics
 ```txt
 LumiESP
-├── LumiESP     // this defines the system topic
+├── LumiEsp     // this defines the system topic
 │   ├── sub
 │   │   ├── status     // the system status
 │   │   ├── datetime   // the current date and time
@@ -114,7 +162,9 @@ LumiESP
 …
 ```
 
-> **Note:** The system topic is used to publish and subscribe to system-related information, such as the current mode, status, and log messages. The other topics are used to control the LED strip and define custom modes.
+The system topic is used to handle system-related information, such as the current mode, status updates, and log messages, using the publish/subscribe (pub/sub) pattern. When a change, like a new color or brightness, is set, the ESP32 publishes the updated values back to the `sub` topic to confirm the changes. This ensures that any subscribers to the `sub` topics receive the latest values and can track the current system status.
+
+> **Hint:** You can see more topics in this [MQTT Explorer screenshot](media/images/demo/screenshorts/mqtt-explorer_topics.png)
 
 ## Define Your Own Custom Modes
 You can easily define your own custom modes by following these steps:
@@ -122,7 +172,8 @@ You can easily define your own custom modes by following these steps:
 2. Inside this folder, create a header file named `CustomMode.h` and a source file named `CustomMode.cpp`.
 3. Implement the `CustomMode` class in these files, using the `AbstractMode` class as the base class.
 
-> `CustomMode.h`
+
+### `CustomMode.h`
 ```cpp
 // #ifndef is a preprocessor directive that checks if the token has been defined earlier in the file or in an included file
 #ifndef CUSTOMMODE_H
@@ -165,7 +216,7 @@ public:
 #endif
 ```
 
-> `CustomMode.cpp`
+### `CustomMode.cpp`
 ```cpp
 // Include the header file of the custom mode
 #include "CustomMode.h"
@@ -289,11 +340,16 @@ void setup() {
 - **LedService**: Controls the LED strip using PWM signals.
 - **ControllerService**: Manages tasks and schedules for the ESP32.
 
-![Services Overview](media/images/classes-overview.png)
+![Services Overview](media/images/overviews/classes-overview.png)
 
 ## Troubleshooting
 - Make sure the correct port is selected in the Makefile.
-- Ensure PlatformIO is installed correctly by checking the installation instructions linked above.
+- Ensure PlatformIO is installed correctly by checking the installation instructions linked above (see [Installation](#installation)).
+- Check if the `DEVICE_NAME` are unique if you have multiple devices (see the [Configuration](#3-configure-the-project) section).
+- Check if the `DEVICE_CLIENT_ID` is unique for each device (see the [Configuration](#3-configure-the-project) section).
+- Verify that the MQTT broker is running and accessible from the ESP32.
+
+> **Note:** If you encounter any issues, please open an issue on the GitHub repository and I hope I can help you.
 
 ## Acknowledgements
 - PlatformIO for providing a versatile environment for embedded development.
@@ -301,3 +357,5 @@ void setup() {
 
 ## Author
 - [Friedjof Noweck](https://github.com/Friedjof)
+
+*Looking forward to seeing your name here soon.*
