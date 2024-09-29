@@ -171,7 +171,10 @@ The system topic is used to handle system-related information, such as the curre
 > **Hint:** You can see more topics in this [MQTT Explorer screenshot](media/images/demo/screenshorts/mqtt-explorer_topics.png)
 
 ## Define Your Own Custom Modes
-You can easily define your own custom modes by following these steps:
+
+> **Note:** You need basic knowledge of C++ (*Abstract* Classes, Inheritance, and Function Binding) to define custom modes.
+
+You can define your own custom modes by following steps:
 1. Create a new folder, such as `ModeCustom`, in the `lib/` directory.
 2. Inside this folder, create a header file named `CustomMode.h` and a source file named `CustomMode.cpp`.
 3. Implement the `CustomMode` class in these files, using the `AbstractMode` class as the base class.
