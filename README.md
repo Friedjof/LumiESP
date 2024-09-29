@@ -1,12 +1,14 @@
 # LumiESP
 LumiESP is a project utilizing an ESP32 microcontroller to control an LED strip via MQTT. It is designed for easy customization and extension, enabling the creation of custom modes and settings. The included Makefile streamlines PlatformIO commands for building, uploading, and monitoring the code.
 
-<div style="display: flex; flex-wrap: nowrap; gap: 10px;">
-    <img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" style="flex: 1 1 20%; max-width: 24%;">
-    <img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" style="flex: 1 1 20%; max-width: 24%;">
-    <img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" style="flex: 1 1 20%; max-width: 24%;">
-    <img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" style="flex: 1 1 20%; max-width: 24%;">
-</div>
+<table>
+  <tr>
+    <td><img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" width="200"></td>
+    <td><img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" width="200"></td>
+    <td><img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" width="200"></td>
+    <td><img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" width="200"></td>
+  </tr>
+</table>
 
 *Example modes: Flash, Rainbow, Snake, and Unicorn*
 
