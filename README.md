@@ -92,11 +92,11 @@ It takes some time to configure a good panel for controlling the LED strip. Ther
 
 <table>
   <tr>
-    <td><img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" width="200"></td>
-    <td><img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" width="200"></td>
-    <td><img src="media/gifs/lumiesp-snake-small.gif" alt="lumiesp-snake-small" width="200"></td>
-    <td><img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" width="200"></td>
-    <td><img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" width="200"></td>
+    <td><img src="media/images/demo/screenshorts/iot-mqtt-panel_modes-and-static.png" alt="iot-mqtt-panel_modes-and-static" width="150"></td>
+    <td><img src="media/images/demo/screenshorts/iot-mqtt-panel_snake.png" alt="iot-mqtt-panel_snake" width="150"></td>
+    <td><img src="media/images/demo/screenshorts/iot-mqtt-panel_flash.png" alt="iot-mqtt-panel_flash" width="150"></td>
+    <td><img src="media/images/demo/screenshorts/iot-mqtt-panel_rainbow.png" alt="iot-mqtt-panel_rainbow" width="150"></td>
+    <td><img src="media/images/demo/screenshorts/iot-mqtt-panel_unicorn.png" alt="iot-mqtt-panel_unicorn" width="150"></td>
   </tr>
 </table>
 
