@@ -333,6 +333,8 @@ void setup() {
 ```
 5. Build, upload, and monitor the code using the Makefile commands ([see above](#makefile)).
 
+> I'd love to see the custom modes you create—feel free to share them via a pull request!
+
 ## Services and classes
 - **ClockService**: Provides timekeeping functionality (including NTP synchronization).
 - **LoggingService**: Logs messages to the serial monitor and MQTT.
