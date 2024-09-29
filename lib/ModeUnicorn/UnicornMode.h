@@ -20,7 +20,7 @@ class UnicornMode : public AbstractMode {
         String newHexColorOff = this->hexColorOff;
         byte brightness = 255;
         byte newBrightness = this->brightness;
-        unsigned int intensity = 0;
+        unsigned int intensity = 10;
         unsigned int newIntensity = this->intensity;
         unsigned int speed = 5;
         unsigned int newSpeed = this->speed;

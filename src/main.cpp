@@ -168,6 +168,7 @@ void loop() {
 }
 
 
+// helper functions
 void connectToWiFi() {
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     WiFi.waitForConnectResult();
