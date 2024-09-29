@@ -2,7 +2,7 @@
 #define FLASHMODE_H
 
 #define DEFUALT_BRIGHTNESS 255
-#define NONE_MODE "none"
+#define NONE_MODE "OffMode"
 
 
 #include <functional>
