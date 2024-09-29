@@ -203,8 +203,8 @@ private:
     void customBrightnessCallback(const byte &brightness);
 
     // Functions to publish updated values back to MQTT to confirm changes
-    std::function<void(String payload)> pushCustomColor = std::bind(&CustomMode::customColorCallback, this, std::placeholders::_1);
-    std::function<void(String payload)> pushCustomBrightness = std::bind(&CustomMode::customBrightnessCallback, this, std::placeholders::_1);
+    std::function<void(String payload)> pushCustomColor = nullptr;
+    std::function<void(String payload)> pushCustomBrightness = nullptr;
 
     // Helper methods to detect changes in color or brightness
     bool isNewCustomColor();
@@ -291,13 +291,19 @@ void CustomMode::customLoop(unsigned long long steps) {
 // Called when a new color is set via MQTT
 void CustomMode::customColorCallback(const String &color) {
     this->newCustomColor = color;                // Store the new color
-    this->pushCustomColor(this->newCustomColor); // Acknowledge the change
+
+    if (this->pushCustomColor != nullptr) {
+        this->pushCustomColor(this->newCustomColor); // Acknowledge the change to the MQTT broker if the callback is set
+    }
 }
 
 // Called when a new brightness is set via MQTT
 void CustomMode::customBrightnessCallback(const byte &brightness) {
     this->newCustomBrightness = brightness;                // Store the new brightness
-    this->pushCustomBrightness(this->newCustomBrightness); // Acknowledge the change
+    
+    if (this->pushCustomBrightness != nullptr) {
+        this->pushCustomBrightness(this->newCustomBrightness); // Acknowledge the change to the MQTT broker if the callback is set
+    }
 }
 
 // Checks if the color has changed
