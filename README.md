@@ -90,55 +90,50 @@ LumiESP
 
 > **Note:** The system topic is used to publish and subscribe to system-related information, such as the current mode, status, and log messages. The other topics are used to control the LED strip and define custom modes.
 
-## Define your own custom modes
-You can define your custom modes very easily.
-1. Create a new folder like `ModeCustom` in the `lib/` directory.
-2. Create a new header `CustomMode.h` and a new source file `CustomMode.cpp` in the new folder.
-3. Implement the `CustomMode` class in the header and source file. Use the `AbstractMode` class as a base class.
+## Define Your Own Custom Modes
+You can easily define your own custom modes by following these steps:
+1. Create a new folder, such as `ModeCustom`, in the `lib/` directory.
+2. Inside this folder, create a header file named `CustomMode.h` and a source file named `CustomMode.cpp`.
+3. Implement the `CustomMode` class in these files, using the `AbstractMode` class as the base class.
 
 > `CustomMode.h`
 ```cpp
-// ifndef is a preprocessor directive that checks if the given token has been #defined earlier in the file or in an included file
+// #ifndef is a preprocessor directive that checks if the token has been defined earlier in the file or in an included file
 #ifndef CUSTOMMODE_H
 #define CUSTOMMODE_H
 
-
 #include <functional>
-
 #include "AbstractMode.h"
-
 
 class CustomMode : public AbstractMode {
 private:
-    // Some internal properties
-    String customColor = "#424242";
+    // Internal properties for managing color and brightness
+    String customColor = "#424242";  // Default color
     String newCustomColor = this->customColor;
-    byte customBrightness = 255;
+    byte customBrightness = 255;  // Default brightness
     byte newCustomBrightness = this->customBrightness;
 
-    // This method is called when a new color is set via MQTT
+    // Callback method called when a new color is set via MQTT
     void customColorCallback(const String &color);
+    // Callback method called when a new brightness is set via MQTT
     void customBrightnessCallback(const byte &brightness);
 
-    // The push-methods are used to publish the new values back to the MQTT broker to acknowledge the change
+    // Functions to publish updated values back to MQTT to confirm changes
     std::function<void(String payload)> pushCustomColor = std::bind(&CustomMode::customColorCallback, this, std::placeholders::_1);
     std::function<void(String payload)> pushCustomBrightness = std::bind(&CustomMode::customBrightnessCallback, this, std::placeholders::_1);
 
-    // Some helper methods to identify the changes
+    // Helper methods to detect changes in color or brightness
     bool isNewCustomColor();
     bool isNewCustomBrightness();
 
 public:
     CustomMode(ControllerService* controllerService);
 
-    // The custom setup and loop methods are used to define the behavior of the mode
-
-    // The "customSetup" method is called once when the mode is initialized in the "main.cpp" file
+    // Setup method called once when the mode is initialized
     void customSetup() override;
 
-    // The "customLoop" method is called in every loop iteration
-    // The "steps" is a global counter that is increased in every loop iteration over every mode
-    void customLoop(unsiged long long steps) override;
+    // Loop method called in every iteration; 'steps' is a counter for every mode in this project
+    void customLoop(unsigned long long steps) override;
 };
 
 #endif
@@ -146,141 +141,111 @@ public:
 
 > `CustomMode.cpp`
 ```cpp
-// include the header file of the custom mode
+// Include the header file of the custom mode
 #include "CustomMode.h"
 
-
-// Implement the constructor of the custom mode
-// It is important to call the constructor of the base class "AbstractMode" with the "controllerService" parameter
+// Constructor implementation of the custom mode
+// Calls the base class "AbstractMode" constructor with the "controllerService" parameter
 CustomMode::CustomMode(ControllerService* controllerService) : AbstractMode(controllerService) {
-    // This parameter is used to classify the mode in general. It is commen sense to discribe some basic information about the mode and the author
+    // Parameters for classifying the mode; provide basic info about the mode and author
     this->modeTitle = "Custom Mode";
     this->modeDescription = "This is a custom mode that sets the LED strip to a custom color and brightness.";
-    this->modeInternalName = "CustomMode"; // This title is used to identify the mode later. It is very important to use a **unique name**
-    this->modeAuthor = "<Your Name>";      // You can use your name or your username
-    this->modeContact = "<Your Email or an other contact information (optional)>";
-    this->modeVersion = "1.0.0";           // You can define a version number
-    this->modeLicense = "MIT";             // You can use any license you want
+    this->modeInternalName = "CustomMode"; // Unique name to identify the mode
+    this->modeAuthor = "<Your Name>";      // Add your name or username
+    this->modeContact = "<Your Email or other contact information (optional)>";
+    this->modeVersion = "1.0.0";           // Define a version number
+    this->modeLicense = "MIT";             // Define your chosen license
 }
 
 void CustomMode::customSetup() {
-    // This method is called once when the mode is initialized
-    // Here you can specify the MQTT topics you want to push and subscribe to
+    // Called once when the mode is initialized
+    // Define MQTT topics to push and subscribe to
 
-    // Note: The "controllerService" is a pointer to the "ControllerService" central instance that is used to manage the other servives
-    //       See the diagram in the "Services and classes" section for more information
-    //       The pointer is managed by the "AbstractMode" class and you can simply use it in your custom mode
+    // Note: "controllerService" manages other services and is accessed via "AbstractMode"
+    // Refer to the "Services and Classes" section diagram for more details
 
-    // >>> Topics: "<DeviceName>/<ModeInternalName>/sub/customcolor" and "<DeviceName>/<ModeInternalName>/pub/customcolor"
-    // Parameters: modeInternalName, topicName, defaultValue, payloadType (e.g., COLOR, INT, BYTE, BOOL, STRING, etc.), callback
+    // Topic for color: "<DeviceName>/<ModeInternalName>/sub/customcolor" and "<DeviceName>/<ModeInternalName>/pub/customcolor"
+    // Uses parameters like modeInternalName, topicName, defaultValue, payloadType, and callback
     this->pushCustomColor = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "customcolor", this->customColor.c_str(), payload_e::COLOR,
         std::function<void(String)>(std::bind(&CustomMode::customColorCallback, this, std::placeholders::_1)));
-    // The "customColorCallback" method is called when a new color is set via MQTT and you can use the "pushCustomColor" method to acknowledge the change
-
-    // >>> Topics: <DeviceName>/<ModeInternalName>/sub/custombrightness and <DeviceName>/<ModeInternalName>/pub/custombrightness
-    // Parameters: modeInternalName, topicName, defaultValue, boundaries (min, max), payloadType, callback
+    
+    // Topic for brightness: "<DeviceName>/<ModeInternalName>/sub/custombrightness" and "<DeviceName>/<ModeInternalName>/pub/custombrightness"
+    // Uses parameters including boundaries (min, max)
     this->pushCustomBrightness = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "custombrightness", this->customBrightness, boundaries_t{0, 255},
         payload_e::BYTE, std::function<void(String)>(std::bind(&CustomMode::customBrightnessCallback, this, std::placeholders::_1)));
 }
 
 void CustomMode::customLoop(unsigned long long steps) {
-    // This method is called in every loop iteration.
-    // Here you can define the behavior of your mode.
+    // Called in every loop iteration; defines the mode's behavior
 
-    // This is a function of the "AbstractMode" class that is used to check if this is the first loop iteration after activating this mode
+    // Check if it's the first run after activation using "isFirstRun()" from "AbstractMode"
     if (this->isFirstRun()) {
-        // Here you can update the LED strip because LEDs are in the state of the last mode
-        // You can use the "setHexColor" method to set the color
+        // Update the LED strip from the state of the last mode
         this->controllerService->setHexColor(this->customColor);
-        // You can use the "setBrightness" method to set the brightness
         this->controllerService->setBrightness(this->customBrightness);
-
-        // Do not forget to confirm the new configuration
-        this->controllerService->confirmLedConfig();
+        this->controllerService->confirmLedConfig(); // Confirm new configuration
     }
 
-    // Note: It is common sense to use if statements to identify if a new configuration has been set via MQTT
-    //       It helps to set only the new configuration and to confirm the change and decrease the time to execute the loop
+    // Use conditions to handle new configurations set via MQTT; this reduces loop execution time
     if (this->isNewCustomColor()) {
-        // Do something with the new color
         this->customColor = this->newCustomColor;
-
-        // You can use the "setHexColor" method to set the color
         this->controllerService->setHexColor(this->customColor);
-
-        // You have to confirm every new configuration if it took place
         this->controllerService->confirmLedConfig();
     }
 
     if (this->isNewCustomBrightness()) {
-        // Do something with the new brightness
         this->customBrightness = this->newCustomBrightness;
-
-        // You can use the "setBrightness" method to set the brightness
-        this->controllerService->setBrightness(this->brightness);
-
-        // You have to confirm every new configuration if it took place
+        this->controllerService->setBrightness(this->customBrightness);
         this->controllerService->confirmLedConfig();
     }
 
-    // Tipp: Use the "steps" parameter to create some animations.
-    //       You can also define your own counter with can be updated in every x-th loop iteration
+    // Use the "steps" parameter for animations or implement a custom counter for updates
 }
 
-// This method is called when a new color is set via MQTT
+// Called when a new color is set via MQTT
 void CustomMode::customColorCallback(const String &color) {
-    // The new color is stored in the "newCustomColor" property
-    this->newCustomColor = color;
-
-    // You can use the "pushCustomColor" method to acknowledge the change
-    // >>> This is common sense to confirm every new configuration and this helps other devices to synchronize with the new configuration
-    this->pushCustomColor(this->newCustomColor);
+    this->newCustomColor = color;                // Store the new color
+    this->pushCustomColor(this->newCustomColor); // Acknowledge the change
 }
 
-// This method is called when a new brightness is set via MQTT
+// Called when a new brightness is set via MQTT
 void CustomMode::customBrightnessCallback(const byte &brightness) {
-    // The new brightness is stored in the "newCustomBrightness" property
-    this->newCustomBrightness = brightness;
-
-    // You can use the "pushCustomBrightness" method to acknowledge the change
-    this->pushCustomBrightness(this->newCustomBrightness);
+    this->newCustomBrightness = brightness;                // Store the new brightness
+    this->pushCustomBrightness(this->newCustomBrightness); // Acknowledge the change
 }
 
-// This method is used to identify if the color has changed
+// Checks if the color has changed
 bool CustomMode::isNewCustomColor() {
     return this->customColor != this->newCustomColor;
 }
 
-// This method is used to identify if the brightness has changed
+// Checks if the brightness has changed
 bool CustomMode::isNewCustomBrightness() {
     return this->customBrightness != this->newCustomBrightness;
 }
 ```
 
-4. Include the new mode in the `main.cpp` file.
+```markdown
+4. Include the New Mode in the `main.cpp` File:
 ```cpp
 //…
 
-// custom modes
-//…
+// Include custom modes
 #include "CustomMode.h"
 //…
 
-// This is the main setup method of the ESP32
+// Main setup method of the ESP32
 void setup() {
-
     //…
     // ----> SETUP YOUR APP HERE <----
-    //…
-    // This is the place where you can define your custom modes
+    // Define your custom modes here
     AbstractMode* customMode = new CustomMode(&controllerService);
     //…
 
-    // setup modes
-    //…
-    // This calls the "setup" method of the "AbstractMode" class and then your defined "customSetup" method
+    // Setup modes
+    // Calls the "setup" method of the "AbstractMode" class followed by "customSetup"
     customMode->setup();
     //…
     // <---- SETUP YOUR APP HERE ---->
