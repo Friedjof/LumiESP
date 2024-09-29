@@ -319,7 +319,7 @@ bool CustomMode::isNewCustomBrightness() {
 // Main setup method of the ESP32
 void setup() {
     //…
-    // ----> SETUP YOUR APP HERE <----
+    // ----> SETUP YOUR MODE HERE <----
     // Define your custom modes here
     AbstractMode* customMode = new CustomMode(&controllerService);
     //…
@@ -328,7 +328,7 @@ void setup() {
     // Calls the "setup" method of the "AbstractMode" class followed by "customSetup"
     customMode->setup();
     //…
-    // <---- SETUP YOUR APP HERE ---->
+    // <---- SETUP YOUR MODE HERE ---->
 
     //…
 }

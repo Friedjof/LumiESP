@@ -78,7 +78,7 @@ void setup() {
 
 
 
-    // ----> SETUP YOUR APP HERE <----
+    // ----> SETUP YOUR MODE HERE <----
     FlashMode* flashMode = new FlashMode(&controllerService);
 
     AbstractMode* offMode = new OffMode(&controllerService);
@@ -97,7 +97,7 @@ void setup() {
     unicornMode->setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Modes setup completed");
-    // <---- SETUP YOUR APP HERE ---->
+    // <---- SETUP YOUR MODE HERE ---->
 
 
 
