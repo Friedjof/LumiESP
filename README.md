@@ -53,7 +53,7 @@ cd LumiESP
 ```
 
 ### 3. Configure the Project
-Before using the LumiESP project, ensure that the following key settings in the `config/config.h` file are correctly configured:
+Before using LumiESP, ensure the following key settings in `config/config.h` are properly configured:
 
 #### WiFi Configuration
 - `WIFI_SSID`: Your WiFi network name.
@@ -62,20 +62,20 @@ Before using the LumiESP project, ensure that the following key settings in the 
 #### MQTT Configuration
 - `MQTT_BROKER`: Address of your MQTT broker.
 - `MQTT_PORT`: Typically set to `1883`.
-- `MQTT_USERNAME`: Your MQTT broker username.
-- `MQTT_PASSWORD`: Your MQTT broker password.
-- `MQTT_CLIENT_ID`: Unique client ID for the ESP32. This is important for MQTT communication.
+- `MQTT_USERNAME`: MQTT broker username.
+- `MQTT_PASSWORD`: MQTT broker password.
+- `MQTT_CLIENT_ID`: Unique client ID for the ESP32, critical for distinguishing your device on the network and avoiding conflicts if multiple devices are connected.
 
 #### Device Configuration
-- `DEVICE_NAME`: Name of your device (e.g., "LumiESP"). This will be used in MQTT topics and should be unique if you have multiple devices.
-- `DEVICE_LOCATION`: Physical location of the device (e.g., "Living Room", not required).
+- `DEVICE_NAME`: Unique name for your device (used in MQTT topics and communication). Ensure it’s unique if you have multiple devices to prevent overlap or topic collisions.
+- `DEVICE_LOCATION`: Optional, e.g., "Living Room".
 
 #### LED Configuration
-- `LED_TYPE`: Type of your LED strip (e.g., `WS2812`).
-- `LED_PIN`: GPIO pin connected to the LED strip.
+- `LED_TYPE`: Type of LED strip (e.g., `WS2812`).
+- `LED_PIN`: GPIO pin connected to the strip.
 - `LED_NUM_LEDS`: Number of LEDs in the strip.
 
-Make sure to adjust these settings according to your specific setup to ensure proper operation of your LumiESP project.
+Make sure these settings are tailored to your setup for proper operation of LumiESP. A unique device name and MQTT client ID are crucial for seamless communication, especially in setups with multiple devices.
 
 ### 4. Build, Upload, and Monitor
 Use the Makefile to simplify PlatformIO commands. Edit variables in the Makefile as needed.
