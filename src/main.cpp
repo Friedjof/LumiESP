@@ -20,6 +20,7 @@
 #include "StaticMode.h"
 #include "SnakeMode.h"
 #include "RainbowMode.h"
+#include "UnicornMode.h"
 
 // apps
 #include "AbstractApp.h"
@@ -84,6 +85,7 @@ void setup() {
     AbstractMode* staticMode = new StaticMode(&controllerService);
     AbstractMode* snakeMode = new SnakeMode(&controllerService);
     AbstractMode* rainbowMode = new RainbowMode(&controllerService);
+    AbstractMode* unicornMode = new UnicornMode(&controllerService);
 
     // setup modes
     flashMode->setup();
@@ -92,6 +94,7 @@ void setup() {
     staticMode->setup();
     snakeMode->setup();
     rainbowMode->setup();
+    unicornMode->setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Modes setup completed");
     // <---- SETUP YOUR APP HERE ---->
