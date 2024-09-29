@@ -90,13 +90,15 @@ Use the Makefile to simplify PlatformIO commands. Edit variables in the Makefile
 ### 5. Control the LED Strip via MQTT with the IoT MQTT Panel App
 It takes some time to configure a good panel for controlling the LED strip. Therefore, I have used the [IoT MQTT Panel](https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod) app to control the LED strip. The app is easy to use and allows you to customize the panel according to your needs. You can see some screenshots of the panel below and a tutorial on how to load the `panel.json` configuration file.
 
-<div style="display: flex; flex-wrap: nowrap; gap: 10px; justify-content: space-between;">
-    <img src="media/images/demo/screenshorts/iot-mqtt-panel_modes-and-static.png" alt="iot-mqtt-panel_modes-and-static" style="flex: 1 1 auto; max-width: 18%;">
-    <img src="media/images/demo/screenshorts/iot-mqtt-panel_snake.png" alt="iot-mqtt-panel_snake" style="flex: 1 1 auto; max-width: 18%;">
-    <img src="media/images/demo/screenshorts/iot-mqtt-panel_flash.png" alt="iot-mqtt-panel_flash" style="flex: 1 1 auto; max-width: 18%;">
-    <img src="media/images/demo/screenshorts/iot-mqtt-panel_rainbow.png" alt="iot-mqtt-panel_rainbow" style="flex: 1 1 auto; max-width: 18%;">
-    <img src="media/images/demo/screenshorts/iot-mqtt-panel_unicorn.png" alt="iot-mqtt-panel_unicorn" style="flex: 1 1 auto; max-width: 18%;">
-</div>
+<table>
+  <tr>
+    <td><img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" width="200"></td>
+    <td><img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" width="200"></td>
+    <td><img src="media/gifs/lumiesp-snake-small.gif" alt="lumiesp-snake-small" width="200"></td>
+    <td><img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" width="200"></td>
+    <td><img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" width="200"></td>
+  </tr>
+</table>
 
 This panel allows you to control the LED strip using MQTT messages. You can set the color, brightness, and mode of the LED strip using the app.
 If you would like to use the samen panel, you can download the app from the [Google Play Store](https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod) and load this [panel.json](media/iot-mqtt-panel/panel.json) configuration file.
