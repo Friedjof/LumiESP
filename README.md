@@ -1,10 +1,10 @@
 # LumiESP
 LumiESP is a project utilizing an ESP32 microcontroller to control an LED strip via MQTT. It is designed for easy customization and extension, enabling the creation of custom modes and settings. The included Makefile streamlines PlatformIO commands for building, uploading, and monitoring the code.
 
-> **Note:** This project is still in development and may contain bugs or incomplete features. Please report any issues you encounter.
+> **Note:** This project is in active development and may have bugs or incomplete features. Please report any issues you encounter.
 
-## What is the ESP32 and MQTT?
-The ESP32 is a versatile, low-cost microcontroller with built-in Wi-Fi and Bluetooth capabilities, making it ideal for IoT (Internet of Things) projects. It allows devices to connect to the internet and communicate wirelessly. MQTT (Message Queuing Telemetry Transport) is a lightweight messaging protocol designed for small sensors and mobile devices. It enables efficient communication between devices by sending and receiving messages over a network.
+## What are the ESP32 and MQTT?
+The ESP32 is a powerful, low-cost microcontroller with integrated Wi-Fi and Bluetooth, making it perfect for IoT (Internet of Things) applications. It enables devices to connect to the internet and interact wirelessly. MQTT (Message Queuing Telemetry Transport) is a lightweight protocol designed for reliable messaging between devices, especially in low-bandwidth or resource-constrained environments. It allows efficient, real-time communication by transmitting messages between devices over a network, making it an ideal choice for IoT systems.
 
 ## Features
 - Control LED strips using the ESP32 over MQTT (e.g., LED strips like `WS2812`, `WS2812B`, `WS2813`, etc.)
@@ -13,33 +13,59 @@ The ESP32 is a versatile, low-cost microcontroller with built-in Wi-Fi and Bluet
 - Ability to define custom modes and settings for the LED strips
 
 ## Requirements
-- ESP32 microcontroller (e.g., ESP32 Dev Module)
-- PlatformIO installed on your system or simply use this [nix-shell](/shell.nix)
-- LED strip (e.g., WS2812, WS2812B, WS2813)
-- MQTT broker (e.g., Mosquitto)
+- An ESP32 microcontroller (e.g., ESP32 Dev Module)
+- PlatformIO installed on your system, or use the provided [nix-shell](/shell.nix)
+- A compatible LED strip (e.g., WS2812, WS2812B, WS2813)
+- An MQTT broker (e.g., Mosquitto)
 
 ## Installation
-### 1. Install PlatformIO
-PlatformIO is a cross-platform code builder and the easiest way to manage your embedded software environment. To install PlatformIO, follow the official instructions found [here](https://docs.platformio.org/en/latest/core/installation/methods/installer-script.html).
 
-> **Note:** If you are using NixOS, you can use the provided `shell.nix` file to enter a shell with PlatformIO installed.
+### 1. Install PlatformIO
+PlatformIO is a cross-platform code builder and an easy way to manage embedded software environments. Follow the official [installation guide](https://docs.platformio.org/en/latest/core/installation/methods/installer-script.html) to set it up.
+
+> **Note:** NixOS users can use the included `shell.nix` to enter a shell with PlatformIO pre-installed.
 
 ### 2. Clone the Repository
-Clone the LumiESP project repository to your local machine:
+Clone the LumiESP project to your local machine:
 
 ```bash
 git clone https://github.com/friedjof/lumiESP.git
 cd LumiESP
 ```
 
-### 3. Build, Upload, and Monitor
-The project includes a Makefile that simplifies the use of PlatformIO commands. Make sure to edit the variables in the Makefile according to your setup.
+### 3. Configure the Project
+Before using the LumiESP project, ensure that the following key settings in the `config/config.h` file are correctly configured:
 
-> **Note:** You have to copy the `config/config.h-template` to `config/config.h` and fill in the necessary information. You can also use the `setup.py` script to do this for you (run `python setup.py` or `make setup`).
+#### WiFi Configuration
+- `WIFI_SSID`: Your WiFi network name.
+- `WIFI_PASSWORD`: Your WiFi password.
+
+#### MQTT Configuration
+- `MQTT_BROKER`: Address of your MQTT broker.
+- `MQTT_PORT`: Typically set to `1883`.
+- `MQTT_USERNAME`: Your MQTT broker username.
+- `MQTT_PASSWORD`: Your MQTT broker password.
+
+#### Device Configuration
+- `DEVICE_NAME`: Name of your device (e.g., "LumiESP").
+- `DEVICE_LOCATION`: Physical location of the device (e.g., "Living Room").
+
+#### LED Configuration
+- `LED_TYPE`: Type of your LED strip (e.g., `WS2812`).
+- `LED_PIN`: GPIO pin connected to the LED strip.
+- `LED_NUM_LEDS`: Number of LEDs in the strip.
+- `LED_MODE_CONFIG_BRIGHTNESS`: Set the initial brightness (0-255). 
+
+Make sure to adjust these settings according to your specific setup to ensure proper operation of your LumiESP project.
+
+### 4. Build, Upload, and Monitor
+Use the Makefile to simplify PlatformIO commands. Edit variables in the Makefile as needed.
+
+> **Note:** Copy `config/config.h-template` to `config/config.h` and add your details, or use `setup.py` (`python setup.py` or `make setup`).
 
 #### Variables
-- `PORT`: Serial port of your ESP32 (e.g., `/dev/ttyUSB0`).
-- `BOARD`: The type of ESP32 board (e.g., `esp32dev`).
+- `PORT`: ESP32 serial port (e.g., `/dev/ttyUSB0`).
+- `BOARD`: ESP32 board type (e.g., `esp32dev`).
 - `SPEED`: Baud rate for the serial monitor (e.g., `115200`).
 
 ### Development Environment
