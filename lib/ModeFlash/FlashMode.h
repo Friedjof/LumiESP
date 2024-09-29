@@ -2,7 +2,6 @@
 #define FLASHMODE_H
 
 #define DEFUALT_BRIGHTNESS 255
-#define NONE_MODE "OffMode"
 
 
 #include <functional>
@@ -17,7 +16,7 @@ class FlashMode : public AbstractMode {
         String newStartColorHex = this->startColorHex;
         String stopColorHex = "#7f7f7f";
         String newStopColorHex = this->stopColorHex;
-        String nextMode = NONE_MODE;
+        String nextMode = "OffMode";
         String newNextMode = this->nextMode;
         byte brightness = 255;
         byte newBrightness = this->brightness;

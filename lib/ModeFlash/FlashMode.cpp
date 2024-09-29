@@ -98,7 +98,7 @@ void FlashMode::customLoop(unsigned long long steps) {
         this->controllerService->setColor(currentColor);
 
         this->controllerService->confirmLedConfig();
-    } else if (this->blinkCounter / 2 >= this->maxFlashNum && !this->infinityFlash && this->nextMode != NONE_MODE) {
+    } else if (this->blinkCounter / 2 >= this->maxFlashNum && !this->infinityFlash) {
         this->controllerService->setMode(this->nextMode);
     }
 
