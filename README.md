@@ -3,10 +3,10 @@ LumiESP is a project utilizing an ESP32 microcontroller to control an LED strip 
 
 <table>
   <tr>
-    <td><img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" width="200"></td>
-    <td><img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" width="200"></td>
-    <td><img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" width="200"></td>
-    <td><img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" width="200"></td>
+    <td><img src="media/gifs/lumiesp-flash.gif" alt="lumiesp-flash" width="150"></td>
+    <td><img src="media/gifs/lumiesp-rainbow.gif" alt="lumiesp-rainbow" width="150"></td>
+    <td><img src="media/gifs/lumiesp-snake.gif" alt="lumiesp-snake" width="150"></td>
+    <td><img src="media/gifs/lumiesp-unicorn.gif" alt="lumiesp-unicorn" width="150"></td>
   </tr>
 </table>
 
