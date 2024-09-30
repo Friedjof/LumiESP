@@ -21,6 +21,7 @@
 #include "SnakeMode.h"
 #include "RainbowMode.h"
 #include "UnicornMode.h"
+#include "MorseMode.h"
 
 // apps
 #include "AbstractApp.h"
@@ -79,22 +80,22 @@ void setup() {
 
 
     // ----> SETUP YOUR MODE HERE <----
-    FlashMode* flashMode = new FlashMode(&controllerService);
-
     AbstractMode* offMode = new OffMode(&controllerService);
     AbstractMode* staticMode = new StaticMode(&controllerService);
     AbstractMode* snakeMode = new SnakeMode(&controllerService);
     AbstractMode* rainbowMode = new RainbowMode(&controllerService);
+    AbstractMode* flashMode = new FlashMode(&controllerService);
     AbstractMode* unicornMode = new UnicornMode(&controllerService);
+    AbstractMode* morseMode = new MorseMode(&controllerService);
 
     // setup modes
-    flashMode->setup();
-
     offMode->setup();
     staticMode->setup();
     snakeMode->setup();
     rainbowMode->setup();
     unicornMode->setup();
+    flashMode->setup();
+    morseMode->setup();
 
     loggingService.logMessage(LOG_LEVEL_DEBUG, LOG_MODE_SERIAL, "Modes setup completed");
     // <---- SETUP YOUR MODE HERE ---->
