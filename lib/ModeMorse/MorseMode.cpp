@@ -82,7 +82,9 @@ void MorseMode::customLoop(unsigned long long steps) {
     if (this->isFirstRun()) {
         // set initial values
         this->newMorseActive = true;
+
         this->pushMorseActive(this->newMorseActive ? "true" : "false");
+        this->pushMessage(this->newMessage);
 
         this->currentPositon = 0;
         this->currentMorseCodeUnit = 0;
@@ -148,7 +150,7 @@ void MorseMode::customLoop(unsigned long long steps) {
             }
 
             if (morsedMessage.length() == 0 && this->currentPositon == 0 && this->currentMorseCodeUnit == 0) {
-                this->controllerService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Successfully stopped sending morse code message >>" + this->message + "<<.");
+                this->controllerService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "finished sending morse code message >>" + this->message + "<<.");
             } else {
                 this->controllerService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Aborted, only the part >>" + morsedMessage + "<< was sent.");
             }
@@ -199,6 +201,7 @@ void MorseMode::customLoop(unsigned long long steps) {
                 this->newMorseActive = false;
 
                 this->pushMorseActive(this->newMorseActive ? "true" : "false");
+                this->pushMessage(this->message);
 
                 this->controllerService->setHexColor(this->colorOff);
 
@@ -236,11 +239,6 @@ void MorseMode::onColorOffCallback(String payload) {
 
 void MorseMode::onBrightnessCallback(String payload) {
     this->newBrightness = payload.toInt();
-
-    if (this->newMorseActive) {
-        this->controllerService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Morse code is active. Please stop the current message before changing the brightness.");
-        return;
-    }
     
     if (this->pushBrightness != nullptr) {
         this->pushBrightness(String(this->newBrightness));
