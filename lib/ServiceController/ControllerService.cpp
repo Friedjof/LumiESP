@@ -341,7 +341,7 @@ void ControllerService::mqttServiceUpdateDateTimeWrapper()
 
     this->pushDateTimeMessage(this->clockService->getDateTime().c_str());
 
-    this->loggingService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "MQTT DateTime update");
+    this->loggingService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "MQTT DateTime update");
 }
 
 void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::MessageProperties& properties, const char* topic, const uint8_t* payload, size_t len, size_t index, size_t total)
@@ -366,6 +366,8 @@ void ControllerService::mqttServiceCallbackWrapper(const espMqttClientTypes::Mes
 void ControllerService::clockServiceTimeSyncWrapper()
 {
     this->clockService->syncTime();
+
+    this->loggingService->logMessage(LOG_LEVEL_INFO, LOG_MODE_ALL, "Date and time synchronized");
 }
 
 void ControllerService::ledServiceLoopWrapper()
