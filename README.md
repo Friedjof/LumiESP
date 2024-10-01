@@ -25,6 +25,7 @@ The ESP32 is a powerful, low-cost microcontroller with integrated Wi-Fi and Blue
 - Simplified build, upload, and monitoring with PlatformIO commands
 - Compatible with the `IoT MQTT Panel` app for easy LED strip control using a pre-configured panel
 - Ability to define and implement custom modes for LED strips (see the [Custom Modes](#define-your-own-custom-modes) section)
+- Supports the a Ultrasonic sensor (HC-SR04) to control the LED strip with gestures (see the [Ultrasonic Sensor Configuration](#ultrasonic-sensor-configuration) section)
 - I hope a good documentation and a good code structure
 
 ## Requirements
@@ -76,6 +77,15 @@ Before using LumiESP, ensure the following key settings in `config/config.h` are
 - `LED_NUM_LEDS`: Number of LEDs in the strip.
 
 Make sure these settings are tailored to your setup for proper operation of LumiESP. A unique device name and MQTT client ID are crucial for seamless communication, especially in setups with multiple devices.
+
+#### Ultrasonic Sensor Configuration
+- `ULTRASONIC`: set to `true` to enable the Ultrasonic sensor support (default: `false`).
+- `TRIGGER_PIN`: GPIO pin connected to the Ultrasonic sensor trigger (default: `22`).
+- `ECHO_PIN`: GPIO pin connected to the Ultrasonic sensor echo (default: `23`).
+
+Read the comments in the `config/config.h` file for more information on each setting.
+
+> **Note:** Currently, you can only control the brightness of the `StaticMode` if it is enabled. Other modes are not yet supported.
 
 ### 4. Build, Upload, and Monitor
 Use the Makefile to simplify PlatformIO commands. Edit variables in the Makefile as needed.

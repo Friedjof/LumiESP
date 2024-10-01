@@ -17,12 +17,13 @@ void StaticMode::customSetup() {
         this->modeInternalName, "hex", this->hexColor.c_str(), payload_e::COLOR, std::function<void(String)>(std::bind(&StaticMode::hexCallback, this, std::placeholders::_1)));
     this->pushBrightness = this->controllerService->subscribeModeTopic(
         this->modeInternalName, "brightness", this->brightness, boundaries_t{0, 255}, payload_e::BYTE, std::function<void(String)>(std::bind(&StaticMode::brightnessCallback, this, std::placeholders::_1)));
-    this->pushUltrasonicEnabled = this->controllerService->subscribeModeTopic(
-        this->modeInternalName, "ultrasonicEnabled", this->ultrasonicEnabled ? "true" : "false", payload_e::BOOL, std::function<void(String)>(std::bind(&StaticMode::ultrasonicEnabledCallback, this, std::placeholders::_1)));
     this->pushDistance = this->controllerService->subscribeModeTopic(this->modeInternalName, "distance", String(this->distance));
 
     // enable ultrasonic sensor if enabled in the config/config.h file
-    if (ULTRASONIC) {
+    if (ULTRASONIC) {    
+        this->pushUltrasonicEnabled = this->controllerService->subscribeModeTopic(
+            this->modeInternalName, "ultrasonicEnabled", this->ultrasonicEnabled ? "true" : "false", payload_e::BOOL, std::function<void(String)>(std::bind(&StaticMode::ultrasonicEnabledCallback, this, std::placeholders::_1)));
+    
         this->controllerService->logMessage(LOG_LEVEL_DEBUG, LOG_MODE_ALL, "StaticMode uses ultrasonic sensor");
 
         pinMode(TRIGGER_PIN, OUTPUT);
@@ -123,7 +124,9 @@ void StaticMode::hexCallback(String payload) {
     this->newHexColor = payload;
 
     // publish the hex to the pub topic
-    this->pushHex(payload);
+    if (this->pushHex != nullptr) {
+        this->pushHex(payload);
+    }
 }
 
 void StaticMode::brightnessCallback(String payload) {
@@ -132,7 +135,9 @@ void StaticMode::brightnessCallback(String payload) {
     this->newBrightness = payload.toInt();
 
     // publish the brightness to the pub topic
-    this->pushBrightness(payload);
+    if (this->pushBrightness != nullptr) {
+        this->pushBrightness(payload);
+    }
 }
 
 void StaticMode::ultrasonicEnabledCallback(String payload) {
@@ -141,7 +146,9 @@ void StaticMode::ultrasonicEnabledCallback(String payload) {
     this->newUltrasonicEnabled = payload == "true" || payload == "1";
 
     // publish the ultrasonic enabled to the pub topic
-    this->pushUltrasonicEnabled(payload);
+    if (this->pushUltrasonicEnabled != nullptr) {
+        this->pushUltrasonicEnabled(payload);
+    }
 }
 
 bool StaticMode::isNewHexColor() {

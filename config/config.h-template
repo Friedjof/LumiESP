@@ -85,18 +85,19 @@
 #define TIME_SYNC_INTERVAL                   60000 * 60 // 1 hour
 
 // HC-SR04 Ultrasonic Pinout
-#define ULTRASONIC true // if true, ultrasonic sensor is used
-#define TRIGGER_PIN 22  // GPIO pin of the trigger
-#define ECHO_PIN 25     // GPIO pin of the echo
+#define ULTRASONIC false // if true, the ultrasonic sensor is used
+#define TRIGGER_PIN 22   // GPIO pin of the trigger
+#define ECHO_PIN 25      // GPIO pin of the echo
 
 #define PUSH_DISTANCE_EVERY_ITERATIONS 100  // push distance every x iterations to avoid flooding the mqtt broker
 #define UPDATE_DISTANCE_EVERY_ITERATIONS 10 // update distance (and brightness) every x iterations
-// *see the Iterationtim in "LED_MODE_CONFIG_SPEED" at the top of this file
+// *see the Iterationtim in "LED_MODE_CONFIG_SPEED" at the top of this file for the time of one iteration
 
-// Distance mapping in cm (e.g. 5cm >= distance <= 25cm)
+// Distance mapping in cm (e.g. 5cm >= distance <= 25cm) to brightness (0-255) in 9 steps
 #define DISTANCE_MIN 5
 #define DISTANCE_MAX 25
 // if distance is greater than this value, the brightness will not change (have to be greater than DISTANCE_MAX)
 #define DISTANCE_NO_CHANGE 35
+
 
 #endif
