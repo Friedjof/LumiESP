@@ -79,10 +79,10 @@ void StaticMode::customLoop(unsigned long long steps) {
             // scale the brightness to 255
             if (tmpScaling == 0) {
                 brightness = 0;
-            } else if (tmpScaling == 9) {
+            } else if (tmpScaling == 8) {
                 brightness = 255;
             } else {
-                brightness = map(tmpScaling, 0, 9, 0, 255);
+                brightness = map(tmpScaling, 0, 8, 0, 255);
             }
 
             if (brightness != this->newBrightness) {
