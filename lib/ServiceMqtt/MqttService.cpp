@@ -119,6 +119,9 @@ std::function<void(String payload)> MqttService::subscribeModeTopic(String modeN
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic) {
     return this->subscribeModeTopic(modeName, localTopic, "", boundaries_t(), payload_e::STRING, topic_e::PUB_ONLY, nullptr);
 }
+std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload) {
+    return this->subscribeModeTopic(modeName, localTopic, defaultPayload.c_str(), boundaries_t(), payload_e::STRING, topic_e::PUB_ONLY, nullptr);
+}
 std::function<void(String payload)> MqttService::subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback) {
     return this->subscribeModeTopic(modeName, localTopic, defaultPayload, boundaries_t(), payloadType, topicType, topicCallback);
 }

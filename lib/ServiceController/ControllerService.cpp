@@ -194,6 +194,15 @@ std::function<void(String payload)> ControllerService::subscribeModeTopic(String
     return this->mqttService->subscribeModeTopic(modeName, localTopic, payloadType, topicType);
 }
 
+std::function<void(String payload)> ControllerService::subscribeModeTopic(String modeName, String localTopic, String defaultPayload) {
+    if (!this->initialized) {
+        this->loggingService->logMessage(LOG_LEVEL_WARN, LOG_MODE_ALL, "Controller Service not initialized");
+        return nullptr;
+    }
+
+    return this->mqttService->subscribeModeTopic(modeName, localTopic, defaultPayload);
+}
+
 std::function<void(String payload)> ControllerService::subscribeModeTopic(String modeName, String localTopic)
 {
     if (!this->initialized)

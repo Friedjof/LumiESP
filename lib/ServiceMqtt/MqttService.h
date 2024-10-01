@@ -42,6 +42,7 @@ class MqttService
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload, boundaries_t boundaries, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
         // LumiEsp
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, payload_e payloadType, topic_e topicType);
+        std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, String defaultPayload);
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic);
         std::function<void(String payload)> subscribeModeTopic(String modeName, String localTopic, const char* defaultPayload, payload_e payloadType, topic_e topicType, std::function<void(String payload)> topicCallback);
         // StaticMode
